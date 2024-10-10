@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 @AllArgsConstructor
-@Schema(description = "상품 조회 응답")
+@Schema(description = "상품 응답")
 public class ItemResponse {
     @Schema(description = "상품 식별자", example = "1")
     private Long itemId;
@@ -22,6 +22,7 @@ public class ItemResponse {
 
     @Builder
     @AllArgsConstructor
+    @Schema(description = "상품 옵션 응답")
     public static class ItemOptionResponse {
         @Schema(description = "상품 옵션 식별자", example = "10")
         private Long itemOptionId;
