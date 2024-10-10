@@ -9,11 +9,7 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(
                 title = "e-commerce API 명세서",
                 description = "API 명세서",
-                version = "v1",
-                contact = @Contact(
-                        name = "hhplus",
-                        email = "sample@email.co.kr"
-                )
+                version = "v1"
         )
 )
 @Configuration

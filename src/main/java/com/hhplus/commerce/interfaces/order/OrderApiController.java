@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderApiController implements OrderApiSpecification {
     @PostMapping("")
     public CommonResponse createOrder(
-            @RequestHeader("Authorization") Long customerId,
+            @RequestHeader("customerId") Long customerId,
             @RequestBody OrderRequest orderRequest
     ) {
         OrderResponse orderResponse = OrderResponse.builder()
@@ -24,7 +24,7 @@ public class OrderApiController implements OrderApiSpecification {
 
     @PostMapping("/payment")
     public CommonResponse payOrder(
-            @RequestHeader("Authorization") Long customerId,
+            @RequestHeader("customerId") Long customerId,
             @RequestBody PaymentRequest request
     ) {
         PaymentResponse paymentResponse = PaymentResponse.builder()

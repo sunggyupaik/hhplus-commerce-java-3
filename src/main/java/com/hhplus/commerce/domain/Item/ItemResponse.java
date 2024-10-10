@@ -1,10 +1,11 @@
 package com.hhplus.commerce.domain.Item;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
 @Builder
+@Setter
+@Getter
 @AllArgsConstructor
 @Schema(description = "상품 응답")
 public class ItemResponse {
@@ -21,6 +22,8 @@ public class ItemResponse {
     ItemOptionResponse itemOptionResponse;
 
     @Builder
+    @Setter
+    @Getter
     @AllArgsConstructor
     @Schema(description = "상품 옵션 응답")
     public static class ItemOptionResponse {
