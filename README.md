@@ -8,4 +8,6 @@
 
 ### [ERD](./docs/03_ERD.md)
 
-### [MockAPI](./docs/03_ERD.md)
+### [MockAPI](./docs/04_MockAPI.md)
+
+### [API Documentation](./docs/05_APIDocumentation.md)
