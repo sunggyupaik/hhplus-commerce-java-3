@@ -12,7 +12,7 @@ import java.util.List;
 public class ItemApiController implements ItemApiSpecification {
     @GetMapping("/{id}")
     public CommonResponse getItem(
-            @PathVariable Long id
+            @PathVariable("id") Long id
     ) {
         ItemResponse.ItemOptionResponse itemOptionResponse = ItemResponse.ItemOptionResponse.builder()
                 .itemOptionId(10L)

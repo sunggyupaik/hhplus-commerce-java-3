@@ -1,13 +1,17 @@
 package com.hhplus.commerce.domain.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Builder
+@Setter
 @Getter
+@AllArgsConstructor
 @Schema(description = "주문 요청")
 public class OrderRequest {
     @Schema(description = "고객 식별자", example = "1")
@@ -22,11 +26,13 @@ public class OrderRequest {
     @Schema(description = "수령자 우편번호", example = "123-1")
     private String receiverZipcode;
 
-    @Schema(description = "주문 상품 요청", example = "1")
+    @Schema(description = "주문 상품 요청")
     private List<OrderItemRequest> orderItemRequestList;
 
     @Builder
+    @Setter
     @Getter
+    @AllArgsConstructor
     @Schema(description = "주문 상품 요청")
     public static class OrderItemRequest {
         @Schema(description = "상품 재고", example = "10")
@@ -49,7 +55,9 @@ public class OrderRequest {
     }
 
     @Builder
+    @Setter
     @Getter
+    @AllArgsConstructor
     @Schema(description = "주문 상품 옵션 요청")
     public static class OrderItemOptionRequest {
         @Schema(description = "상품 옵션 사이즈", example = "95")

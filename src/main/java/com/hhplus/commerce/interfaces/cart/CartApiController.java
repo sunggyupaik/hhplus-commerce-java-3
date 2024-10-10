@@ -13,12 +13,12 @@ import java.util.List;
 public class CartApiController implements CartSpecification {
     @GetMapping("")
     public CommonResponse getCart(
-            @RequestHeader("Authorization") Long customerId
+            @RequestHeader(value = "customerId", required = false) Long customerId
     ) {
         List<CartItemResponse> cartItemResponses = Arrays.asList(
-                new CartItemResponse(1L, 2L, 3L),
-                new CartItemResponse(1L, 3L, 5L),
-                new CartItemResponse(1L, 4L, 10L)
+                new CartItemResponse(customerId, 2L, 3L),
+                new CartItemResponse(customerId, 3L, 5L),
+                new CartItemResponse(customerId, 4L, 10L)
         );
 
         return CommonResponse.success(cartItemResponses);
@@ -26,7 +26,7 @@ public class CartApiController implements CartSpecification {
 
     @PostMapping("")
     public CommonResponse addCart(
-            @RequestHeader("Authorization") Long customerId,
+            @RequestHeader("customerId") Long customerId,
             @RequestBody CartItemRequest request
     ) {
         CartItemResponse cartItemResponse = CartItemResponse.builder()
@@ -40,7 +40,7 @@ public class CartApiController implements CartSpecification {
 
     @DeleteMapping("/item/{itemId}")
     public CommonResponse deleteCart(
-            @RequestHeader("Authorization") Long customerId,
+            @RequestHeader("customerId") Long customerId,
             @PathVariable("itemId") Long itemId
     ) {
         CartItemResponse cartItemResponse = CartItemResponse.builder()

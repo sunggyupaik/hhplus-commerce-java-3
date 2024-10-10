@@ -11,7 +11,7 @@ public class CustomerApiController implements CustomerApiSpecification {
     @Override
     @GetMapping("")
     public CommonResponse getCustomerPoint(
-            @RequestHeader("Authorization") Long customerId
+            @RequestHeader("customerId") Long customerId
     ) {
         CustomerPointResponse customerPointResponse = CustomerPointResponse.builder()
                 .customerId(customerId)
@@ -24,7 +24,7 @@ public class CustomerApiController implements CustomerApiSpecification {
     @Override
     @PostMapping("/points/charge")
     public CommonResponse chargeCustomerPoint(
-            @RequestHeader("Authorization") Long customerId,
+            @RequestHeader("customerId") Long customerId,
             @RequestBody PointChargeRequest request
     ) {
         CustomerPointResponse customerPointResponse = CustomerPointResponse.builder()

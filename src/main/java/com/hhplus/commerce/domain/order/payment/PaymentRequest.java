@@ -1,11 +1,15 @@
 package com.hhplus.commerce.domain.order.payment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
+@Setter
 @Getter
+@AllArgsConstructor
 @Schema(description = "결제 요청")
 public class PaymentRequest {
     @Schema(description = "주문 식별자", example = "1")

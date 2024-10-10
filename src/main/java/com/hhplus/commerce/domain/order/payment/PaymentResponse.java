@@ -1,9 +1,15 @@
 package com.hhplus.commerce.domain.order.payment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
+@Setter
+@Getter
+@AllArgsConstructor
 public class PaymentResponse {
     @Schema(description = "결제 식별자", example = "10")
     private Long paymentId;

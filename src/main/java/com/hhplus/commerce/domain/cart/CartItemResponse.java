@@ -3,8 +3,12 @@ package com.hhplus.commerce.domain.cart;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
+@Setter
+@Getter
 @AllArgsConstructor
 @Schema(description = "상품 조회 응답")
 public class CartItemResponse {
