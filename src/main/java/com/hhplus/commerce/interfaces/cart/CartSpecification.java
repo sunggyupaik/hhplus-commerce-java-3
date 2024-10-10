@@ -23,7 +23,6 @@ public interface CartSpecification {
     @Operation(summary = "장바구니 삭제", description = "💡주어진 고객, 상품, 상품옵션 식별자로 장바구니 상품을 삭제합니다.")
     CommonResponse deleteCart(
             @Parameter(description = "고객 식별자") Long customerId,
-            @Parameter(description = "상품 식별자") Long itemId,
-            @Parameter(description = "상품 옵션 식별자") Long itemOptionId
+            @Parameter(description = "상품 삭제 정보") CartItemRequest request
     );
 }
