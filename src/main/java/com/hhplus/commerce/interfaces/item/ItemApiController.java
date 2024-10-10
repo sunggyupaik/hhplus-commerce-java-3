@@ -1,10 +1,9 @@
-package com.hhplus.commerce.interfaces;
+package com.hhplus.commerce.interfaces.item;
 
 import com.hhplus.commerce.common.response.CommonResponse;
 import com.hhplus.commerce.domain.Item.ItemResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +11,9 @@ import java.util.List;
 @RequestMapping("/api/v1/items")
 public class ItemApiController implements ItemApiSpecification {
     @GetMapping("/{id}")
-    public CommonResponse getItem(@PathVariable Long id) {
+    public CommonResponse getItem(
+            @PathVariable Long id
+    ) {
         ItemResponse.ItemOptionResponse itemOptionResponse = ItemResponse.ItemOptionResponse.builder()
                 .itemOptionId(10L)
                 .itemOptionSize("95")
