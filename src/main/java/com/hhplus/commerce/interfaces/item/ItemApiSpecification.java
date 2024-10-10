@@ -4,7 +4,6 @@ import com.hhplus.commerce.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "item", description = "상품 API")
 public interface ItemApiSpecification {
