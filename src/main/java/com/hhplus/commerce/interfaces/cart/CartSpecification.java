@@ -14,15 +14,16 @@ public interface CartSpecification {
             @Parameter(description = "고객 식별자") Long customerId
     );
 
-    @Operation(summary = "장바구니 추가", description = "💡주어진 고객, 상품 식별자로 장바구니에 상품을 추가합니다.")
+    @Operation(summary = "장바구니 추가", description = "💡주어진 고객 식별자, 상품정보로 장바구니에 상품을 추가합니다.")
     CommonResponse addCart(
             @Parameter(description = "고객 식별자") Long customerId,
             @Parameter(description = "상품 정보") CartItemRequest request
     );
 
-    @Operation(summary = "장바구니 삭제", description = "💡주어진 고객, 상품 식별자로 장바구니 상품을 삭제합니다.")
+    @Operation(summary = "장바구니 삭제", description = "💡주어진 고객, 상품, 상품옵션 식별자로 장바구니 상품을 삭제합니다.")
     CommonResponse deleteCart(
             @Parameter(description = "고객 식별자") Long customerId,
-            @Parameter(description = "상품 식별자") Long itemId
+            @Parameter(description = "상품 식별자") Long itemId,
+            @Parameter(description = "상품 옵션 식별자") Long itemOptionId
     );
 }
