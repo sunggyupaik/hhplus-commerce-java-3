@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/customers")
 public class CustomerApiController implements CustomerApiSpecification {
     @Override
-    @GetMapping("")
+    @GetMapping("/points")
     public CommonResponse getCustomerPoint(
             @RequestHeader("customerId") Long customerId
     ) {

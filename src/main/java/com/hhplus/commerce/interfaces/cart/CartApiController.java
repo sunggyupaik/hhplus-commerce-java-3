@@ -67,16 +67,15 @@ public class CartApiController implements CartSpecification {
         return CommonResponse.success(cartItemCommandResponse);
     }
 
-    @DeleteMapping("/item/{itemId}/item-option/{itemOptionId}")
+    @DeleteMapping("")
     public CommonResponse deleteCart(
             @RequestHeader("customerId") Long customerId,
-            @PathVariable("itemId") Long itemId,
-            @PathVariable("itemOptionId") Long itemOptionId
+            @RequestBody CartItemRequest request
     ) {
         CartItemCommandResponse cartItemCommandResponse = CartItemCommandResponse.builder()
                 .customerId(customerId)
-                .itemId(itemId)
-                .itemOptionId(itemOptionId)
+                .itemId(request.getItemId())
+                .itemOptionId(request.getItemOptionId())
                 .quantity(10L)
                 .build();
 

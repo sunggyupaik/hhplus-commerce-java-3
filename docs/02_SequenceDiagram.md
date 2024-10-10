@@ -10,7 +10,7 @@
 
 ![img_1.png](images/img_1.png)
 
-## 3. 잔액 충전 시퀀스 다이어그램
+## 3. 포인트 충전 시퀀스 다이어그램
 
 ![img_2.png](images/img_2.png)
 
