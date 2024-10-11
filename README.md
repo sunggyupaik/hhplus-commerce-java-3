@@ -11,3 +11,5 @@
 ### [MockAPI](./docs/04_MockAPI.md)
 
 ### [API Documentation](./docs/05_APIDocumentation.md)
+
+### [Tech Stack & Package](./docs/06_TechStackPackage.md)
