@@ -1,7 +1,7 @@
 package com.hhplus.commerce.interfaces.item;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.Item.ItemResponse;
+import com.hhplus.commerce.domain.Item.dto.ItemResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;

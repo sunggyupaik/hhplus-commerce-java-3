@@ -1,9 +1,9 @@
 package com.hhplus.commerce.interfaces.cart;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.cart.CartItemCommandResponse;
-import com.hhplus.commerce.domain.cart.CartItemRequest;
-import com.hhplus.commerce.domain.cart.CartItemResponse;
+import com.hhplus.commerce.domain.cart.dto.CartItemCommandResponse;
+import com.hhplus.commerce.domain.cart.dto.CartItemRequest;
+import com.hhplus.commerce.domain.cart.dto.CartItemResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/carts")
 public class CartApiController implements CartSpecification {
-    @GetMapping("")
+    @GetMapping
     public CommonResponse getCart(
             @RequestHeader(value = "customerId") Long customerId
     ) {
@@ -53,7 +53,7 @@ public class CartApiController implements CartSpecification {
         return CommonResponse.success(cartItemResponses);
     }
 
-    @PostMapping("")
+    @PostMapping
     public CommonResponse addCart(
             @RequestHeader("customerId") Long customerId,
             @RequestBody CartItemRequest request
@@ -67,7 +67,7 @@ public class CartApiController implements CartSpecification {
         return CommonResponse.success(cartItemCommandResponse);
     }
 
-    @DeleteMapping("")
+    @DeleteMapping
     public CommonResponse deleteCart(
             @RequestHeader("customerId") Long customerId,
             @RequestBody CartItemRequest request

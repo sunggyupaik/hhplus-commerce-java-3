@@ -1,4 +1,4 @@
-package com.hhplus.commerce.domain.Item;
+package com.hhplus.commerce.domain.Item.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -19,7 +19,7 @@ public class ItemResponse {
     private Long itemPrice;
 
     @Schema(description = "상품 옵션")
-    ItemOptionResponse itemOptionResponse;
+    private ItemOptionResponse itemOptionResponse;
 
     @Builder
     @Setter

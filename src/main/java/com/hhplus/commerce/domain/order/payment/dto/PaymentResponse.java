@@ -1,4 +1,4 @@
-package com.hhplus.commerce.domain.order.payment;
+package com.hhplus.commerce.domain.order.payment.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
+@Schema(description = "결제 응답")
 public class PaymentResponse {
     @Schema(description = "결제 식별자", example = "10")
     private Long paymentId;

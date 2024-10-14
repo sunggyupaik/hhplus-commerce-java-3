@@ -1,4 +1,4 @@
-package com.hhplus.commerce.domain.cart;
+package com.hhplus.commerce.domain.cart.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-@Schema(description = "상품 조회 응답")
+@Schema(description = "장바구니 상품 생성 응답")
 public class CartItemCommandResponse {
     @Schema(description = "고객 식별자", example = "1")
     private Long customerId;

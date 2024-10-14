@@ -1,4 +1,4 @@
-package com.hhplus.commerce.domain.cart;
+package com.hhplus.commerce.domain.cart.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AllArgsConstructor
-@Schema(description = "잔액 충전 요청")
+@Schema(description = "장바구니 추가 요청")
 public class CartItemRequest {
     @Schema(description = "상품 식별자", example = "1")
     private Long itemId;

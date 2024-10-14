@@ -1,7 +1,7 @@
 package com.hhplus.commerce.interfaces.customer;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.customer.PointChargeRequest;
+import com.hhplus.commerce.domain.customer.dto.PointChargeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

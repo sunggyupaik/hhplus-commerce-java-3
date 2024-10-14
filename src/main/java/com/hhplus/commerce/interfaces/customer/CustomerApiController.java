@@ -1,8 +1,8 @@
 package com.hhplus.commerce.interfaces.customer;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.customer.CustomerPointResponse;
-import com.hhplus.commerce.domain.customer.PointChargeRequest;
+import com.hhplus.commerce.domain.customer.dto.CustomerPointResponse;
+import com.hhplus.commerce.domain.customer.dto.PointChargeRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

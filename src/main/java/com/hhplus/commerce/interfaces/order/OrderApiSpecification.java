@@ -1,12 +1,11 @@
 package com.hhplus.commerce.interfaces.order;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.order.OrderRequest;
-import com.hhplus.commerce.domain.order.payment.PaymentRequest;
+import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.domain.order.payment.dto.PaymentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "order", description = "주문 API")
 public interface OrderApiSpecification {
