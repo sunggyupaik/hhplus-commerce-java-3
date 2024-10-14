@@ -1,16 +1,16 @@
 package com.hhplus.commerce.interfaces.order;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.order.OrderRequest;
-import com.hhplus.commerce.domain.order.OrderResponse;
-import com.hhplus.commerce.domain.order.payment.PaymentRequest;
-import com.hhplus.commerce.domain.order.payment.PaymentResponse;
+import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.domain.order.dto.OrderResponse;
+import com.hhplus.commerce.domain.order.payment.dto.PaymentRequest;
+import com.hhplus.commerce.domain.order.payment.dto.PaymentResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/orders")
 public class OrderApiController implements OrderApiSpecification {
-    @PostMapping("")
+    @PostMapping
     public CommonResponse createOrder(
             @RequestHeader("customerId") Long customerId,
             @RequestBody OrderRequest orderRequest

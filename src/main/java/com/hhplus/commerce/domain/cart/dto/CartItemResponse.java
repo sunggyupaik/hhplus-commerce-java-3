@@ -1,6 +1,5 @@
-package com.hhplus.commerce.domain.cart;
+package com.hhplus.commerce.domain.cart.dto;
 
-import com.hhplus.commerce.domain.Item.ItemResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +25,7 @@ public class CartItemResponse {
     private Long itemPrice;
 
     @Schema(description = "상품 옵션")
-    CartItemOptionResponse cartItemOptionResponse;
+    private CartItemOptionResponse cartItemOptionResponse;
 
     @Builder
     @Setter
@@ -46,7 +45,7 @@ public class CartItemResponse {
         @Schema(description = "상품 옵션 가격", example = "0")
         private Long itemOptionPrice;
 
-        @Schema(description = "상품 재고", example = "10")
+        @Schema(description = "상품 갯수", example = "2")
         private Long quantity;
     }
 }

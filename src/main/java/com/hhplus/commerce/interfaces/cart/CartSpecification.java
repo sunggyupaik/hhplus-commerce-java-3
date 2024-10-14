@@ -1,11 +1,10 @@
 package com.hhplus.commerce.interfaces.cart;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.cart.CartItemRequest;
+import com.hhplus.commerce.domain.cart.dto.CartItemRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @Tag(name = "cart", description = "장바구니 API")
 public interface CartSpecification {
