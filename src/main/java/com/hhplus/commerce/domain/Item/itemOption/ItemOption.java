@@ -34,17 +34,20 @@ public class ItemOption {
     public ItemOption(
             Long id,
             Item item,
-            ItemInventory itemInventory,
             String itemOptionSize,
             String itemOptionColor,
             Long itemOptionPrice
     ) {
         this.id = id;
         this.item = item;
-        this.itemInventory = itemInventory;
         this.itemOptionSize = itemOptionSize;
         this.itemOptionColor = itemOptionColor;
         this.itemOptionPrice = itemOptionPrice;
+    }
+
+    public ItemOption changeInventory(ItemInventory itemInventory) {
+        this.itemInventory = itemInventory;
+        return this;
     }
 
     public static ItemOption of(ItemOption itemOption, ItemInventory itemInventory) {
