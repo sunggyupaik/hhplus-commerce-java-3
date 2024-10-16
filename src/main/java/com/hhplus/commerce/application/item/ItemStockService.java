@@ -16,6 +16,6 @@ public class ItemStockService {
         ItemInventory itemInventory = itemReader.getItemInventory(itemOptionId);
         itemInventory.decreaseStock(quantity);
 
-        return itemInventory.getId();
+        return itemInventory.getQuantity();
     }
 }

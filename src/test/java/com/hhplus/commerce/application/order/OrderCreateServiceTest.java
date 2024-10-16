@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -53,8 +54,9 @@ class OrderCreateServiceTest {
 
                 given(orderStore.save(any(Order.class))).willReturn(order);
 
-                Long itemResponse = orderCreateService.createOrder(orderRequest);
+                Long orderId = orderCreateService.createOrder(orderRequest);
 
+                assertThat(orderId).isEqualTo(createdOrderId);
                 verify(orderStore, times(1)).save(any(Order.class));
                 verify(orderStore, times(1)).saveOrderItem(any(OrderItem.class));
                 verify(orderStore, times(1)).saveOrderItemOption(any(OrderItemOption.class));
