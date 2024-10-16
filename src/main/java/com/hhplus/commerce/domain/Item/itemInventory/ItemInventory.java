@@ -35,10 +35,12 @@ public class ItemInventory {
         this.quantity = quantity;
     }
 
-    public void decreaseStock(Long quantity) {
+    public Long decreaseStock(Long quantity) {
         this.quantity -= quantity;
         if (this.quantity < 0) {
             throw new IllegalStatusException(ErrorCode.ITEM_STOCK_INSUFFICIENT);
         }
+
+        return this.quantity;
     }
 }
