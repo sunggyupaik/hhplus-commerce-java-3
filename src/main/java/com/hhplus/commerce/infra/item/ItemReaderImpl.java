@@ -4,6 +4,7 @@ import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.ItemReader;
+import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class ItemReaderImpl implements ItemReader {
     private final ItemRepository itemRepository;
     private final ItemOptionRepository itemOptionRepository;
+    private final ItemInventoryRepository itemInventoryRepository;
 
     @Override
     public Item getItem(Long itemId) {
@@ -24,5 +26,11 @@ public class ItemReaderImpl implements ItemReader {
     public ItemOption getItemOption(Long itemOptionId) {
         return itemOptionRepository.findById(itemOptionId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ITEM_OPTION_NOT_FOUND));
+    }
+
+    @Override
+    public ItemInventory getItemInventory(Long itemOptionId) {
+        return itemInventoryRepository.findByItemOptionId(itemOptionId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ITEM_INVENTORY_NOT_FOUND));
     }
 }
