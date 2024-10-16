@@ -1,5 +1,7 @@
 package com.hhplus.commerce.domain.Item.itemInventory;
 
+import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,5 +33,12 @@ public class ItemInventory {
         this.id = id;
         this.itemOption = itemOption;
         this.quantity = quantity;
+    }
+
+    public void decreaseStock(Long quantity) {
+        this.quantity -= quantity;
+        if (this.quantity < 0) {
+            throw new IllegalStatusException(ErrorCode.ITEM_STOCK_INSUFFICIENT);
+        }
     }
 }
