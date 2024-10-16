@@ -1,6 +1,6 @@
 package com.hhplus.commerce.domain.order.item;
 
-import com.hhplus.commerce.domain.Item.Item;
+import com.hhplus.commerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private Item item;
+    private Order order;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderItem", cascade = CascadeType.PERSIST)
     private List<OrderItemOption> orderItemOptions = new ArrayList<>();
@@ -40,7 +40,7 @@ public class OrderItem {
     @Builder
     public OrderItem(
             Long id,
-            Item item,
+            Order order,
             Integer orderCount,
             Long itemId,
             String itemName,
@@ -48,7 +48,7 @@ public class OrderItem {
             DeliveryStatus deliveryStatus
     ) {
         this.id = id;
-        this.item = item;
+        this.order = order;
         this.orderCount = orderCount;
         this.itemId = itemId;
         this.itemName = itemName;

@@ -2,7 +2,9 @@ package com.hhplus.commerce.interfaces.order;
 
 import com.hhplus.commerce.common.response.CommonResponse;
 import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.domain.order.dto.OrderResponse;
 import com.hhplus.commerce.domain.order.payment.dto.PaymentRequest;
+import com.hhplus.commerce.domain.order.payment.dto.PaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,4 +22,28 @@ public interface OrderApiSpecification {
             @Parameter(description = "고객 식별자") Long customerId,
             @Parameter(description = "결제 정보") PaymentRequest request
     );
+
+    final class Fake implements OrderApiSpecification {
+
+        @Override
+        public CommonResponse createOrder(Long customerId, OrderRequest orderRequest) {
+            OrderResponse orderResponse = OrderResponse.builder()
+                    .orderId(10L)
+                    .build();
+
+            return CommonResponse.success(orderResponse);
+        }
+
+        @Override
+        public CommonResponse payOrder(Long customerId, PaymentRequest request) {
+            PaymentResponse paymentResponse = PaymentResponse.builder()
+                    .paymentId(1L)
+                    .orderId(request.getOrderId())
+                    .amount(request.getAmount())
+                    .paymentMethod(request.getPaymentMethod())
+                    .build();
+
+            return CommonResponse.success(paymentResponse);
+        }
+    }
 }
