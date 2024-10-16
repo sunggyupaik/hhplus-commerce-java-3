@@ -9,7 +9,7 @@ public class CommonResponse<T> {
     private Result result;
     private T data;
     private String message;
-    private String errorCode;
+    private String code;
 
     public static <T> CommonResponse<T> success(T data) {
         return (CommonResponse<T>) CommonResponse.builder()
@@ -22,7 +22,7 @@ public class CommonResponse<T> {
         return (CommonResponse<T>) CommonResponse.builder()
                 .result(Result.FAIL)
                 .message(message)
-                .errorCode(errorCode)
+                .code(errorCode)
                 .build();
     }
 

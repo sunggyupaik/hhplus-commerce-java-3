@@ -4,11 +4,13 @@ import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "item_inventory")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class ItemInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
