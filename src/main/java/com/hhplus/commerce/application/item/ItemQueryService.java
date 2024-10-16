@@ -5,6 +5,7 @@ import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class ItemQueryService {
     private final ItemReader itemReader;
 
+    @Transactional(readOnly = true)
     public ItemResponse getItem(Long id) {
         Item item = itemReader.getItem(id);
 

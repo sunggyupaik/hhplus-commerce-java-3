@@ -36,8 +36,7 @@ public class Order extends BaseTimeEntity {
     public Order(
             Long id,
             Long customerId,
-            Address address,
-            OrderStatus status
+            Address address
     ) {
         this.id = id;
         this.customerId = customerId;
