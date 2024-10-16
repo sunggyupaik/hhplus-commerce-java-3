@@ -30,13 +30,16 @@ public class Item extends BaseTimeEntity {
     @Builder
     public Item(
             Long id,
-            List<ItemOption> itemOptions,
             String itemName,
             Long itemPrice
     ) {
         this.id = id;
-        this.itemOptions = itemOptions;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
+    }
+
+    public Item addItemOption(ItemOption itemOption) {
+        itemOptions.add(itemOption);
+        return this;
     }
 }
