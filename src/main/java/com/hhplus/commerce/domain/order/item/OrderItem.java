@@ -2,18 +2,13 @@ package com.hhplus.commerce.domain.order.item;
 
 import com.hhplus.commerce.domain.order.Order;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 
 @Entity
 @Table(name = "order_items")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +16,12 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @ToString.Exclude
     private Order order;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderItem", cascade = CascadeType.PERSIST)
-    private List<OrderItemOption> orderItemOptions = new ArrayList<>();
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "orderItem", cascade = CascadeType.PERSIST)
+    @ToString.Exclude
+    private OrderItemOption orderItemOption;
 
     private Integer orderCount;
 
@@ -44,8 +41,7 @@ public class OrderItem {
             Integer orderCount,
             Long itemId,
             String itemName,
-            Long itemPrice,
-            DeliveryStatus deliveryStatus
+            Long itemPrice
     ) {
         this.id = id;
         this.order = order;
@@ -56,8 +52,12 @@ public class OrderItem {
         this.deliveryStatus = DeliveryStatus.BEFORE_DELIVERY;
     }
 
-    public OrderItem addOrderItemOption(OrderItemOption orderItemOption) {
-        orderItemOptions.add(orderItemOption);
+    public OrderItem changeOrderItemOption(OrderItemOption orderItemOption) {
+        this.orderItemOption = orderItemOption;
         return this;
+    }
+
+    public Long calculatePrice() {
+        return orderItemOption.calculatePrice() * orderCount;
     }
 }

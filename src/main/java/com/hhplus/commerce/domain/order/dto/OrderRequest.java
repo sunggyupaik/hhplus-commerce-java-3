@@ -31,7 +31,7 @@ public class OrderRequest {
     private String receiverZipcode;
 
     @Schema(description = "주문 상품 요청")
-    private List<OrderItemRequest> orderItemList;
+    private List<OrderItemRequest> orderItemRequestList;
 
     public Order toEntity() {
         Address address = Address.builder()
@@ -67,8 +67,8 @@ public class OrderRequest {
         @Schema(description = "배송 상태", example = "INIT")
         private String deliveryStatus;
 
-        @Schema(description = "상품 옵션 목록")
-        private List<OrderItemOptionRequest> orderItemOptionList;
+        @Schema(description = "상품 옵션")
+        private OrderItemOptionRequest orderItemOptionRequest;
 
         public OrderItem toEntity(Order order) {
             return OrderItem.builder()

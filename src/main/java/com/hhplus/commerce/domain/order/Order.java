@@ -4,10 +4,7 @@ import com.hhplus.commerce.common.BaseTimeEntity;
 import com.hhplus.commerce.domain.order.address.Address;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +13,14 @@ import java.util.List;
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Order extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.PERSIST)
+    @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
 
     private Long customerId;
@@ -47,5 +46,11 @@ public class Order extends BaseTimeEntity {
     public Order addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         return this;
+    }
+
+    public Long calculatePrice() {
+        return orderItems.stream()
+                .mapToLong(OrderItem::calculatePrice)
+                .sum();
     }
 }
