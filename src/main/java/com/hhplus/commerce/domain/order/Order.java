@@ -1,6 +1,8 @@
 package com.hhplus.commerce.domain.order;
 
 import com.hhplus.commerce.common.BaseTimeEntity;
+import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.order.address.Address;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import jakarta.persistence.*;
@@ -52,5 +54,17 @@ public class Order extends BaseTimeEntity {
         return orderItems.stream()
                 .mapToLong(OrderItem::calculatePrice)
                 .sum();
+    }
+
+    public void orderComplete() {
+        if (status != OrderStatus.INIT) {
+            throw new IllegalStatusException(ErrorCode.COMMON_ILLEGAL_STATUS);
+        }
+
+        this.status = OrderStatus.ORDER_COMPLETE;
+    }
+
+    public boolean paymentAvailable() {
+        return status == OrderStatus.INIT;
     }
 }

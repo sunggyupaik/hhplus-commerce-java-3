@@ -5,10 +5,7 @@ import com.hhplus.commerce.domain.order.address.Address;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,6 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Schema(description = "주문 요청")
 public class OrderRequest {
     @Schema(description = "고객 식별자", example = "1")
@@ -50,6 +48,7 @@ public class OrderRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     @Schema(description = "주문 상품 요청")
     public static class OrderItemRequest {
         @Schema(description = "상품 재고", example = "10")
@@ -85,8 +84,12 @@ public class OrderRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    @ToString
     @Schema(description = "주문 상품 옵션 요청")
     public static class OrderItemOptionRequest {
+        @Schema(description = "상품 옵션 식별자", example = "3")
+        private Long itemOptionId;
+
         @Schema(description = "상품 옵션 사이즈", example = "95")
         private String itemOptionSize;
 

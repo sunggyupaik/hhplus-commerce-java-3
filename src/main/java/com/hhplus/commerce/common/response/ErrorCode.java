@@ -31,6 +31,7 @@ public enum ErrorCode {
     PAYMENT_INVALID_PRICE(HttpStatus.BAD_REQUEST.value(), "요청 금액이 잘못되었습니다."),
     PAYMENT_INVALID_CUSTOMER(HttpStatus.BAD_REQUEST.value(), "주문자와 결제자가 다릅니다."),
     PAYMENT_INVALID_ORDER(HttpStatus.CONFLICT.value(), "이미 결제가 완료되었습니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.CONFLICT.value(), "존재하지 않는 결제입니다."),
 
     //cart
     CART_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 장바구니 입니다."),

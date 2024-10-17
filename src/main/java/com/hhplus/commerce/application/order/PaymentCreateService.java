@@ -32,5 +32,9 @@ public class PaymentCreateService {
         if (!order.getCustomerId().equals(paymentRequest.getCustomerId())) {
             throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_CUSTOMER);
         }
+
+        if (!order.paymentAvailable()) {
+            throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_ORDER);
+        }
     }
 }
