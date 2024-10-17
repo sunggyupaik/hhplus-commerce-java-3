@@ -17,4 +17,10 @@ public class PointReaderImpl implements PointReader {
         return pointRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.POINT_NOT_FOUND));
     }
+
+    @Override
+    public Point getPointWithPessimisticLock(Long customerId) {
+        return pointRepository.findByIdWithPessimisticLock(customerId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.POINT_NOT_FOUND));
+    }
 }
