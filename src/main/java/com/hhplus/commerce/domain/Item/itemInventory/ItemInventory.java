@@ -4,15 +4,13 @@ import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "item_inventory")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class ItemInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +18,7 @@ public class ItemInventory {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @ToString.Exclude
     private ItemOption itemOption;
 
     private Long quantity;

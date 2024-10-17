@@ -7,6 +7,7 @@ import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import com.hhplus.commerce.domain.cart.Cart;
 import com.hhplus.commerce.domain.cart.CartReader;
+import com.hhplus.commerce.domain.customer.CustomerReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +19,18 @@ import java.util.stream.Collectors;
 public class CartQueryService {
     private final CartReader cartReader;
     private final ItemReader itemReader;
+    private final CustomerReader customerReader;
 
-    public List<CartItemResponse> getCarts(Long customerId) {
+    public List<CartItemResponse> getCart(Long customerId) {
+        customerReader.getCustomer(customerId);
+
         List<Cart> carts = cartReader.getCarts(customerId);
 
         return carts.stream()
                 .map(cart -> {
                     Item item = itemReader.getItem(cart.getItemId());
                     ItemOption itemOption = itemReader.getItemOption(cart.getItemOptionId());
-
-                    ItemInventory itemInventory = itemOption.getItemInventory();
+                    ItemInventory itemInventory = itemReader.getItemInventory(itemOption.getId());
 
                     CartItemResponse.CartItemOptionResponse cartItemOptionResponse =
                             CartItemResponse.CartItemOptionResponse.of(itemOption, itemInventory);

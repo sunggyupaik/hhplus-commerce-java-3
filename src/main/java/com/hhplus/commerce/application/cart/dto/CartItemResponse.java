@@ -24,7 +24,7 @@ public class CartItemResponse {
     @Schema(description = "상품 가격", example = "10000")
     private Long itemPrice;
 
-    @Schema(description = "상품 옵션")
+    @Schema(description = "상품 옵션 목록")
     private CartItemOptionResponse cartItemOption;
 
     public static CartItemResponse of(Item item, CartItemOptionResponse cartItemOptionResponse) {

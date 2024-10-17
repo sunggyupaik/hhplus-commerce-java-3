@@ -20,7 +20,7 @@ public class CartApiController implements CartSpecification {
     public CommonResponse getCart(
             @RequestHeader(value = "customerId") Long customerId
     ) {
-        List<CartItemResponse> cartItemResponseList = cartQueryService.getCarts(customerId);
+        List<CartItemResponse> cartItemResponseList = cartQueryService.getCart(customerId);
         return CommonResponse.success(cartItemResponseList);
     }
 
