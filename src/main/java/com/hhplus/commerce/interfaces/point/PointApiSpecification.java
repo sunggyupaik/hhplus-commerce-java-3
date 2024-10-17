@@ -2,7 +2,7 @@ package com.hhplus.commerce.interfaces.point;
 
 import com.hhplus.commerce.application.point.dto.PointResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.application.point.dto.PointChargeRequest;
+import com.hhplus.commerce.application.point.dto.PointRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,7 @@ public interface PointApiSpecification {
     @Operation(summary = "포인트 충전", description = "💡주어진 식별자와 금액으로 해당 고객의 포인트를 충전하고 반환합니다")
     CommonResponse chargePoint(
             @Parameter(description = "고객 식별자") Long customerId,
-            @Parameter(description = "포인트 충전 정보") PointChargeRequest request
+            @Parameter(description = "포인트 충전 정보") PointRequest request
     );
 
     final class Fake implements PointApiSpecification {
@@ -32,7 +32,7 @@ public interface PointApiSpecification {
         }
 
         @Override
-        public CommonResponse chargePoint(Long customerId, PointChargeRequest request) {
+        public CommonResponse chargePoint(Long customerId, PointRequest request) {
             PointResponse pointResponse = PointResponse.builder()
                     .customerId(customerId)
                     .point(2000L)
