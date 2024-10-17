@@ -34,6 +34,11 @@ public class ItemInventory {
         this.quantity = quantity;
     }
 
+
+    public void changeItemOption(ItemOption itemOption) {
+        this.itemOption = itemOption;
+    }
+
     public Long decreaseStock(Long quantity) {
         this.quantity -= quantity;
         if (this.quantity < 0) {
@@ -42,4 +47,5 @@ public class ItemInventory {
 
         return this.quantity;
     }
+
 }
