@@ -1,10 +1,10 @@
 package com.hhplus.commerce.interfaces.order;
 
+import com.hhplus.commerce.application.order.dto.PaymentRequest;
+import com.hhplus.commerce.application.order.dto.PaymentResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
 import com.hhplus.commerce.domain.order.dto.OrderRequest;
 import com.hhplus.commerce.domain.order.dto.OrderResponse;
-import com.hhplus.commerce.domain.order.payment.dto.PaymentRequest;
-import com.hhplus.commerce.domain.order.payment.dto.PaymentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

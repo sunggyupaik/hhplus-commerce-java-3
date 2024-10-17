@@ -2,22 +2,21 @@ package com.hhplus.commerce.domain.order.item;
 
 import com.hhplus.commerce.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "order_item_opionts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class OrderItemOption extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @ToString.Exclude
     private OrderItem oderItem;
 
     private String itemOptionSize;
@@ -39,5 +38,9 @@ public class OrderItemOption extends BaseTimeEntity {
         this.itemOptionSize = itemOptionSize;
         this.itemOptionColor = itemOptionColor;
         this.itemOptionPrice = itemOptionPrice;
+    }
+
+    public Long calculatePrice() {
+        return itemOptionPrice;
     }
 }
