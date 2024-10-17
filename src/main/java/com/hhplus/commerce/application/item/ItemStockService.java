@@ -13,7 +13,7 @@ public class ItemStockService {
 
     @Transactional
     public Long decreaseStock(Long itemOptionId, Long quantity) {
-        ItemInventory itemInventory = itemReader.getItemInventory(itemOptionId);
+        ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
         itemInventory.decreaseStock(quantity);
 
         return itemInventory.getQuantity();
