@@ -1,14 +1,10 @@
 package com.hhplus.commerce.interfaces.cart;
 
 import com.hhplus.commerce.application.cart.CartQueryService;
-import com.hhplus.commerce.application.cart.dto.CartItemResponse;
-import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.application.cart.dto.CartItemCommandResponse;
 import com.hhplus.commerce.application.cart.dto.CartItemRequest;
+import com.hhplus.commerce.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +16,9 @@ public class CartApiController implements CartSpecification {
     public CommonResponse getCart(
             @RequestHeader(value = "customerId") Long customerId
     ) {
-        List<CartItemResponse> cartItemResponseList = cartQueryService.getCart(customerId);
-        return CommonResponse.success(cartItemResponseList);
+//        List<CartItemResponse> cartItemResponseList = cartQueryService.getCart(customerId);
+//        return CommonResponse.success(cartItemResponseList);
+        return new CartSpecification.Fake().getCart(customerId);
     }
 
     @PostMapping
@@ -29,13 +26,7 @@ public class CartApiController implements CartSpecification {
             @RequestHeader("customerId") Long customerId,
             @RequestBody CartItemRequest request
     ) {
-        CartItemCommandResponse cartItemCommandResponse = CartItemCommandResponse.builder()
-                .customerId(customerId)
-                .itemId(request.getItemId())
-                .quantity(request.getQuantity())
-                .build();
-
-        return CommonResponse.success(cartItemCommandResponse);
+        return new CartSpecification.Fake().addCart(customerId, request);
     }
 
     @DeleteMapping
@@ -43,13 +34,6 @@ public class CartApiController implements CartSpecification {
             @RequestHeader("customerId") Long customerId,
             @RequestBody CartItemRequest request
     ) {
-        CartItemCommandResponse cartItemCommandResponse = CartItemCommandResponse.builder()
-                .customerId(customerId)
-                .itemId(request.getItemId())
-                .itemOptionId(request.getItemOptionId())
-                .quantity(10L)
-                .build();
-
-        return CommonResponse.success(cartItemCommandResponse);
+        return new CartSpecification.Fake().deleteCart(customerId, request);
     }
 }
