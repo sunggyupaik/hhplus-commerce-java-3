@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Point extends BaseTimeEntity {
     public static final long MAX_POINT = 100000L;
+    public static final long MIN_POINT = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +40,15 @@ public class Point extends BaseTimeEntity {
         this.point += amount;
         if (this.point > MAX_POINT) {
             throw new IllegalStatusException(ErrorCode.POINT_BALANCE_OVER);
+        }
+
+        return this.point;
+    }
+
+    public Long use(Long amount) {
+        this.point -= amount;
+        if (this.point < MIN_POINT) {
+            throw new IllegalStatusException(ErrorCode.POINT_BALANCE_INSUFFICIENT);
         }
 
         return this.point;
