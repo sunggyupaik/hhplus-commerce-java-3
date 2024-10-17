@@ -6,16 +6,44 @@
 
 ### 상품 API
 
-![img.png](images/img_10.png)
+## 상품조회
+
+![img.png](images_mockAPI/img.png)
+
+## 상위 상품 조회
+
+![img_1.png](images_mockAPI/img_1.png)
 
 ### 장바구니 API
 
-![img.png](images/img_11.png)
+## 장바구니 조회
+
+![img_2.png](images_mockAPI/img_2.png)
+
+## 장바구니 추가
+
+![img_3.png](images_mockAPI/img_3.png)
+
+## 장바구니 삭제
+
+![img_4.png](images_mockAPI/img_4.png)
 
 ### 주문 API
 
-![img.png](images/img_12.png)
+## 주문 생성
 
-### 고객 API
+![img_7.png](images_mockAPI/img_7.png)
 
-![img.png](images/img_13.png)
+## 주문 결제
+
+![img_8.png](images_mockAPI/img_8.png)
+
+### 포인트 API
+
+## 포인트 조회
+
+![img_6.png](images_mockAPI/img_6.png)
+
+## 포인트 충전
+
+![img_5.png](images_mockAPI/img_5.png)
