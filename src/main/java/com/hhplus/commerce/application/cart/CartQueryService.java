@@ -10,6 +10,7 @@ import com.hhplus.commerce.domain.cart.CartReader;
 import com.hhplus.commerce.domain.customer.CustomerReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class CartQueryService {
     private final ItemReader itemReader;
     private final CustomerReader customerReader;
 
+    @Transactional(readOnly = true)
     public List<CartItemResponse> getCart(Long customerId) {
         customerReader.getCustomer(customerId);
 

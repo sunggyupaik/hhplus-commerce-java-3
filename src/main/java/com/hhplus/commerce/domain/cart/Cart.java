@@ -38,4 +38,9 @@ public class Cart extends BaseTimeEntity {
         this.itemOptionId = itemOptionId;
         this.quantity = quantity;
     }
+
+    public Cart addQuantity(Long quantity) {
+        this.quantity += quantity;
+        return this;
+    }
 }
