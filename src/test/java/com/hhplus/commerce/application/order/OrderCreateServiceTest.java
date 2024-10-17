@@ -42,7 +42,7 @@ class OrderCreateServiceTest {
             @Test
             @DisplayName("주문을 생성하고 주문 식별자를 반환한다")
             void it_returns_created_order_id() {
-                Order order = createOrder(createdOrderId);
+                Order order = createOrderAggregate(createdOrderId, createdOrderItemId, createdOrderItemOptionId);
                 OrderRequest orderRequest = createOrderRequest();
 
                 given(orderStore.save(any(Order.class))).willReturn(order);
