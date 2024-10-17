@@ -16,4 +16,9 @@ public class CartReaderImpl implements CartReader {
     public List<Cart> getCarts(Long customerId) {
         return cartRepository.findByCustomerId(customerId);
     }
+
+    @Override
+    public boolean exists(Long customerId, Long itemOptionId) {
+        return cartRepository.existsByCustomerIdAndItemOptionId(customerId, itemOptionId);
+    }
 }
