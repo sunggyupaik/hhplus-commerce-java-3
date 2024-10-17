@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class OrderStoreImpl implements OrderStore {
-    private OrderRepository orderRepository;
-    private OrderItemRepository orderItemRepository;
-    private OrderItemOptionRepository orderItemOptionRepository;
-    private PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final OrderItemOptionRepository orderItemOptionRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public Order save(Order order) {

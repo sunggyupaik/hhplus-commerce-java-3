@@ -58,6 +58,6 @@ public class OrderItem {
     }
 
     public Long calculatePrice() {
-        return orderItemOption.calculatePrice() * orderCount;
+        return (itemPrice + orderItemOption.calculatePrice()) * orderCount;
     }
 }
