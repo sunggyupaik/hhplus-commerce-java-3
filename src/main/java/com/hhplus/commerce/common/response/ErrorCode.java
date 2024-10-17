@@ -15,6 +15,7 @@ public enum ErrorCode {
 
     //customer
     CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 고객입니다."),
+
     //order
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 주문입니다."),
 
@@ -25,9 +26,12 @@ public enum ErrorCode {
 
     //payment
     PAYMENT_INVALID_PRICE(HttpStatus.BAD_REQUEST.value(), "요청 금액이 잘못되었습니다."),
-    PAYMENT_INVALID_CUSTOMER(HttpStatus.BAD_REQUEST.value(), "주문자와 결제자가 다릅니다.")
-    ;
+    PAYMENT_INVALID_CUSTOMER(HttpStatus.BAD_REQUEST.value(), "주문자와 결제자가 다릅니다."),
 
+    //cart
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 장바구니 입니다."),
+
+    ;
     private final int statusCode;
     private final String errorMsg;
 }

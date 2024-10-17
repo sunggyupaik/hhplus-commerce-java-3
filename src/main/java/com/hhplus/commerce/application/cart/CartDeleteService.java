@@ -6,6 +6,7 @@ import com.hhplus.commerce.domain.cart.CartStore;
 import com.hhplus.commerce.domain.customer.CustomerReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class CartDeleteService {
     private final CartReader cartReader;
     private final CustomerReader customerReader;
 
+    @Transactional
     public void deleteCart(Long customerId, CartDeleteRequest request) {
         customerReader.getCustomer(customerId);
 

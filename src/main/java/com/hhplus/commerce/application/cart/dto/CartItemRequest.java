@@ -1,5 +1,6 @@
 package com.hhplus.commerce.application.cart.dto;
 
+import com.hhplus.commerce.domain.cart.Cart;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -17,4 +18,13 @@ public class CartItemRequest {
 
     @Schema(description = "상품 갯수", example = "5")
     private Long quantity;
+
+    public Cart toEntity(Long customerId) {
+        return Cart.builder()
+                .customerId(customerId)
+                .itemId(itemId)
+                .itemOptionId(itemOptionId)
+                .quantity(quantity)
+                .build();
+    }
 }

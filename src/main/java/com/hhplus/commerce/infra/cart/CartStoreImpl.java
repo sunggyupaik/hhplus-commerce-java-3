@@ -1,5 +1,6 @@
 package com.hhplus.commerce.infra.cart;
 
+import com.hhplus.commerce.domain.cart.Cart;
 import com.hhplus.commerce.domain.cart.CartStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,11 @@ public class CartStoreImpl implements CartStore {
 
     @Override
     public void deleteCart(Long customerId, Long itemOptionId) {
-        cartRepository.deleteCartsByCustomerIdAndItemOptionId(customerId, itemOptionId);
+        cartRepository.deleteCartByCustomerIdAndItemOptionId(customerId, itemOptionId);
+    }
+
+    @Override
+    public Cart save(Cart cart) {
+        return cartRepository.save(cart);
     }
 }
