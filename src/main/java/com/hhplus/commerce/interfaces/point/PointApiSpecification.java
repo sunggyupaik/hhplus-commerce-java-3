@@ -1,5 +1,6 @@
 package com.hhplus.commerce.interfaces.point;
 
+import com.hhplus.commerce.application.point.dto.PointResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
 import com.hhplus.commerce.application.point.dto.PointChargeRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,4 +19,26 @@ public interface PointApiSpecification {
             @Parameter(description = "고객 식별자") Long customerId,
             @Parameter(description = "포인트 충전 정보") PointChargeRequest request
     );
+
+    final class Fake implements PointApiSpecification {
+        @Override
+        public CommonResponse getPoint(Long customerId) {
+            PointResponse pointResponse = PointResponse.builder()
+                    .customerId(customerId)
+                    .point(1000L)
+                    .build();
+
+            return CommonResponse.success(pointResponse);
+        }
+
+        @Override
+        public CommonResponse chargePoint(Long customerId, PointChargeRequest request) {
+            PointResponse pointResponse = PointResponse.builder()
+                    .customerId(customerId)
+                    .point(2000L)
+                    .build();
+
+            return CommonResponse.success(pointResponse);
+        }
+    }
 }

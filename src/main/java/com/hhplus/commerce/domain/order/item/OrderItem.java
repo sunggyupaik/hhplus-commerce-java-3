@@ -20,7 +20,7 @@ public class OrderItem extends BaseTimeEntity {
     @ToString.Exclude
     private Order order;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "orderItem", cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @ToString.Exclude
     private OrderItemOption orderItemOption;
 
