@@ -12,39 +12,40 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @SuppressWarnings({"InnerClassMayBeStatic"})
-@DisplayName("PointChargeService 클래스")
-class PointChargeServiceTest {
-    private PointChargeService pointChargeService;
+@DisplayName("PointUseService 클래스")
+class PointUseServiceTest {
+    private PointUseService pointUseService;
     private PointReader pointReader;
 
     @BeforeEach
     void setUp() {
         pointReader = mock(PointReader.class);
-        pointChargeService = new PointChargeService(pointReader);
+        pointUseService = new PointUseService(pointReader);
     }
 
     @Nested
-    @DisplayName("chargePoint 메소드는")
-    class Describe_chargePoint {
+    @DisplayName("usePoint 메소드는")
+    class Describe_usePoint {
         @Nested
         @DisplayName("만약 존재하는 고객 식별자와 금액이 주어진다면")
         class Context_with_existed_customer_id_and_amount {
             private final Long existedCustomerId = 1L;
 
             @Test
-            @DisplayName("포인트를 충전하고 충전된 금액을 반환한다")
-            void it_charges_point_and_returns_charged_point() {
-                Point point = createPoint(existedCustomerId, 1000L);
-                PointChargeRequest request = createPointChargeRequest(5000L);
+            @DisplayName("포인트를 사용하고 잔액을 반환한다")
+            void it_uses_point_and_returns_left_point() {
+                Point point = createPoint(existedCustomerId, 5000L);
+                PointChargeRequest request = createPointChargeRequest(3000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
-                Long chargedPoint = pointChargeService.chargePoint(existedCustomerId, request);
+                Long leftPoint = pointUseService.usePoint(existedCustomerId, request);
 
-                assertThat(chargedPoint).isEqualTo(1000L + request.getAmount());
+                assertThat(leftPoint).isEqualTo(5000L - request.getAmount());
             }
         }
 
@@ -60,26 +61,26 @@ class PointChargeServiceTest {
                 given(pointReader.getPointWithPessimisticLock(notExistedCustomerId)).willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> pointChargeService.chargePoint(notExistedCustomerId, request)
+                        () -> pointUseService.usePoint(notExistedCustomerId, request)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
         }
 
         @Nested
-        @DisplayName("만약 최대 한도를 초과하는 금액이 주어진다면")
-        class Context_with_balance_over_amount {
+        @DisplayName("만약 0원 미만을 만드는 금액이 주어진다면")
+        class Context_with_balance_less_than_zero {
             private final Long existedCustomerId = 1L;
 
             @Test
             @DisplayName("포인트가 최대를 초과했다는 예외를 반환한다.")
-            void it_throws_point_overs_max() {
+            void it_throws_point_insufficient() {
                 Point point = createPoint(existedCustomerId, 1000L);
                 PointChargeRequest request = createPointChargeRequest(5000000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 assertThatThrownBy(
-                        () -> pointChargeService.chargePoint(existedCustomerId, request)
+                        () -> pointUseService.usePoint(existedCustomerId, request)
                 )
                         .isInstanceOf(IllegalStatusException.class);
             }
