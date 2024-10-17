@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointChargeRequest;
+import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.point.Point;
@@ -39,7 +39,7 @@ class PointChargeServiceTest {
             @DisplayName("포인트를 충전하고 충전된 금액을 반환한다")
             void it_charges_point_and_returns_charged_point() {
                 Point point = createPoint(existedCustomerId, 1000L);
-                PointChargeRequest request = createPointChargeRequest(5000L);
+                PointRequest request = createPointRequest(5000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 Long chargedPoint = pointChargeService.chargePoint(existedCustomerId, request);
@@ -56,7 +56,7 @@ class PointChargeServiceTest {
             @Test
             @DisplayName("포인트가 존재하지 않다는 예외를 반환한다")
             void it_throws_point_not_exists() {
-                PointChargeRequest request = createPointChargeRequest(5000L);
+                PointRequest request = createPointRequest(5000L);
                 given(pointReader.getPointWithPessimisticLock(notExistedCustomerId)).willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
@@ -75,7 +75,7 @@ class PointChargeServiceTest {
             @DisplayName("포인트가 최대를 초과했다는 예외를 반환한다.")
             void it_throws_point_overs_max() {
                 Point point = createPoint(existedCustomerId, 1000L);
-                PointChargeRequest request = createPointChargeRequest(5000000L);
+                PointRequest request = createPointRequest(5000000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 assertThatThrownBy(
@@ -93,8 +93,8 @@ class PointChargeServiceTest {
                 .build();
     }
 
-    private PointChargeRequest createPointChargeRequest(Long amount) {
-        return PointChargeRequest.builder()
+    private PointRequest createPointRequest(Long amount) {
+        return PointRequest.builder()
                 .amount(amount)
                 .build();
     }

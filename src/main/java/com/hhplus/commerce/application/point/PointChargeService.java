@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointChargeRequest;
+import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointReader;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,8 @@ public class PointChargeService {
     private final PointReader pointReader;
 
     @Transactional
-    public Long chargePoint(Long customerId, PointChargeRequest pointChargeRequest) {
+    public Long chargePoint(Long customerId, PointRequest pointRequest) {
         Point point = pointReader.getPointWithPessimisticLock(customerId);
-        return point.charge(pointChargeRequest.getAmount());
+        return point.charge(pointRequest.getAmount());
     }
 }

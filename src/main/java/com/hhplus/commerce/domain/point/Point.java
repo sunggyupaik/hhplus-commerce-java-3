@@ -4,15 +4,13 @@ import com.hhplus.commerce.common.BaseTimeEntity;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "points")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Point extends BaseTimeEntity {
     public static final long MAX_POINT = 100000L;
     public static final long MIN_POINT = 0L;
