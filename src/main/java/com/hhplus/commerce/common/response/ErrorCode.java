@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     //point
     POINT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 포인트입니다."),
+    POINT_BALANCE_OVER(HttpStatus.CONFLICT.value(), "포인트 잔액이 최대를 초과헀습니다."),
     ;
     private final int statusCode;
     private final String errorMsg;
