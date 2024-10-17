@@ -7,5 +7,6 @@ public interface ItemStore {
     Item saveItem(Item item);
 
     ItemOption saveItemOption(ItemOption itemOption);
+
     ItemInventory saveItemInventory(ItemInventory itemInventory);
 }

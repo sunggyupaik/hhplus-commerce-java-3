@@ -76,7 +76,7 @@ public class PointChargeConcurrencyTest {
 
     @Test
     @DisplayName("1명이 40000원씩 10번을 동시에 충전하면 2번 성공하고 8번 실패한다.")
-    void concurrentCharegForSamePoint10timesOverMax() throws InterruptedException {
+    void concurrentChargeForSamePoint10timesOverMax() throws InterruptedException {
         final int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -101,7 +101,6 @@ public class PointChargeConcurrencyTest {
 
         assertThat(success.get()).isEqualTo(2);
         assertThat(fail.get()).isEqualTo(8);
-
     }
 
     private PointRequest createPointChargeRequest(Long amount) {
