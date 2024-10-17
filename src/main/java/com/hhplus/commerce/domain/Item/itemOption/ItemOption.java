@@ -20,7 +20,7 @@ public class ItemOption {
     @ToString.Exclude
     private Item item;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "itemOption", cascade = CascadeType.PERSIST)
     @ToString.Exclude
     private ItemInventory itemInventory;
 
@@ -45,8 +45,13 @@ public class ItemOption {
         this.itemOptionPrice = itemOptionPrice;
     }
 
+    public void changeItem(Item item) {
+        this.item = item;
+    }
+
     public ItemOption changeInventory(ItemInventory itemInventory) {
         this.itemInventory = itemInventory;
+        itemInventory.changeItemOption(this);
         return this;
     }
 
