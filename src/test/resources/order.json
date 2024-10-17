@@ -1,0 +1,20 @@
+{
+  "customerId": 1,
+  "receiverCity": "서울",
+  "receiverStreet": "새나무로",
+  "receiverZipcode": "123-1",
+  "orderItemRequestList": [
+    {
+      "orderCount": 10,
+      "itemId": 20,
+      "itemName": "겨울 코트",
+      "itemPrice": 10000,
+      "deliveryStatus": "INIT",
+      "orderItemOptionRequest": {
+        "itemOptionSize": "95",
+        "itemOptionColor": "빨강",
+        "itemOptionPrice": 0
+      }
+    }
+  ]
+}
