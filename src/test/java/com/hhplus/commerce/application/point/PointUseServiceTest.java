@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointChargeRequest;
+import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.point.Point;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -40,7 +39,7 @@ class PointUseServiceTest {
             @DisplayName("포인트를 사용하고 잔액을 반환한다")
             void it_uses_point_and_returns_left_point() {
                 Point point = createPoint(existedCustomerId, 5000L);
-                PointChargeRequest request = createPointChargeRequest(3000L);
+                PointRequest request = createPointChargeRequest(3000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 Long leftPoint = pointUseService.usePoint(existedCustomerId, request);
@@ -57,7 +56,7 @@ class PointUseServiceTest {
             @Test
             @DisplayName("포인트가 존재하지 않다는 예외를 반환한다")
             void it_throws_point_not_exists() {
-                PointChargeRequest request = createPointChargeRequest(5000L);
+                PointRequest request = createPointChargeRequest(5000L);
                 given(pointReader.getPointWithPessimisticLock(notExistedCustomerId)).willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
@@ -76,7 +75,7 @@ class PointUseServiceTest {
             @DisplayName("포인트가 최대를 초과했다는 예외를 반환한다.")
             void it_throws_point_insufficient() {
                 Point point = createPoint(existedCustomerId, 1000L);
-                PointChargeRequest request = createPointChargeRequest(5000000L);
+                PointRequest request = createPointChargeRequest(5000000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 assertThatThrownBy(
@@ -94,8 +93,8 @@ class PointUseServiceTest {
                 .build();
     }
 
-    private PointChargeRequest createPointChargeRequest(Long amount) {
-        return PointChargeRequest.builder()
+    private PointRequest createPointChargeRequest(Long amount) {
+        return PointRequest.builder()
                 .amount(amount)
                 .build();
     }

@@ -39,6 +39,7 @@ public class Item extends BaseTimeEntity {
 
     public Item addItemOption(ItemOption itemOption) {
         itemOptions.add(itemOption);
+        itemOption.changeItem(this);
         return this;
     }
 }

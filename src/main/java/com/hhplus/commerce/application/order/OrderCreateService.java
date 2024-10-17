@@ -14,7 +14,7 @@ public class OrderCreateService {
     private final OrderStore orderStore;
 
     @Transactional
-    public Long createOrder(OrderRequest request) {
+    public Order createOrder(OrderRequest request) {
         Order savedOrder = orderStore.save(request.toEntity());
 
         //order aggregate
@@ -25,6 +25,6 @@ public class OrderCreateService {
             orderStore.saveOrderItemOption(orderItemOptionRequest.toEntity(savedOrderItem));
         });
 
-        return savedOrder.getId();
+        return savedOrder;
     }
 }

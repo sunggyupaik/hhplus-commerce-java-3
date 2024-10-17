@@ -40,16 +40,16 @@ class OrderCreateServiceTest {
             private final Long createdOrderItemOptionId = 3L;
 
             @Test
-            @DisplayName("주문을 생성하고 주문 식별자를 반환한다")
-            void it_returns_created_order_id() {
+            @DisplayName("주문을 생성하고 반환한다")
+            void it_returns_created_order() {
                 Order order = createOrderAggregate(createdOrderId, createdOrderItemId, createdOrderItemOptionId);
                 OrderRequest orderRequest = createOrderRequest();
 
                 given(orderStore.save(any(Order.class))).willReturn(order);
 
-                Long orderId = orderCreateService.createOrder(orderRequest);
+                Order createdOrder = orderCreateService.createOrder(orderRequest);
 
-                assertThat(orderId).isEqualTo(createdOrderId);
+                assertThat(createdOrder.getId()).isEqualTo(createdOrderId);
                 verify(orderStore, times(1)).save(any(Order.class));
                 verify(orderStore, times(1)).saveOrderItem(any(OrderItem.class));
                 verify(orderStore, times(1)).saveOrderItemOption(any(OrderItemOption.class));

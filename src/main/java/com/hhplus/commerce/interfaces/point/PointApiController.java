@@ -2,7 +2,7 @@ package com.hhplus.commerce.interfaces.point;
 
 import com.hhplus.commerce.application.point.PointChargeService;
 import com.hhplus.commerce.application.point.PointQueryService;
-import com.hhplus.commerce.application.point.dto.PointChargeRequest;
+import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,7 @@ public class PointApiController implements PointApiSpecification {
     @PostMapping("/charge")
     public CommonResponse chargePoint(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody PointChargeRequest request
+            @RequestBody PointRequest request
     ) {
 //        Long charegdPoint = pointChargeService.chargePoint(customerId, request);
 //

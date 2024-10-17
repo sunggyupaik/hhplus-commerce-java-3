@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @Schema(description = "잔액 충전 요청")
-public class PointChargeRequest {
+public class PointRequest {
     @Schema(description = "충전 할 포인트", example = "1000")
     private Long amount;
 }
