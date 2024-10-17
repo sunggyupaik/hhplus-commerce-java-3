@@ -33,4 +33,10 @@ public class ItemReaderImpl implements ItemReader {
         return itemInventoryRepository.findByItemOptionId(itemOptionId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ITEM_INVENTORY_NOT_FOUND));
     }
+
+    @Override
+    public ItemInventory getItemInventoryWithPessimisticLock(Long itemOptionId) {
+        return itemInventoryRepository.findByItemOptionIdWithPessimisticLock(itemOptionId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ITEM_INVENTORY_NOT_FOUND));
+    }
 }
