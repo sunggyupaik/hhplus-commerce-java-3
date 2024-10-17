@@ -3,15 +3,13 @@ package com.hhplus.commerce.domain.Item.itemOption;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "item_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class ItemOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +17,11 @@ public class ItemOption {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    @ToString.Exclude
     private Item item;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private ItemInventory itemInventory;
 
     private String itemOptionSize;

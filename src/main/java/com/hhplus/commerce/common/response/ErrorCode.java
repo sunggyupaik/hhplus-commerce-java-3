@@ -13,6 +13,8 @@ public enum ErrorCode {
     ITEM_INVENTORY_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 상품 재고입니다."),
     ITEM_STOCK_INSUFFICIENT(HttpStatus.CONFLICT.value(), "상품의 재고가 부족합니다."),
 
+    //customer
+    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 고객입니다."),
     //order
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 주문입니다."),
 
