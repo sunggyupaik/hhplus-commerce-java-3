@@ -43,14 +43,7 @@ class OrderCreateServiceTest {
             @DisplayName("주문을 생성하고 주문 식별자를 반환한다")
             void it_returns_created_order_id() {
                 Order order = createOrder(createdOrderId);
-                OrderItem orderItem = createOrderItem(createdOrderItemId, order);
-                OrderItemOption orderItemOption = createOrderItemOption(createdOrderItemOptionId, orderItem);
-                orderItem.addOrderItemOption(orderItemOption);
-                order.addOrderItem(orderItem);
-
-                List<OrderRequest.OrderItemOptionRequest> orderItemOptionRequestList = List.of(OrderRequest.OrderItemOptionRequest.builder().build());
-                List<OrderRequest.OrderItemRequest> orderItemRequestList = List.of(OrderRequest.OrderItemRequest.builder().orderItemOptionList(orderItemOptionRequestList).build());
-                OrderRequest orderRequest = OrderRequest.builder().orderItemList(orderItemRequestList).build();
+                OrderRequest orderRequest = createOrderRequest();
 
                 given(orderStore.save(any(Order.class))).willReturn(order);
 
@@ -62,6 +55,16 @@ class OrderCreateServiceTest {
                 verify(orderStore, times(1)).saveOrderItemOption(any(OrderItemOption.class));
             }
         }
+    }
+
+    private Order createOrderAggregate(Long orderId, Long orderItemId, Long orderItemOptionId) {
+        Order order = createOrder(orderId);
+        OrderItem orderItem = createOrderItem(orderItemId, order);
+        OrderItemOption orderItemOption = createOrderItemOption(orderItemOptionId, orderItem);
+        orderItem.changeOrderItemOption(orderItemOption);
+        order.addOrderItem(orderItem);
+
+        return order;
     }
 
     private Order createOrder(Long id) {
@@ -82,5 +85,14 @@ class OrderCreateServiceTest {
                 .id(id)
                 .oderItem(orderItem)
                 .build();
+    }
+
+    private OrderRequest createOrderRequest() {
+        OrderRequest.OrderItemOptionRequest orderItemOptionRequest = OrderRequest.OrderItemOptionRequest.builder().build();
+
+        List<OrderRequest.OrderItemRequest> orderItemRequestList =
+                List.of(OrderRequest.OrderItemRequest.builder().orderItemOptionRequest(orderItemOptionRequest).build());
+
+        return OrderRequest.builder().orderItemRequestList(orderItemRequestList).build();
     }
 }
