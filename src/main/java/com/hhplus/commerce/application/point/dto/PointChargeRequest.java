@@ -1,4 +1,4 @@
-package com.hhplus.commerce.domain.customer.dto;
+package com.hhplus.commerce.application.point.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
