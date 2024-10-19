@@ -111,9 +111,9 @@ class OrderFacadeOrderTest {
 
     //item
     private Item createItemAggregateFixture() {
-        Item item = createItem(null);
-        ItemOption itemOption = createItemOption(null, item);
-        ItemInventory itemInventory = createItemInventory(null, itemOption, 10L);
+        Item item = createItem();
+        ItemOption itemOption = createItemOption(item);
+        ItemInventory itemInventory = createItemInventory(itemOption, 10L);
         item.addItemOption(itemOption);
         itemOption.changeInventory(itemInventory);
 
@@ -124,22 +124,19 @@ class OrderFacadeOrderTest {
         return item;
     }
 
-    private Item createItem(Long id) {
+    private Item createItem() {
         return Item.builder()
-                .id(id)
                 .build();
     }
 
-    private ItemOption createItemOption(Long id, Item item) {
+    private ItemOption createItemOption(Item item) {
         return ItemOption.builder()
-                .id(id)
                 .item(item)
                 .build();
     }
 
-    private ItemInventory createItemInventory(Long id, ItemOption itemOption, Long quantity) {
+    private ItemInventory createItemInventory(ItemOption itemOption, Long quantity) {
         return ItemInventory.builder()
-                .id(id)
                 .itemOption(itemOption)
                 .quantity(quantity)
                 .build();
