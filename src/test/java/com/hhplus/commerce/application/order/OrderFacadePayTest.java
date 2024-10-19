@@ -11,7 +11,7 @@ import com.hhplus.commerce.domain.order.OrderStatus;
 import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
-import com.hhplus.commerce.domain.order.payment.Payment;
+import com.hhplus.commerce.domain.order.payment.OrderPayment;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointStore;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
@@ -95,8 +95,8 @@ public class OrderFacadePayTest {
                 "5000원 2개 주문하므로 주문 가격은 총 10000원이다");
         Assertions.assertEquals(customer.getId(), order.getCustomerId(),
                 "주문자와 결제자는 똑같다");
-        Payment payment = orderReader.getPayment(order.getId());
-        Assertions.assertEquals(payment.getId(), 1L,
+        OrderPayment orderPayment = orderReader.getPayment(order.getId());
+        Assertions.assertEquals(orderPayment.getId(), 1L,
                 "결제가 정상이면 새로운 결제 정보가 생성된다");
         Assertions.assertEquals(order.getStatus(), OrderStatus.ORDER_COMPLETE,
                 "주문은 주문완료 상태로 변경된다.");

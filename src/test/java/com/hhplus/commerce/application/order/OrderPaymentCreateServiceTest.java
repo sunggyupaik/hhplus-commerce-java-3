@@ -6,7 +6,8 @@ import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
-import com.hhplus.commerce.domain.order.payment.Payment;
+import com.hhplus.commerce.domain.order.payment.OrderPayment;
+import com.hhplus.commerce.domain.order.payment.OrderPaymentHistory;
 import com.hhplus.commerce.domain.order.payment.PaymentMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,11 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings({"InnerClassMayBeStatic"})
 @DisplayName("PaymentCreateService 클래스")
-class PaymentCreateServiceTest {
+class OrderPaymentCreateServiceTest {
     private PaymentCreateService paymentCreateService;
     private OrderStore orderStore;
 
@@ -33,39 +34,41 @@ class PaymentCreateServiceTest {
 
     @Nested
     @DisplayName("createPayment 메소드는")
-    class Describe_createPayment {
-        private final Long existedOrderId = 1L;
-        private final Long existedOrderItemId = 2L;
-        private final Long existedOrderItemOptionId = 3L;
-        private final Long existedPaymentId = 4L;
-        private final Long existedCustomerId_1 = 5L;
-        private final Long existedCustomerId_2 = 6L;
+    class Describe_createOrderPayment {
+        private final Long ORDER_ID = 1L;
+        private final Long ORDER_ITEM_ID = 2L;
+        private final Long ORDER_ITEM_OPTION_ID = 3L;
+        private final Long PAYMENT_ID = 4L;
+        private final Long CUSTOMER_ID_1 = 5L;
+        private final Long CUSTOMER_ID_2 = 6L;
+        private final Long PAYMENT_HISTORY_ID = 6L;
 
-        Order order = createOrder(existedOrderId, existedCustomerId_1);
-        OrderItem orderItem = createOrderItem(existedOrderItemId, order, 5, 1000L);
-        OrderItemOption orderItemOption = createOrderItemOption(existedOrderItemOptionId, orderItem, 1000L);
+        Order order = createOrder(ORDER_ID, CUSTOMER_ID_1);
+        OrderItem orderItem = createOrderItem(ORDER_ITEM_ID, order, 5, 1000L);
+        OrderItemOption orderItemOption = createOrderItemOption(ORDER_ITEM_OPTION_ID, orderItem, 1000L);
         Order orderAggregate = createOrderAggregate(order, orderItem, orderItemOption);
-        Payment payment = createPayment(existedPaymentId, orderAggregate, existedCustomerId_1, "TOSS", 10000L);
-        PaymentRequest paymentRequest = createPaymentRequest(existedPaymentId, existedCustomerId_1, "TOSS", 10000L);
+        OrderPayment orderPayment = createPayment(PAYMENT_ID, orderAggregate, CUSTOMER_ID_1, "TOSS", 10000L);
+        OrderPaymentHistory orderPaymentHistory = createPaymentHistory(PAYMENT_HISTORY_ID, orderAggregate, "SUCCESS", "SUCCESS");
+        PaymentRequest paymentRequest = createPaymentRequest(PAYMENT_ID, CUSTOMER_ID_1, "TOSS", 10000L);
 
-        Payment invalidAmountPayment = createPayment(existedPaymentId, orderAggregate, existedCustomerId_1, "TOSS", 10000L);
-        PaymentRequest invalidAmountRequest = createPaymentRequest(existedPaymentId, existedCustomerId_1, "TOSS", 20000L);
+        PaymentRequest invalidAmountRequest = createPaymentRequest(PAYMENT_ID, CUSTOMER_ID_1, "TOSS", 20000L);
 
-        Order order_2 = createOrder(existedOrderId, existedCustomerId_2);
+        Order order_2 = createOrder(ORDER_ID, CUSTOMER_ID_2);
         Order orderAggregate_2 = createOrderAggregate(order_2, orderItem, orderItemOption);
 
         @Nested
         @DisplayName("만약 존재하는 주문과 결제 정보가 주어진다면")
         class Context_with_existed_order_and_payment_request {
             @Test
-            @DisplayName("결제하고 결제 식별자를 반환한다.")
-            void it_creates_payment_and_returns_payment_id() {
-
-                given(orderStore.savePayment(any(Payment.class))).willReturn(payment);
+            @DisplayName("결제, 결제이력 생성 후 결제 식별자를 반환한다.")
+            void it_returns_created_payment_id() {
+                given(orderStore.savePayment(any(OrderPayment.class))).willReturn(orderPayment);
+                given(orderStore.saveOrderPaymentHistory(any(OrderPaymentHistory.class))).willReturn(orderPaymentHistory);
 
                 Long createdPaymentId = paymentCreateService.createPayment(orderAggregate, paymentRequest);
 
-                assertThat(createdPaymentId).isEqualTo(existedPaymentId);
+                assertThat(createdPaymentId).isEqualTo(PAYMENT_ID);
+                verify(orderStore, times(1)).saveOrderPaymentHistory(any(OrderPaymentHistory.class));
             }
         }
 
@@ -79,6 +82,9 @@ class PaymentCreateServiceTest {
                         () -> paymentCreateService.createPayment(orderAggregate_2, paymentRequest)
                 )
                         .isInstanceOf(InvalidParamException.class);
+
+                verify(orderStore, times(1))
+                        .saveOrderPaymentHistory(any(OrderPaymentHistory.class));
             }
         }
 
@@ -92,6 +98,26 @@ class PaymentCreateServiceTest {
                         () -> paymentCreateService.createPayment(orderAggregate, invalidAmountRequest)
                 )
                         .isInstanceOf(InvalidParamException.class);
+
+                verify(orderStore, times(1))
+                        .saveOrderPaymentHistory(any(OrderPaymentHistory.class));
+            }
+        }
+
+        @Nested
+        @DisplayName("만약 주문이 주문 시작 상태가 아니라면")
+        class Context_with_not_valid_order_status {
+            @Test
+            @DisplayName("주문 상태가 정상이 아니라는 예외를 반환한다")
+            void it_throws_amounts_invalid() {
+                orderAggregate.changeToOrderComplete();
+                assertThatThrownBy(
+                        () -> paymentCreateService.createPayment(orderAggregate, invalidAmountRequest)
+                )
+                        .isInstanceOf(InvalidParamException.class);
+
+                verify(orderStore, times(1))
+                        .saveOrderPaymentHistory(any(OrderPaymentHistory.class));
             }
         }
     }
@@ -127,8 +153,17 @@ class PaymentCreateServiceTest {
                 .build();
     }
 
-    private Payment createPayment(Long id, Order order, Long customerId, String paymentMethod, Long amount) {
-        return Payment.builder()
+    private OrderPaymentHistory createPaymentHistory(Long id, Order order, String code, String message) {
+        return OrderPaymentHistory.builder()
+                .id(id)
+                .order(order)
+                .code(code)
+                .message(message)
+                .build();
+    }
+
+    private OrderPayment createPayment(Long id, Order order, Long customerId, String paymentMethod, Long amount) {
+        return OrderPayment.builder()
                 .id(id)
                 .order(order)
                 .customerId(customerId)
