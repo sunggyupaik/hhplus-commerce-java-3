@@ -7,8 +7,14 @@ import com.hhplus.commerce.domain.Item.ItemStore;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import com.hhplus.commerce.domain.order.Order;
-import com.hhplus.commerce.domain.order.OrderStore;
+import com.hhplus.commerce.domain.order.OrderReader;
 import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.infra.item.ItemInventoryRepository;
+import com.hhplus.commerce.infra.item.ItemOptionRepository;
+import com.hhplus.commerce.infra.item.ItemRepository;
+import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
+import com.hhplus.commerce.infra.order.OrderItemRepository;
+import com.hhplus.commerce.infra.order.OrderRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,41 +28,59 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderFacadeOrderTest {
-    private final OrderFacade orderFacade;
-    private final ItemStore itemStore;
-    private final ItemReader itemReader;
-    private final OrderStore orderStore;
+    @Autowired private  OrderFacade orderFacade;
+    @Autowired private  ItemStore itemStore;
+    @Autowired private  ItemReader itemReader;
+    @Autowired private  OrderReader orderReader;
 
-    public OrderFacadeOrderTest(
-            @Autowired OrderFacade orderFacade,
-            @Autowired ItemStore itemStore,
-            @Autowired ItemReader itemReader,
-            @Autowired OrderStore orderStore
-    ) {
-        this.orderFacade = orderFacade;
-        this.itemStore = itemStore;
-        this.itemReader = itemReader;
-        this.orderStore = orderStore;
+    //DB 초기화용
+    @Autowired private  ItemRepository itemRepository;
+    @Autowired private  ItemOptionRepository itemOptionRepository;
+    @Autowired private  ItemInventoryRepository itemInventoryRepository;
+    @Autowired private  OrderRepository orderRepository;
+    @Autowired private  OrderItemRepository orderItemRepository;
+    @Autowired private  OrderItemOptionRepository orderItemOptionRepository;
+
+    @AfterEach
+    void tearDown() {
+        itemAggregateDeleteAllInBatch();
+        orderAggregateDeleteAllInBatch();
+    }
+
+    private void orderAggregateDeleteAllInBatch() {
+        orderItemOptionRepository.deleteAllInBatch();
+        orderItemRepository.deleteAllInBatch();
+        orderRepository.deleteAllInBatch();
+    }
+
+    private void itemAggregateDeleteAllInBatch() {
+        itemInventoryRepository.deleteAllInBatch();
+        itemOptionRepository.deleteAllInBatch();
+        itemRepository.deleteAllInBatch();
     }
 
     @Test
     @org.junit.jupiter.api.Order(1)
     @DisplayName("주어진 주문정보에 따라 재고를 차감하고 주문서를 생성한다")
     void order() {
-        itemFixture();
-        OrderRequest orderRequest = createOrderRequest();
+        Item item = createItemAggregateFixture();
+        OrderRequest orderRequest = createOrderRequest(item.getId());
 
         Order createdOrder = orderFacade.order(orderRequest);
 
         ItemInventory itemInventory = itemReader.getItemInventory(1L);
-        Assertions.assertEquals(itemInventory.getQuantity(), 8, "10개 중 2개를 주문하면 재고는 8개가 남는다.");
-        Assertions.assertEquals(createdOrder.getId(), 1L, "새로운 주문서가 생성됩니다.");
+        Assertions.assertEquals(itemInventory.getQuantity(), 8,
+                "10개 중 2개를 주문하면 재고는 8개가 남는다.");
+        Assertions.assertEquals(createdOrder.getId(), 1L,
+                "새로운 주문서가 생성됩니다.");
     }
 
     @Test
     @org.junit.jupiter.api.Order(2)
-    @DisplayName("잔고 8개에서 동시에 2개씩 10번 주문을 신청하면 4번은 성공하고 6번은 재고 없음으로 실패한다.")
-    void orderThrowsIllegaStatusException() throws InterruptedException {
+    @DisplayName("잔고 10개에서 동시에 2개씩 10번 주문을 신청하면 5번은 성공하고 5번은 재고 없음으로 실패한다.")
+    void orderThrowsIllegalStatusException() throws InterruptedException {
+        Item item = createItemAggregateFixture();
+
         final int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -66,7 +90,7 @@ class OrderFacadeOrderTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    OrderRequest orderRequest = createOrderRequest();
+                    OrderRequest orderRequest = createOrderRequest(item.getId());
                     Order createdOrder = orderFacade.order(orderRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
@@ -79,12 +103,14 @@ class OrderFacadeOrderTest {
 
         latch.await();
 
-        Assertions.assertEquals(success.get(), 4, "재고가 8개이므로 2개씩 4번 주문 가능하다");
-        Assertions.assertEquals(fail.get(), 6, "재고가 8개이므로 초과 주문은 예외를 반환한다");
+        Assertions.assertEquals(success.get(), 5,
+                "재고가 10개이므로 2개씩 5번 주문 가능하다");
+        Assertions.assertEquals(fail.get(), 5,
+                "재고가 10개이므로 초과 주문 5번은 예외를 반환한다");
     }
 
     //item
-    private Item itemFixture() {
+    private Item createItemAggregateFixture() {
         Item item = createItem(null);
         ItemOption itemOption = createItemOption(null, item);
         ItemInventory itemInventory = createItemInventory(null, itemOption, 10L);
@@ -119,18 +145,18 @@ class OrderFacadeOrderTest {
                 .build();
     }
 
-    private OrderRequest createOrderRequest() {
+    private OrderRequest createOrderRequest(Long itemId) {
         OrderRequest.OrderItemOptionRequest orderItemOptionRequest =
                 OrderRequest.OrderItemOptionRequest
                         .builder()
-                        .itemOptionId(1L)
+                        .itemOptionId(itemId)
                         .build();
 
         List<OrderRequest.OrderItemRequest> orderItemRequestList =
                 List.of(
                         OrderRequest.OrderItemRequest.builder()
                             .orderItemOptionRequest(orderItemOptionRequest)
-                            .itemId(1L)
+                            .itemId(itemId)
                             .orderCount(2)
                             .itemPrice(1000L)
                             .build()
