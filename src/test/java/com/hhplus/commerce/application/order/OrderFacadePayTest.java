@@ -27,6 +27,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
@@ -147,6 +152,44 @@ public class OrderFacadePayTest {
                 () -> orderFacade.pay(order, paymentRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(5)
+    @DisplayName("같은 결제 요청을 동시에 10번하면 1번만 성공한다")
+    void orderThrowsIllegalStatusException() throws InterruptedException {
+        Customer customer = customerFixture();
+        Point point = pointFixture(customer.getId(), 20000L);
+        Order order = orderFixture(customer.getId());
+        PaymentRequest paymentRequest = createPaymentRequest(
+                order.getId(), customer.getId(), "TOSS", 10000L
+        );
+
+        final int threadCount = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger success = new AtomicInteger(0);
+        AtomicInteger fail = new AtomicInteger(0);
+
+        for (int i = 1; i <= threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    orderFacade.pay(order, paymentRequest);
+                    success.incrementAndGet();
+                } catch (IllegalStatusException e) {
+                    fail.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        Assertions.assertEquals(success.get(), 1,
+                "같은 결제 요청은 10번 중 처음 1건만 성공한다");
+        Assertions.assertEquals(fail.get(), 9,
+                "같은 결제 요청은 10번 중 처음 이외 9건은 실패한다");
     }
 
     //point
