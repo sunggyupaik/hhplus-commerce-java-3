@@ -1,7 +1,7 @@
 package com.hhplus.commerce.application.order.dto;
 
 import com.hhplus.commerce.domain.order.Order;
-import com.hhplus.commerce.domain.order.payment.Payment;
+import com.hhplus.commerce.domain.order.payment.OrderPayment;
 import com.hhplus.commerce.domain.order.payment.PaymentMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -27,8 +27,8 @@ public class PaymentRequest {
     @Schema(description = "결제 금액", example = "1000")
     private Long amount;
 
-    public Payment toEntity(Order order) {
-        return Payment.builder()
+    public OrderPayment toEntity(Order order) {
+        return OrderPayment.builder()
                 .order(order)
                 .customerId(customerId)
                 .paymentMethod(PaymentMethod.valueOf(paymentMethod))

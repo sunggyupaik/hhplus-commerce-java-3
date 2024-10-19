@@ -9,10 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "order_payments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Payment extends BaseTimeEntity {
+public class OrderPayment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +29,7 @@ public class Payment extends BaseTimeEntity {
     private Long amount;
 
     @Builder
-    public Payment(
+    public OrderPayment(
             Long id,
             Order order,
             Long customerId,

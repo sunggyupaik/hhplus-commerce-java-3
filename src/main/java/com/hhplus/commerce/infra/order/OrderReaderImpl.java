@@ -5,7 +5,7 @@ import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderReader;
-import com.hhplus.commerce.domain.order.payment.Payment;
+import com.hhplus.commerce.domain.order.payment.OrderPayment;
 import com.hhplus.commerce.infra.order.payment.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ public class OrderReaderImpl implements OrderReader {
     }
 
     @Override
-    public Payment getPayment(Long orderId) {
+    public OrderPayment getPayment(Long orderId) {
         return paymentRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
     }

@@ -1,7 +1,7 @@
 package com.hhplus.commerce.domain.order;
 
 import com.hhplus.commerce.application.item.dto.ItemBestResponse;
-import com.hhplus.commerce.domain.order.payment.Payment;
+import com.hhplus.commerce.domain.order.payment.OrderPayment;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ public interface OrderReader {
 
     List<ItemBestResponse> getBestItems();
 
-    Payment getPayment(Long orderId);
+    OrderPayment getPayment(Long orderId);
 }
