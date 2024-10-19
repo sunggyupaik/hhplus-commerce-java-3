@@ -83,7 +83,7 @@ class OrderCreateServiceTest {
     private OrderItemOption createOrderItemOption(Long id, OrderItem orderItem) {
         return OrderItemOption.builder()
                 .id(id)
-                .oderItem(orderItem)
+                .orderItem(orderItem)
                 .build();
     }
 

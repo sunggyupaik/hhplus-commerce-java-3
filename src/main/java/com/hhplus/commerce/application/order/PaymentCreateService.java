@@ -1,6 +1,7 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.order.dto.PaymentRequest;
+import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.order.Order;
@@ -34,7 +35,7 @@ public class PaymentCreateService {
         }
 
         if (!order.paymentAvailable()) {
-            throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_ORDER);
+            throw new IllegalStatusException(ErrorCode.PAYMENT_INVALID_ORDER);
         }
     }
 }

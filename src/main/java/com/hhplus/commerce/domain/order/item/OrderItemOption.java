@@ -17,7 +17,7 @@ public class OrderItemOption extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn
     @ToString.Exclude
-    private OrderItem oderItem;
+    private OrderItem orderItem;
 
     private String itemOptionSize;
 
@@ -28,13 +28,13 @@ public class OrderItemOption extends BaseTimeEntity {
     @Builder
     public OrderItemOption(
             Long id,
-            OrderItem oderItem,
+            OrderItem orderItem,
             String itemOptionSize,
             String itemOptionColor,
             Long itemOptionPrice
     ) {
         this.id = id;
-        this.oderItem = oderItem;
+        this.orderItem = orderItem;
         this.itemOptionSize = itemOptionSize;
         this.itemOptionColor = itemOptionColor;
         this.itemOptionPrice = itemOptionPrice;

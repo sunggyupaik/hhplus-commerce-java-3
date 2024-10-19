@@ -122,7 +122,7 @@ class PaymentCreateServiceTest {
     private OrderItemOption createOrderItemOption(Long id, OrderItem orderItem, Long itemOptionPrice) {
         return OrderItemOption.builder()
                 .id(id)
-                .oderItem(orderItem)
+                .orderItem(orderItem)
                 .itemOptionPrice(itemOptionPrice)
                 .build();
     }

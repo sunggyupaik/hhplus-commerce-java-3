@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "item_inventory")
+@Table(name = "item_inventories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString

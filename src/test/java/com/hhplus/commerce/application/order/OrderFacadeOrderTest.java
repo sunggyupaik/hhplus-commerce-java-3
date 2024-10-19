@@ -70,9 +70,9 @@ class OrderFacadeOrderTest {
 
         ItemInventory itemInventory = itemReader.getItemInventory(1L);
         Assertions.assertEquals(itemInventory.getQuantity(), 8,
-                "10개 중 2개를 주문하면 재고는 8개가 남는다.");
+                "10개 중 2개를 주문하면 재고는 8개가 남는다");
         Assertions.assertEquals(createdOrder.getId(), 1L,
-                "새로운 주문서가 생성됩니다.");
+                "새로운 주문서가 생성된다");
     }
 
     @Test

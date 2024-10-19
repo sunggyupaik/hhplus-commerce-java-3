@@ -101,7 +101,7 @@ public class OrderRequest {
 
         public OrderItemOption toEntity(OrderItem orderItem) {
             return OrderItemOption.builder()
-                    .oderItem(orderItem)
+                    .orderItem(orderItem)
                     .itemOptionSize(itemOptionSize)
                     .itemOptionColor(itemOptionColor)
                     .itemOptionPrice(itemOptionPrice)
