@@ -67,4 +67,8 @@ public class Order extends BaseTimeEntity {
     public boolean paymentAvailable() {
         return status == OrderStatus.INIT;
     }
+
+    public void changeToOrderComplete() {
+        status = OrderStatus.ORDER_COMPLETE;
+    }
 }

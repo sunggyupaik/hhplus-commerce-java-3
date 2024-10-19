@@ -41,6 +41,9 @@ public class OrderFacade {
         //결제
         paymentCreateService.createPayment(order, paymentRequest);
 
+        // 주문 완료
+        order.changeToOrderComplete();
+
         // 데이터 플랫폼 전송
         orderDataPlatformSendService.send(OrderResponse.of(order));
 
