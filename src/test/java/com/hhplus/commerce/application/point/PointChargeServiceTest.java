@@ -5,12 +5,11 @@ import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointReader;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import com.hhplus.commerce.domain.point.history.PointHistory;
+import com.hhplus.commerce.domain.point.history.PointHistoryStore;
+import com.hhplus.commerce.domain.point.history.PointType;
+import org.junit.jupiter.api.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -20,11 +19,13 @@ import static org.mockito.Mockito.mock;
 class PointChargeServiceTest {
     private PointChargeService pointChargeService;
     private PointReader pointReader;
+    private PointHistoryStore pointHistoryStore;
 
     @BeforeEach
     void setUp() {
         pointReader = mock(PointReader.class);
-        pointChargeService = new PointChargeService(pointReader);
+        pointHistoryStore = mock(PointHistoryStore.class);
+        pointChargeService = new PointChargeService(pointReader, pointHistoryStore);
     }
 
     @Nested
@@ -33,18 +34,26 @@ class PointChargeServiceTest {
         @Nested
         @DisplayName("만약 존재하는 고객 식별자와 금액이 주어진다면")
         class Context_with_existed_customer_id_and_amount {
-            private final Long existedCustomerId = 1L;
+            private final Long EXISTED_CUSTOMER_ID = 1L;
+            private final Long AMOUNT_1000 = 1000L;
+            private final Long CHARGE_AMOUNT_5000 = 5000L;
 
             @Test
-            @DisplayName("포인트를 충전하고 충전된 금액을 반환한다")
-            void it_charges_point_and_returns_charged_point() {
-                Point point = createPoint(existedCustomerId, 1000L);
-                PointRequest request = createPointRequest(5000L);
-                given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
+            @DisplayName("포인트를 충전하고 충전 이력을 저장하고 충전된 금액을 반환한다")
+            void it_returns_charged_point() {
+                Point point = createPoint(EXISTED_CUSTOMER_ID, AMOUNT_1000);
+                PointHistory pointHistory = createPointHistory(EXISTED_CUSTOMER_ID, CHARGE_AMOUNT_5000, PointType.CHARGE);
+                PointRequest request = createPointRequest(CHARGE_AMOUNT_5000);
+                given(pointReader.getPointWithPessimisticLock(EXISTED_CUSTOMER_ID)).willReturn(point);
+                given(pointHistoryStore.save(pointHistory)).willReturn(pointHistory);
 
-                Long chargedPoint = pointChargeService.chargePoint(existedCustomerId, request);
+                Long chargedPoint = pointChargeService.chargePoint(EXISTED_CUSTOMER_ID, request);
 
-                assertThat(chargedPoint).isEqualTo(1000L + request.getAmount());
+                Assertions.assertEquals(chargedPoint, AMOUNT_1000 + request.getAmount(),
+                        "반환된 금액은 보유한 금액과 요청한 금액의 합이다");
+                Assertions.assertEquals(pointHistory.getType(), PointType.CHARGE,
+                        "포인트의 타입은 충전이다");
+
             }
         }
 
@@ -84,6 +93,14 @@ class PointChargeServiceTest {
                         .isInstanceOf(IllegalStatusException.class);
             }
         }
+    }
+
+    private PointHistory createPointHistory(Long customerId, Long amount, PointType type) {
+        return PointHistory.builder()
+                .customerId(customerId)
+                .amount(amount)
+                .type(type)
+                .build();
     }
 
     private Point createPoint(Long customerId, Long point) {
