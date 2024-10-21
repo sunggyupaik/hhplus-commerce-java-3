@@ -1,4 +1,4 @@
-package com.hhplus.commerce.domain.order.dto;
+package com.hhplus.commerce.application.order.dto;
 
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.address.Address;
