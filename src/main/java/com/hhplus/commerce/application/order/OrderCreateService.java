@@ -2,7 +2,7 @@ package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderStore;
-import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -8,7 +8,7 @@ import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderReader;
-import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.infra.item.ItemInventoryRepository;
 import com.hhplus.commerce.infra.item.ItemOptionRepository;
 import com.hhplus.commerce.infra.item.ItemRepository;
@@ -27,11 +27,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class OrderFacadeOrderTest {
+class OrderFacadeTest {
     @Autowired private  OrderFacade orderFacade;
     @Autowired private  ItemStore itemStore;
     @Autowired private  ItemReader itemReader;
-    @Autowired private  OrderReader orderReader;
+    @Autowired private OrderReader orderReader;
 
     //DB 초기화용
     @Autowired private  ItemRepository itemRepository;

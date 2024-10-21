@@ -2,7 +2,7 @@ package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderStore;
-import com.hhplus.commerce.domain.order.dto.OrderRequest;
+import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import org.junit.jupiter.api.BeforeEach;

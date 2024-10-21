@@ -1,17 +1,18 @@
-package com.hhplus.commerce.application.order;
+package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.application.order.dto.PaymentRequest;
+import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.order.Order;
-import com.hhplus.commerce.domain.order.OrderReader;
 import com.hhplus.commerce.domain.order.OrderStatus;
 import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
-import com.hhplus.commerce.domain.order.payment.OrderPayment;
+import com.hhplus.commerce.domain.payment.Payment;
+import com.hhplus.commerce.domain.payment.PaymentHistory;
+import com.hhplus.commerce.domain.payment.PaymentReader;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointStore;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
@@ -21,12 +22,14 @@ import com.hhplus.commerce.infra.item.ItemRepository;
 import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
 import com.hhplus.commerce.infra.order.OrderItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
-import com.hhplus.commerce.infra.order.payment.PaymentRepository;
+import com.hhplus.commerce.infra.payment.PaymentHistoryRepository;
+import com.hhplus.commerce.infra.payment.PaymentRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,10 +39,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class OrderFacadePayTest {
-    @Autowired private OrderFacade orderFacade;
+public class PaymentFacadeTest {
+    @Autowired private PaymentFacade paymentFacade;
     @Autowired private OrderStore orderStore;
-    @Autowired private OrderReader orderReader;
+    @Autowired private PaymentReader paymentReader;
     @Autowired private PointStore pointStore;
     @Autowired private CustomerStore customerStore;
 
@@ -47,6 +50,7 @@ public class OrderFacadePayTest {
     @Autowired private PointRepository pointRepository;
     @Autowired private CustomerRepository customerRepository;
     @Autowired private PaymentRepository paymentRepository;
+    @Autowired private PaymentHistoryRepository paymentHistoryRepository;
     @Autowired private ItemRepository itemRepository;
     @Autowired private ItemOptionRepository itemOptionRepository;
     @Autowired private ItemInventoryRepository itemInventoryRepository;
@@ -59,6 +63,7 @@ public class OrderFacadePayTest {
         customerRepository.deleteAllInBatch();
         pointRepository.deleteAllInBatch();
         paymentRepository.deleteAllInBatch();
+        paymentHistoryRepository.deleteAllInBatch();
 
         itemAggregateDeleteAllInBatch();
         orderAggregateDeleteAllInBatch();
@@ -87,7 +92,7 @@ public class OrderFacadePayTest {
                 order.getId(), customer.getId(), "TOSS", 10000L
         );
 
-        Long leftPoint = orderFacade.pay(order, paymentRequest);
+        Long leftPoint = paymentFacade.payOrder(order, paymentRequest);
 
         Assertions.assertEquals(leftPoint, 10000L,
                 "20000 포인트에서 10000원을 결제해 10000 포인트가 남는다");
@@ -95,8 +100,8 @@ public class OrderFacadePayTest {
                 "5000원 2개 주문하므로 주문 가격은 총 10000원이다");
         Assertions.assertEquals(customer.getId(), order.getCustomerId(),
                 "주문자와 결제자는 똑같다");
-        OrderPayment orderPayment = orderReader.getPayment(order.getId());
-        Assertions.assertEquals(orderPayment.getId(), 1L,
+        Payment payment = paymentReader.getPayment(order.getId());
+        Assertions.assertEquals(payment.getId(), 1L,
                 "결제가 정상이면 새로운 결제 정보가 생성된다");
         Assertions.assertEquals(order.getStatus(), OrderStatus.ORDER_COMPLETE,
                 "주문은 주문완료 상태로 변경된다.");
@@ -114,7 +119,7 @@ public class OrderFacadePayTest {
         );
 
         assertThatThrownBy(
-                () -> orderFacade.pay(order, paymentRequest)
+                () -> paymentFacade.payOrder(order, paymentRequest)
         )
                 .isInstanceOf(IllegalStatusException.class);
     }
@@ -131,7 +136,7 @@ public class OrderFacadePayTest {
         );
 
         assertThatThrownBy(
-                () -> orderFacade.pay(order, paymentRequest)
+                () -> paymentFacade.payOrder(order, paymentRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
     }
@@ -149,7 +154,7 @@ public class OrderFacadePayTest {
         );
 
         assertThatThrownBy(
-                () -> orderFacade.pay(order, paymentRequest)
+                () -> paymentFacade.payOrder(order, paymentRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
     }
@@ -174,7 +179,7 @@ public class OrderFacadePayTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    orderFacade.pay(order, paymentRequest);
+                    paymentFacade.payOrder(order, paymentRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
@@ -190,6 +195,10 @@ public class OrderFacadePayTest {
                 "같은 결제 요청은 10번 중 처음 1건만 성공한다");
         Assertions.assertEquals(fail.get(), 9,
                 "같은 결제 요청은 10번 중 처음 이외 9건은 실패한다");
+
+        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
+        Assertions.assertEquals(paymentHistories.size(), 1,
+                "결제를 성공한 경우만 이력이 저장된다.");
     }
 
     //point

@@ -1,4 +1,4 @@
-package com.hhplus.commerce.application.order.dto;
+package com.hhplus.commerce.application.payment.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

@@ -1,23 +1,19 @@
-package com.hhplus.commerce.domain.order.payment;
+package com.hhplus.commerce.domain.payment;
 
-import com.hhplus.commerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "order_payment_histories")
+@Table(name = "payment_histories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
-public class OrderPaymentHistory {
+public class PaymentHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    @ToString.Exclude
-    private Order order;
+    private Long orderId;
 
     private Long customerId;
 
@@ -31,9 +27,9 @@ public class OrderPaymentHistory {
     private String message;
 
     @Builder
-    public OrderPaymentHistory(
+    public PaymentHistory(
             Long id,
-            Order order,
+            Long orderId,
             Long customerId,
             PaymentMethod paymentMethod,
             Long amount,
@@ -41,7 +37,7 @@ public class OrderPaymentHistory {
             String message
     ) {
         this.id = id;
-        this.order = order;
+        this.orderId = orderId;
         this.customerId = customerId;
         this.paymentMethod = paymentMethod;
         this.amount = amount;
