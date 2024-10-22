@@ -3,15 +3,13 @@ package com.hhplus.commerce.application.payment.dto;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentMethod;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
+@ToString
 @Schema(description = "결제 요청")
 public class PaymentRequest {
     @Schema(description = "주문 식별자", example = "1")
