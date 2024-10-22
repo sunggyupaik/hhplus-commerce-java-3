@@ -44,6 +44,10 @@ public class OrderRequest {
                 .build();
     }
 
+    public void addCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Getter
     @Builder
     @NoArgsConstructor

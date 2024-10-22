@@ -32,4 +32,8 @@ public class PaymentRequest {
                 .amount(amount)
                 .build();
     }
+
+    public void addCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 }

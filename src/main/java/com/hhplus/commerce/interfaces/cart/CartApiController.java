@@ -25,6 +25,7 @@ public class CartApiController implements CartSpecification {
             @RequestHeader(value = "customerId") Long customerId
     ) {
         List<CartItemResponse> cartItemResponseList = cartQueryService.getCart(customerId);
+
         return CommonResponse.success(cartItemResponseList);
     }
 
@@ -34,6 +35,7 @@ public class CartApiController implements CartSpecification {
             @RequestBody CartItemRequest request
     ) {
         Long cartId = cartAddService.addCart(customerId, request);
+
         return CommonResponse.success(cartId);
     }
 
@@ -43,6 +45,7 @@ public class CartApiController implements CartSpecification {
             @RequestBody CartDeleteRequest request
     ) {
         Integer count = cartDeleteService.deleteCart(customerId, request);
+
         return CommonResponse.success(count);
     }
 }

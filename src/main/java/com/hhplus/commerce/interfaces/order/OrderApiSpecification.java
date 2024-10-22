@@ -3,6 +3,8 @@ package com.hhplus.commerce.interfaces.order;
 import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.application.order.dto.OrderResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.domain.order.OrderStatus;
+import com.hhplus.commerce.domain.order.address.Address;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,8 +21,17 @@ public interface OrderApiSpecification {
 
         @Override
         public CommonResponse createOrder(Long customerId, OrderRequest orderRequest) {
+            Address address = Address.builder()
+                    .receiverCity("서울")
+                    .receiverStreet("달나무")
+                    .receiverZipcode("123")
+                    .build();
+
             OrderResponse orderResponse = OrderResponse.builder()
                     .orderId(10L)
+                    .address(address)
+                    .status(OrderStatus.INIT)
+                    .totalPrice(2000L)
                     .build();
 
             return CommonResponse.success(orderResponse);
