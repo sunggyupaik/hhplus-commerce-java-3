@@ -6,6 +6,7 @@ import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderReader;
 import com.hhplus.commerce.domain.order.OrderStatus;
 import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class PaymentFacadeTest {
     @Autowired private PaymentFacade paymentFacade;
     @Autowired private OrderStore orderStore;
+    @Autowired private OrderReader orderReader;
     @Autowired private PaymentReader paymentReader;
     @Autowired private PointStore pointStore;
     @Autowired private CustomerStore customerStore;
@@ -92,7 +94,7 @@ public class PaymentFacadeTest {
                 order.getId(), customer.getId(), "TOSS", 10000L
         );
 
-        Long leftPoint = paymentFacade.payOrder(order, paymentRequest);
+        Long leftPoint = paymentFacade.payOrder(paymentRequest);
 
         Assertions.assertEquals(leftPoint, 10000L,
                 "20000 포인트에서 10000원을 결제해 10000 포인트가 남는다");
@@ -100,10 +102,13 @@ public class PaymentFacadeTest {
                 "5000원 2개 주문하므로 주문 가격은 총 10000원이다");
         Assertions.assertEquals(customer.getId(), order.getCustomerId(),
                 "주문자와 결제자는 똑같다");
+
         Payment payment = paymentReader.getPayment(order.getId());
         Assertions.assertEquals(payment.getId(), 1L,
                 "결제가 정상이면 새로운 결제 정보가 생성된다");
-        Assertions.assertEquals(order.getStatus(), OrderStatus.ORDER_COMPLETE,
+
+        Order findOrder = orderReader.getOrder(order.getId());
+        Assertions.assertEquals(findOrder.getStatus(), OrderStatus.ORDER_COMPLETE,
                 "주문은 주문완료 상태로 변경된다.");
     }
 
@@ -119,7 +124,7 @@ public class PaymentFacadeTest {
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(order, paymentRequest)
+                () -> paymentFacade.payOrder(paymentRequest)
         )
                 .isInstanceOf(IllegalStatusException.class);
     }
@@ -136,7 +141,7 @@ public class PaymentFacadeTest {
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(order, paymentRequest)
+                () -> paymentFacade.payOrder(paymentRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
     }
@@ -154,7 +159,7 @@ public class PaymentFacadeTest {
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(order, paymentRequest)
+                () -> paymentFacade.payOrder(paymentRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
     }
@@ -179,7 +184,7 @@ public class PaymentFacadeTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    paymentFacade.payOrder(order, paymentRequest);
+                    paymentFacade.payOrder(paymentRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
