@@ -32,6 +32,10 @@ public enum ErrorCode {
     PAYMENT_INVALID_CUSTOMER(HttpStatus.BAD_REQUEST.value(), "주문자와 결제자가 다릅니다."),
     PAYMENT_ALREADY_FINISHED(HttpStatus.CONFLICT.value(), "이미 결제가 완료되었습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.CONFLICT.value(), "존재하지 않는 결제입니다."),
+    PAYMENT_IDEMPOTENCY_KEY_INVALID(HttpStatus.BAD_REQUEST.value(), "멱등키가 존재하지 않습니다."),
+    PAYMENT_IDEMPOTENCY_INVALID(HttpStatus.UNPROCESSABLE_ENTITY.value(), "요청 본문은 다른데 멱등키는 동일합니다."),
+    PAYMENT_ALREADY_PROCESSING(HttpStatus.CONFLICT.value(), "이미 결제 요청을 처리중입니다."),
+    PAYMENT_IDEMPOTENCY_NULL(HttpStatus.NOT_FOUND.value(), "존재하지 않은 멱등키 정보입니다."),
 
     //cart
     CART_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 장바구니 입니다."),
