@@ -18,7 +18,7 @@ public class CartDeleteService {
     private final CustomerReader customerReader;
 
     @Transactional
-    public void deleteCart(Long customerId, CartDeleteRequest request) {
+    public Integer deleteCart(Long customerId, CartDeleteRequest request) {
         customerReader.getCustomer(customerId);
 
         List<Long> itemOptionIds = request.getItemOptionIds();
@@ -27,5 +27,7 @@ public class CartDeleteService {
                 cartStore.deleteCart(customerId, itemOptionId);
             }
         }
+
+        return request.getItemOptionIds().size();
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "장바구니 추가 요청")
+@Schema(description = "장바구니 삭제 요청")
 public class CartDeleteRequest {
     @Schema(description = "상품 옵션 식별자 목록", example = "[1, 2, 3]")
     List<Long> itemOptionIds;

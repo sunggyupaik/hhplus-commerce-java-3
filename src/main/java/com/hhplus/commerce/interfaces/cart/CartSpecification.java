@@ -1,9 +1,9 @@
 package com.hhplus.commerce.interfaces.cart;
 
-import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.application.cart.dto.CartItemCommandResponse;
+import com.hhplus.commerce.application.cart.dto.CartDeleteRequest;
 import com.hhplus.commerce.application.cart.dto.CartItemRequest;
 import com.hhplus.commerce.application.cart.dto.CartItemResponse;
+import com.hhplus.commerce.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +27,7 @@ public interface CartSpecification {
     @Operation(summary = "장바구니 삭제", description = "💡주어진 고객, 상품, 상품옵션 식별자로 장바구니 상품을 삭제합니다.")
     CommonResponse deleteCart(
             @Parameter(description = "고객 식별자") Long customerId,
-            @Parameter(description = "상품 삭제 정보") CartItemRequest request
+            @Parameter(description = "상품 삭제 정보") CartDeleteRequest request
     );
 
     final class Fake implements CartSpecification {
@@ -70,25 +70,12 @@ public interface CartSpecification {
 
         @Override
         public CommonResponse addCart(Long customerId, CartItemRequest request) {
-            CartItemCommandResponse cartItemCommandResponse = CartItemCommandResponse.builder()
-                    .customerId(customerId)
-                    .itemId(request.getItemId())
-                    .quantity(request.getQuantity())
-                    .build();
-
-            return CommonResponse.success(cartItemCommandResponse);
+            return CommonResponse.success(1L);
         }
 
         @Override
-        public CommonResponse deleteCart(Long customerId, CartItemRequest request) {
-            CartItemCommandResponse cartItemCommandResponse = CartItemCommandResponse.builder()
-                    .customerId(customerId)
-                    .itemId(request.getItemId())
-                    .itemOptionId(request.getItemOptionId())
-                    .quantity(10L)
-                    .build();
-
-            return CommonResponse.success(cartItemCommandResponse);
+        public CommonResponse deleteCart(Long customerId, CartDeleteRequest request) {
+            return CommonResponse.success(1L);
         }
     }
 }
