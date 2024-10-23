@@ -24,6 +24,7 @@ import com.hhplus.commerce.infra.payment.PaymentRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -80,6 +81,7 @@ class IdempotencyCheckServiceTest {
     }
 
     @Test
+    @DisplayName("멱등성 키가 없으면 결제 요청을 실패한다")
     void idempotencyCheckWithIdempotencyNull() throws InterruptedException {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
@@ -118,12 +120,12 @@ class IdempotencyCheckServiceTest {
     }
 
     @Test
+    @DisplayName("동시에 같은 요청을 여러번 보내면 진행 중인 작업 이외에 나머지는 요청 진행을 실패한다")
     void idempotencyCheckWithConcurrentTry() throws InterruptedException {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
         Payment payment = paymentFixture(order.getId(), customer.getId(), "TOSS", 15000L);
-        //PaymentIdempotency paymentIdempotency = paymentIdempotencyFixture(order.getId(), "123");
         PaymentRequest paymentRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 15000L
         );
@@ -156,6 +158,7 @@ class IdempotencyCheckServiceTest {
     }
 
     @Test
+    @DisplayName("멱등성 키는 같지만 요청 내용이 다르면 결제 요청을 실패한다")
     void idempotencyCheckWithSameKeyNotSamePayload() throws InterruptedException {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
