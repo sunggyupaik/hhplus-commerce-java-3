@@ -56,19 +56,15 @@ public class Order extends BaseTimeEntity {
                 .sum();
     }
 
-    public void orderComplete() {
-        if (status != OrderStatus.INIT) {
-            throw new IllegalStatusException(ErrorCode.COMMON_ILLEGAL_STATUS);
-        }
-
-        this.status = OrderStatus.ORDER_COMPLETE;
-    }
-
     public boolean paymentAvailable() {
         return status == OrderStatus.INIT;
     }
 
     public void changeToOrderComplete() {
+        if (status != OrderStatus.INIT) {
+            throw new IllegalStatusException(ErrorCode.COMMON_ILLEGAL_STATUS);
+        }
+
         status = OrderStatus.ORDER_COMPLETE;
     }
 }
