@@ -17,8 +17,24 @@ public class PointUseService {
     private final PointHistoryStore pointHistoryStore;
 
     @Transactional
-    public Long usePoint(Long customerId, PointRequest pointRequest) {
+    public Long usePointWithPessimisticLock(Long customerId, PointRequest pointRequest) {
         Point point = pointReader.getPointWithPessimisticLock(customerId);
+        Long leftPoint = point.use(pointRequest.getAmount());
+
+        PointHistory pointHistory = PointHistory.builder()
+                .customerId(customerId)
+                .amount(pointRequest.getAmount())
+                .type(PointType.USE)
+                .build();
+
+        pointHistoryStore.save(pointHistory);
+
+        return leftPoint;
+    }
+
+    @Transactional
+    public Long usePoint(Long customerId, PointRequest pointRequest) {
+        Point point = pointReader.getPoint(customerId);
         Long leftPoint = point.use(pointRequest.getAmount());
 
         PointHistory pointHistory = PointHistory.builder()

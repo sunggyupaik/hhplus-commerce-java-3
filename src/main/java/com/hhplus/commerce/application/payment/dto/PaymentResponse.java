@@ -1,15 +1,14 @@
 package com.hhplus.commerce.application.payment.dto;
 
+import com.hhplus.commerce.domain.payment.Payment;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
+@ToString
 @Schema(description = "결제 응답")
 public class PaymentResponse {
     @Schema(description = "결제 식별자", example = "10")
@@ -23,4 +22,13 @@ public class PaymentResponse {
 
     @Schema(description = "결제 금액", example = "1000")
     private Long amount;
+
+    public static PaymentResponse of(Payment payment) {
+        return PaymentResponse.builder()
+                .paymentId(payment.getId())
+                .orderId(payment.getOrderId())
+                .paymentMethod(payment.getPaymentMethod() == null? null : payment.getPaymentMethod().name())
+                .amount(payment.getAmount())
+                .build();
+    }
 }
