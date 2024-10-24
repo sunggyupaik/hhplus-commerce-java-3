@@ -6,6 +6,8 @@ import com.hhplus.commerce.domain.payment.PaymentIdempotency;
 import com.hhplus.commerce.domain.payment.PaymentStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class PaymentStoreImpl implements PaymentStore {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PaymentHistory saveOrderPaymentHistory(PaymentHistory paymentHistory) {
         return paymentHistoryRepository.save(paymentHistory);
     }
