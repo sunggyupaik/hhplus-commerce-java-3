@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     //common
-    COMMON_ILLEGAL_STATUS(HttpStatus.BAD_REQUEST.value(), "잘못된 상태값입니다."),
+    COMMON_ILLEGAL_STATUS(HttpStatus.BAD_REQUEST.value(), "잘못된 상태값 입니다."),
+    COMMON_INVALID_PARAMETER(HttpStatus.BAD_REQUEST.value(), "잘못된 매개변수값 입니다."),
 
     //item
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "존재하지 않는 상품입니다."),
