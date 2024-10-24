@@ -1,6 +1,7 @@
 package com.hhplus.commerce.common.response;
 
 import com.hhplus.commerce.common.exception.BaseException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -10,16 +11,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class CommonControllerAdvice {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(BaseException.class)
     public CommonResponse handleBaseException(BaseException e) {
+        log.warn("[BaseException] cause = {}, errorMsg = {}", e, e.getMessage());
         return CommonResponse.fail(e.getMessage(), e.getErrorCode().name());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public CommonResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.warn("[BaseException] cause = {}, errorMsg = {}", e, e.getMessage());
         BindingResult bindingResult = e.getBindingResult();
         FieldError fe = bindingResult.getFieldError();
         if (fe != null) {
