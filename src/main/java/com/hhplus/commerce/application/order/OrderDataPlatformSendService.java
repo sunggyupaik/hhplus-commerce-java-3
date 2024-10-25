@@ -2,6 +2,7 @@ package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.domain.order.Order;
 import lombok.extern.slf4j.Slf4j;
+import com.hhplus.commerce.application.order.dto.OrderResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
