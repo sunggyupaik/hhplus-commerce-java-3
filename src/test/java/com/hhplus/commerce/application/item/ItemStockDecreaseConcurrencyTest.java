@@ -1,10 +1,11 @@
 package com.hhplus.commerce.application.item;
 
 import com.hhplus.commerce.domain.Item.Item;
-import com.hhplus.commerce.domain.Item.ItemReader;
-import com.hhplus.commerce.domain.Item.ItemStore;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
+import com.hhplus.commerce.infra.item.ItemInventoryRepository;
+import com.hhplus.commerce.infra.item.ItemOptionRepository;
+import com.hhplus.commerce.infra.item.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,31 +21,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public class ItemStockDecreaseConcurrencyTest {
-    private final ItemStockDecreaseService itemStockDecreaseService;
-    private final ItemStore itemStore;
-    private final ItemReader itemReader;
-
-    public ItemStockDecreaseConcurrencyTest(
-            @Autowired ItemStore itemStore,
-            @Autowired ItemStockDecreaseService itemStockDecreaseService,
-            @Autowired ItemReader itemReader
-    ) {
-        this.itemStore = itemStore;
-        this.itemStockDecreaseService = itemStockDecreaseService;
-        this.itemReader = itemReader;
-    }
+    @Autowired private ItemStockDecreaseService itemStockDecreaseService;
+    @Autowired private ItemRepository itemRepository;
+    @Autowired private ItemOptionRepository itemOptionRepository;
+    @Autowired private ItemInventoryRepository itemInventoryRepository;
 
     @BeforeEach
     void setUp() {
-        Item item = createItem(null);
-        ItemOption itemOption = createItemOption(null, item);
-        ItemInventory itemInventory = createItemInventory(null, itemOption, 10L);
-        item.addItemOption(itemOption);
-        itemOption.changeInventory(itemInventory);
+        Item item = createItem();
+        ItemOption itemOption = createItemOption(item);
+        ItemInventory itemInventory = createItemInventory(itemOption, 10L);
 
-        Item createdItem = itemStore.saveItem(item);
-        ItemOption createdItemOption = itemStore.saveItemOption(itemOption);
-        ItemInventory createdItemInventory = itemStore.saveItemInventory(itemInventory);
+        itemRepository.save(item);
+        itemOptionRepository.save(itemOption);
+        itemInventoryRepository.save(itemInventory);
     }
 
     @Test
@@ -68,26 +58,24 @@ public class ItemStockDecreaseConcurrencyTest {
 
         latch.await();
 
-        assertThat(success.get()).isEqualTo(10);
-        assertThat(itemReader.getItemInventory(1L).getQuantity()).isEqualTo(0);
+        Long quantity = itemInventoryRepository.findById(1L).orElseThrow().getQuantity();
+        assertThat(10).isEqualTo(success.get());
+        assertThat(0L).isEqualTo(quantity);
     }
 
-    private Item createItem(Long id) {
+    private Item createItem() {
         return Item.builder()
-                .id(id)
                 .build();
     }
 
-    private ItemOption createItemOption(Long id, Item item) {
+    private ItemOption createItemOption(Item item) {
         return ItemOption.builder()
-                .id(id)
                 .item(item)
                 .build();
     }
 
-    private ItemInventory createItemInventory(Long id, ItemOption itemOption, Long quantity) {
+    private ItemInventory createItemInventory(ItemOption itemOption, Long quantity) {
         return ItemInventory.builder()
-                .id(id)
                 .itemOption(itemOption)
                 .quantity(quantity)
                 .build();
