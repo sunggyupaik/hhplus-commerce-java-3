@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.order;
 
-import com.hhplus.commerce.application.item.ItemStockDecreaseService;
+import com.hhplus.commerce.application.item.ItemStockService;
 import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.domain.order.Order;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class OrderFacade {
-    private final ItemStockDecreaseService itemStockDecreaseService;
+    private final ItemStockService itemStockService;
     private final OrderCreateService orderCreateService;
 
     @Transactional
@@ -20,7 +20,7 @@ public class OrderFacade {
             OrderRequest.OrderItemOptionRequest orderItemOptionRequest
                     = orderItemRequest.getOrderItemOptionRequest();
 
-            itemStockDecreaseService.decreaseStock(
+            itemStockService.decreaseStock(
                     orderItemOptionRequest.getItemOptionId(),
                     Long.valueOf(orderItemRequest.getOrderCount())
             );

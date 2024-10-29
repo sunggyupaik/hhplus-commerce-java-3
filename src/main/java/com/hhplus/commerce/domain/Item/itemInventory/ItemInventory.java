@@ -48,4 +48,8 @@ public class ItemInventory {
         return this.quantity;
     }
 
+    public Long increaseStock(Long quantity) {
+        this.quantity += quantity;
+        return this.quantity;
+    }
 }

@@ -8,14 +8,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ItemStockDecreaseService {
+public class ItemStockService {
     private final ItemReader itemReader;
 
     @Transactional
     public Long decreaseStock(Long itemOptionId, Long quantity) {
         ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
-        itemInventory.decreaseStock(quantity);
+        Long decreasedQuantity = itemInventory.decreaseStock(quantity);
 
-        return itemInventory.getQuantity();
+        return decreasedQuantity;
+    }
+
+    @Transactional
+    public Long increaseStock(Long itemOptionId, Long quantity) {
+        ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
+        Long increasedQuantity = itemInventory.increaseStock(quantity);
+
+        return increasedQuantity;
     }
 }

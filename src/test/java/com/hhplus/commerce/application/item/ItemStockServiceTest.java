@@ -16,14 +16,14 @@ import static org.mockito.Mockito.*;
 
 @SuppressWarnings({"InnerClassMayBeStatic"})
 @DisplayName("ItemStockDecreaseService 클래스")
-class ItemStockDecreaseServiceTest {
+class ItemStockServiceTest {
     private ItemReader itemReader;
-    private ItemStockDecreaseService itemStockDecreaseService;
+    private ItemStockService itemStockService;
 
     @BeforeEach
     void setUp() {
         itemReader = mock(ItemReader.class);
-        itemStockDecreaseService = new ItemStockDecreaseService(itemReader);
+        itemStockService = new ItemStockService(itemReader);
     }
 
     @Nested
@@ -42,7 +42,7 @@ class ItemStockDecreaseServiceTest {
                 ItemInventory itemInventory = createItemInventory(existedItemInventoryId, 20L);
                 given(itemReader.getItemInventoryWithPessimisticLock(existedItemOptionId)).willReturn(itemInventory);
 
-                Long leftQuantity = itemStockDecreaseService.decreaseStock(existedItemOptionId, quantity);
+                Long leftQuantity = itemStockService.decreaseStock(existedItemOptionId, quantity);
 
                 assertThat(leftQuantity).isEqualTo(20L - quantity);
             }
@@ -60,7 +60,7 @@ class ItemStockDecreaseServiceTest {
                         .willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> itemStockDecreaseService.decreaseStock(notExistedItemOptionId, 10L)
+                        () -> itemStockService.decreaseStock(notExistedItemOptionId, 10L)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
@@ -80,7 +80,7 @@ class ItemStockDecreaseServiceTest {
                 given(itemReader.getItemInventoryWithPessimisticLock(existedItemOptionId)).willReturn(itemInventory);
 
                 assertThatThrownBy(
-                        () -> itemStockDecreaseService.decreaseStock(existedItemOptionId, quantity)
+                        () -> itemStockService.decreaseStock(existedItemOptionId, quantity)
                 )
                         .isInstanceOf(IllegalStatusException.class);
             }
