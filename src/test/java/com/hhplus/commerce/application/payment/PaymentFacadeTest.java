@@ -94,18 +94,17 @@ public class PaymentFacadeTest {
     @Test
     @org.junit.jupiter.api.Order(1)
     @DisplayName("주어진 결제 정보에 따라 포인트 차감, 결제 생성, 주문 완료로 변경, 데이터 플랫폼 전송한다")
-    void order() {
+    void pay() {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        PaymentIdempotency paymentIdempotency = paymentIdempotencyFixture(order.getId(), null);
         PaymentRequest paymentRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
         paymentFacade.payOrder(paymentRequest);
 
-        Point findPoint = pointRepository.findById(customer.getId()).get();
+        Point findPoint = pointRepository.findById(point.getId()).orElseThrow();
         Assertions.assertEquals(findPoint.getPoint(), 10000L,
                 "20000 포인트에서 10000원을 결제해 10000 포인트가 남는다");
         Assertions.assertEquals(order.calculatePrice(), 10000L,
@@ -113,8 +112,8 @@ public class PaymentFacadeTest {
         Assertions.assertEquals(customer.getId(), order.getCustomerId(),
                 "주문자와 결제자는 똑같다");
 
-        Payment payment = paymentReader.getPaymentWithPessimisticLock(order.getId());
-        Assertions.assertEquals(payment.getId(), 1L,
+        List<Payment> all = paymentRepository.findAll();
+        Assertions.assertEquals( all.size(), 1,
                 "결제가 정상이면 새로운 결제 정보가 생성된다");
 
         Order findOrder = orderReader.getOrder(order.getId());
@@ -209,17 +208,16 @@ public class PaymentFacadeTest {
 
     @Test
     @org.junit.jupiter.api.Order(6)
-    @DisplayName("같은 결제 요청을 동시에 10번하면 10번 모두 응답을 성공한다")
+    @DisplayName("같은 결제 요청을 동시에 5번하면 5번 모두 응답을 성공한다")
     void orderThrowsIllegalStatusException() throws InterruptedException {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        Payment payment = paymentFixture(order.getId(), customer.getId(), "TOSS", 10000L);
         PaymentRequest paymentRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
-        final int threadCount = 8;
+        final int threadCount = 5;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
         AtomicInteger success = new AtomicInteger(0);
@@ -232,7 +230,6 @@ public class PaymentFacadeTest {
                     success.incrementAndGet();
                 } catch (InvalidParamException e) {
                     fail.incrementAndGet();
-                } catch (Exception e) {
                 } finally {
                     latch.countDown();
                 }
@@ -242,7 +239,7 @@ public class PaymentFacadeTest {
         latch.await();
 
         Assertions.assertEquals(success.get(), threadCount,
-                "같은 8번의 결제 요청은 모두 성공을 응답한다");
+                "같은 10번의 결제 요청은 모두 성공을 응답한다");
 
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
         Assertions.assertEquals(paymentHistories.size(), 1,

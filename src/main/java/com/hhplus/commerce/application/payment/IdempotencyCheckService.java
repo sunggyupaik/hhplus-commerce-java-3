@@ -5,6 +5,8 @@ import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.domain.customer.Customer;
+import com.hhplus.commerce.domain.customer.CustomerReader;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentIdempotency;
 import com.hhplus.commerce.domain.payment.PaymentReader;
@@ -15,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class IdempotencyService {
+public class IdempotencyCheckService {
     private final PaymentReader paymentReader;
     private final PaymentStore paymentStore;
+    private final CustomerReader customerReader;
 
     @Transactional
     public PaymentIdempotencyCheckResponse idempotencyCheck(PaymentRequest paymentRequest) {
@@ -27,16 +30,13 @@ public class IdempotencyService {
             throw new InvalidParamException(ErrorCode.PAYMENT_IDEMPOTENCY_KEY_INVALID);
         }
 
-        Payment payment = paymentReader.getPaymentWithPessimisticLock(paymentRequest.getOrderId());
-
         //멱등키 정보가 존재하지 않으면 새롭게 생성하고 리턴한다.
+        Customer customer = customerReader.getCustomerWithPessimisticLock(paymentRequest.getCustomerId());
         if (!paymentReader.exists(paymentRequest.getOrderId(), requestIdempotencyKey)) {
             PaymentIdempotency newPaymentIdempotency = PaymentIdempotency.builder()
                     .orderId(paymentRequest.getOrderId())
                     .idempotencyKey(requestIdempotencyKey)
                     .build();
-
-            System.out.println(newPaymentIdempotency+"=newPaymentIdempotency");
 
             paymentStore.savePaymentIdempotency(newPaymentIdempotency);
 
@@ -55,6 +55,8 @@ public class IdempotencyService {
             // 비관적 락으로 동시 접근이 제한되므로 409 오류 케이스는 발생하지 않습니다.
             throw new InvalidParamException(ErrorCode.PAYMENT_ALREADY_PROCESSING);
         }
+
+        Payment payment = paymentReader.getPayment(paymentRequest.getOrderId());
 
         //422 Unprocessable Entity 재시도 된 요청 본문(payload)이 처음 요청과 다른데 같은 멱등키를 또 사용했을 때
         if (!validateProcessable(requestIdempotencyKey, paymentIdempotency, paymentRequest, payment)) {

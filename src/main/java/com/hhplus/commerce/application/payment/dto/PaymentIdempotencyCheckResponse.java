@@ -1,15 +1,13 @@
 package com.hhplus.commerce.application.payment.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Setter
 @Getter
 @AllArgsConstructor
+@ToString
 @Schema(description = "멱등성 키 검사 응답")
 public class PaymentIdempotencyCheckResponse {
     @Schema(description = "멱등성 키 존재 여부", example = "true")
