@@ -34,7 +34,7 @@ public class PointUseService {
 
     @Transactional
     public Long usePoint(Long customerId, PointRequest pointRequest) {
-        Point point = pointReader.getPoint(customerId);
+        Point point = pointReader.getPointWithPessimisticLock(customerId);
         Long leftPoint = point.use(pointRequest.getAmount());
 
         PointHistory pointHistory = PointHistory.builder()

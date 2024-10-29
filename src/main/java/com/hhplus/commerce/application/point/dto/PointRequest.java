@@ -14,4 +14,10 @@ import lombok.Setter;
 public class PointRequest {
     @Schema(description = "충전 할 포인트", example = "1000")
     private Long amount;
+
+    public static PointRequest of(Long amount) {
+        return PointRequest.builder()
+                .amount(amount)
+                .build();
+    }
 }
