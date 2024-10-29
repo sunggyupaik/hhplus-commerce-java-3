@@ -29,4 +29,9 @@ public class OrderReaderImpl implements OrderReader {
         LocalDateTime startDate = endDate.minusDays(3);
         return orderItemRepository.findTop5ByOrderCountSum(startDate, endDate);
     }
+
+    @Override
+    public List<Order> getInitOrders() {
+        return orderRepository.getInitOrders();
+    }
 }
