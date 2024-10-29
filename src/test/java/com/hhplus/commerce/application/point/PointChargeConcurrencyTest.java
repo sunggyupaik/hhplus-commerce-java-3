@@ -3,11 +3,10 @@ package com.hhplus.commerce.application.point;
 import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.customer.Customer;
-import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.point.Point;
-import com.hhplus.commerce.domain.point.PointReader;
-import com.hhplus.commerce.domain.point.PointStore;
-import org.junit.jupiter.api.BeforeEach;
+import com.hhplus.commerce.infra.customer.CustomerRepository;
+import com.hhplus.commerce.infra.point.PointRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,30 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public class PointChargeConcurrencyTest {
-    private final PointChargeService pointChargeService;
-    private final PointReader pointReader;
-    private final PointStore pointStore;
-    private final CustomerStore customerStore;
+    @Autowired private PointChargeService pointChargeService;
+    @Autowired private PointRepository pointRepository;
+    @Autowired private CustomerRepository customerRepository;
 
-    public PointChargeConcurrencyTest(
-            @Autowired PointChargeService pointChargeService,
-            @Autowired PointReader pointReader,
-            @Autowired PointStore pointStore,
-            @Autowired CustomerStore customerStore
-    ) {
-        this.pointChargeService = pointChargeService;
-        this.pointReader = pointReader;
-        this.pointStore = pointStore;
-        this.customerStore = customerStore;
-    }
-
-    @BeforeEach
-    void setUp() {
-        Customer customer = createCustomer(1L);
-        customerStore.save(customer);
-
-        Point point = createPoint(1L, 1L);
-        pointStore.save(point);
+    @AfterEach
+    void tearDown() {
+        pointRepository.deleteAllInBatch();
+        customerRepository.deleteAllInBatch();
     }
 
     @Test
@@ -56,11 +39,14 @@ public class PointChargeConcurrencyTest {
         CountDownLatch latch = new CountDownLatch(threadCount);
         AtomicInteger success = new AtomicInteger(0);
 
+        Customer savedCustomer = customerRepository.save(createCustomer());
+        Point savedPoint = pointRepository.save(createPoint(savedCustomer.getId()));
+
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
                     PointRequest pointRequest = createPointChargeRequest(100L);
-                    pointChargeService.chargePoint(1L, pointRequest);
+                    pointChargeService.chargePoint(savedCustomer.getId(), pointRequest);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -71,7 +57,9 @@ public class PointChargeConcurrencyTest {
         latch.await();
 
         assertThat(success.get()).isEqualTo(10);
-        assertThat(pointReader.getPoint(1L).getPoint()).isEqualTo(1000L);
+
+        Long chargedPoint = pointRepository.findById(savedPoint.getId()).orElseThrow().getPoint();
+        assertThat(chargedPoint).isEqualTo(1000L);
     }
 
     @Test
@@ -83,11 +71,14 @@ public class PointChargeConcurrencyTest {
         AtomicInteger success = new AtomicInteger(0);
         AtomicInteger fail = new AtomicInteger(0);
 
+        Customer savedCustomer = customerRepository.save(createCustomer());
+        Point savedPoint = pointRepository.save(createPoint(savedCustomer.getId()));
+
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
                     PointRequest pointRequest = createPointChargeRequest(40000L);
-                    pointChargeService.chargePoint(1L, pointRequest);
+                    pointChargeService.chargePoint(savedCustomer.getId(), pointRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
@@ -109,17 +100,15 @@ public class PointChargeConcurrencyTest {
                 .build();
     }
 
-    private Point createPoint(Long id, Long customerId) {
+    private Point createPoint(Long customerId) {
         return Point.builder()
-                .id(id)
                 .customerId(customerId)
                 .point(0L)
                 .build();
     }
 
-    private Customer createCustomer(Long id) {
+    private Customer createCustomer() {
         return Customer.builder()
-                .id(id)
                 .build();
     }
 }

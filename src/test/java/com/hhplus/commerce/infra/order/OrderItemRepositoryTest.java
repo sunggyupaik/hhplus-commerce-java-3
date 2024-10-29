@@ -4,10 +4,10 @@ import com.hhplus.commerce.application.item.dto.ItemBestResponse;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.order.Order;
-import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +19,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class OrderItemRepositoryTest {
-    @Autowired private OrderStore orderStore;
     @Autowired private CustomerStore customerStore;
+    @Autowired private OrderRepository orderRepository;
     @Autowired private OrderItemRepository orderItemRepository;
+    @Autowired private OrderItemOptionRepository orderItemOptionRepository;
+
+    @BeforeEach
+    void tearDown() {
+        orderItemOptionRepository.deleteAllInBatch();
+        orderItemRepository.deleteAllInBatch();
+        orderRepository.deleteAllInBatch();
+    }
 
     @Test
     void testFindTop5ByOrderCountSum() {
@@ -77,12 +85,10 @@ class OrderItemRepositoryTest {
         Order order = createOrder(customerId);
         OrderItem orderItem = createOrderItem(orderCount, order, itemId);
         OrderItemOption orderItemOption = createOrderItemOption(orderItem);
-        orderItem.changeOrderItemOption(orderItemOption);
-        order.addOrderItem(orderItem);
 
-        orderStore.save(order);
-        orderStore.saveOrderItem(orderItem);
-        orderStore.saveOrderItemOption(orderItemOption);
+        orderRepository.save(order);
+        orderItemRepository.save(orderItem);
+        orderItemOptionRepository.save(orderItemOption);
 
         return order;
     }

@@ -69,8 +69,6 @@ class PaymentCreateServiceTest {
 
                 PaymentResponse response = paymentCreateService.createPayment(orderAggregate, paymentRequest);
 
-                System.out.println(response+"=response");
-
                 assertThat(response.getPaymentId()).isEqualTo(PAYMENT_ID);
                 verify(paymentStore, times(1)).saveOrderPaymentHistory(any(PaymentHistory.class));
             }
