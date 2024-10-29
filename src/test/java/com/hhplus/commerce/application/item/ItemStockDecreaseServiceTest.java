@@ -15,7 +15,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings({"InnerClassMayBeStatic"})
-@DisplayName("ItemStockService 클래스")
+@DisplayName("ItemStockDecreaseService 클래스")
 class ItemStockDecreaseServiceTest {
     private ItemReader itemReader;
     private ItemStockDecreaseService itemStockDecreaseService;
@@ -40,7 +40,7 @@ class ItemStockDecreaseServiceTest {
             @DisplayName("해당 갯수만큼 차감하고 남은 재고 수를 반환한다")
             void it_decreases_stock_and_returns_left_quantity() {
                 ItemInventory itemInventory = createItemInventory(existedItemInventoryId, 20L);
-                given(itemReader.getItemInventory(existedItemOptionId)).willReturn(itemInventory);
+                given(itemReader.getItemInventoryWithPessimisticLock(existedItemOptionId)).willReturn(itemInventory);
 
                 Long leftQuantity = itemStockDecreaseService.decreaseStock(existedItemOptionId, quantity);
 
@@ -56,7 +56,8 @@ class ItemStockDecreaseServiceTest {
             @Test
             @DisplayName("상품 재고가 존재하지 않다는 예외를 반환한다")
             void it_throws_item_inventory_not_exists() {
-                given(itemReader.getItemInventory(notExistedItemOptionId)).willThrow(EntityNotFoundException.class);
+                given(itemReader.getItemInventoryWithPessimisticLock(notExistedItemOptionId))
+                        .willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
                         () -> itemStockDecreaseService.decreaseStock(notExistedItemOptionId, 10L)
@@ -76,7 +77,7 @@ class ItemStockDecreaseServiceTest {
             @DisplayName("상품 재고가 부족하다는 예외를 반환한다")
             void it_throws_item_stock_insufficient() {
                 ItemInventory itemInventory = createItemInventory(existedItemInventoryId, 20L);
-                given(itemReader.getItemInventory(existedItemOptionId)).willReturn(itemInventory);
+                given(itemReader.getItemInventoryWithPessimisticLock(existedItemOptionId)).willReturn(itemInventory);
 
                 assertThatThrownBy(
                         () -> itemStockDecreaseService.decreaseStock(existedItemOptionId, quantity)

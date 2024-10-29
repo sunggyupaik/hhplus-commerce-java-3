@@ -27,14 +27,10 @@ public class ItemStockDecreaseConcurrencyTest {
     @Autowired private ItemInventoryRepository itemInventoryRepository;
 
     @BeforeEach
-    void setUp() {
-        Item item = createItem();
-        ItemOption itemOption = createItemOption(item);
-        ItemInventory itemInventory = createItemInventory(itemOption, 10L);
-
-        itemRepository.save(item);
-        itemOptionRepository.save(itemOption);
-        itemInventoryRepository.save(itemInventory);
+    void tearDown() {
+        itemInventoryRepository.deleteAllInBatch();
+        itemOptionRepository.deleteAllInBatch();
+        itemRepository.deleteAllInBatch();
     }
 
     @Test
@@ -44,6 +40,8 @@ public class ItemStockDecreaseConcurrencyTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
         AtomicInteger success = new AtomicInteger(0);
+
+        Item item = createItemAggregateFixture();
 
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
@@ -58,9 +56,22 @@ public class ItemStockDecreaseConcurrencyTest {
 
         latch.await();
 
-        Long quantity = itemInventoryRepository.findById(1L).orElseThrow().getQuantity();
+        Long quantity = itemInventoryRepository.findById(item.getId()).orElseThrow().getQuantity();
         assertThat(10).isEqualTo(success.get());
         assertThat(0L).isEqualTo(quantity);
+    }
+
+    //item
+    private Item createItemAggregateFixture() {
+        Item item = createItem();
+        ItemOption itemOption = createItemOption(item);
+        ItemInventory itemInventory = createItemInventory(itemOption, 10L);
+
+        itemRepository.save(item);
+        itemOptionRepository.save(itemOption);
+        itemInventoryRepository.save(itemInventory);
+
+        return item;
     }
 
     private Item createItem() {

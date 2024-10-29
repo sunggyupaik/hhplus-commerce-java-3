@@ -1,14 +1,11 @@
 package com.hhplus.commerce.application.order;
 
+import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.Item.Item;
-import com.hhplus.commerce.domain.Item.ItemReader;
-import com.hhplus.commerce.domain.Item.ItemStore;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import com.hhplus.commerce.domain.order.Order;
-import com.hhplus.commerce.domain.order.OrderReader;
-import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.infra.item.ItemInventoryRepository;
 import com.hhplus.commerce.infra.item.ItemOptionRepository;
 import com.hhplus.commerce.infra.item.ItemRepository;
@@ -29,9 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderFacadeTest {
     @Autowired private  OrderFacade orderFacade;
-    @Autowired private  ItemStore itemStore;
-    @Autowired private  ItemReader itemReader;
-    @Autowired private OrderReader orderReader;
 
     //DB 초기화용
     @Autowired private  ItemRepository itemRepository;
@@ -41,7 +35,7 @@ class OrderFacadeTest {
     @Autowired private  OrderItemRepository orderItemRepository;
     @Autowired private  OrderItemOptionRepository orderItemOptionRepository;
 
-    @AfterEach
+    @BeforeEach
     void tearDown() {
         itemAggregateDeleteAllInBatch();
         orderAggregateDeleteAllInBatch();
@@ -68,10 +62,12 @@ class OrderFacadeTest {
 
         Order createdOrder = orderFacade.order(orderRequest);
 
-        ItemInventory itemInventory = itemReader.getItemInventory(1L);
+        ItemInventory itemInventory = itemInventoryRepository.findById(item.getId()).orElseThrow();
         Assertions.assertEquals(itemInventory.getQuantity(), 8,
                 "10개 중 2개를 주문하면 재고는 8개가 남는다");
-        Assertions.assertEquals(createdOrder.getId(), 1L,
+
+        List<Order> all = orderRepository.findAll();
+        Assertions.assertEquals(all.size(), 1,
                 "새로운 주문서가 생성된다");
     }
 
@@ -91,7 +87,7 @@ class OrderFacadeTest {
             executorService.submit(() -> {
                 try {
                     OrderRequest orderRequest = createOrderRequest(item.getId());
-                    Order createdOrder = orderFacade.order(orderRequest);
+                    orderFacade.order(orderRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
@@ -114,12 +110,10 @@ class OrderFacadeTest {
         Item item = createItem();
         ItemOption itemOption = createItemOption(item);
         ItemInventory itemInventory = createItemInventory(itemOption, 10L);
-        item.addItemOption(itemOption);
-        itemOption.changeInventory(itemInventory);
 
-        Item createdItem = itemStore.saveItem(item);
-        ItemOption createdItemOption = itemStore.saveItemOption(itemOption);
-        ItemInventory createdItemInventory = itemStore.saveItemInventory(itemInventory);
+        itemRepository.save(item);
+        itemOptionRepository.save(itemOption);
+        itemInventoryRepository.save(itemInventory);
 
         return item;
     }
