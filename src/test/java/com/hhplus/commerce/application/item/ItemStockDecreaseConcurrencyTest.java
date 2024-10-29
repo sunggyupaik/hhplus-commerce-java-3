@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public class ItemStockDecreaseConcurrencyTest {
-    @Autowired private ItemStockDecreaseService itemStockDecreaseService;
+    @Autowired private ItemStockService itemStockService;
     @Autowired private ItemRepository itemRepository;
     @Autowired private ItemOptionRepository itemOptionRepository;
     @Autowired private ItemInventoryRepository itemInventoryRepository;
@@ -46,7 +46,7 @@ public class ItemStockDecreaseConcurrencyTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    itemStockDecreaseService.decreaseStock(1L, 1L);
+                    itemStockService.decreaseStock(1L, 1L);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
