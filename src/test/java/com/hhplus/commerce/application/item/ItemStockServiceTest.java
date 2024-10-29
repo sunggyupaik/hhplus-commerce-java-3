@@ -4,6 +4,7 @@ import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
+import com.hhplus.commerce.domain.order.OrderReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,12 +19,14 @@ import static org.mockito.Mockito.*;
 @DisplayName("ItemStockDecreaseService 클래스")
 class ItemStockServiceTest {
     private ItemReader itemReader;
+    private OrderReader orderReader;
     private ItemStockService itemStockService;
 
     @BeforeEach
     void setUp() {
         itemReader = mock(ItemReader.class);
-        itemStockService = new ItemStockService(itemReader);
+        orderReader = mock(OrderReader.class);
+        itemStockService = new ItemStockService(itemReader, orderReader);
     }
 
     @Nested

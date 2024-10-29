@@ -8,4 +8,6 @@ public interface OrderReader {
     Order getOrder(Long id);
 
     List<ItemBestResponse> getBestItems();
+
+    List<Order> getInitOrders();
 }
