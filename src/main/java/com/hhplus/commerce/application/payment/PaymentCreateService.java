@@ -20,7 +20,7 @@ public class PaymentCreateService {
 
     @Transactional
     public PaymentResponse createPayment(Order order, PaymentRequest paymentRequest) {
-            validate(order, paymentRequest);
+        validate(order, paymentRequest);
 
         Payment payment = paymentRequest.toEntity();
         Payment createdPayment = paymentStore.savePayment(payment);

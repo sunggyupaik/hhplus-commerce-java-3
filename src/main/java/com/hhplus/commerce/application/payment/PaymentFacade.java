@@ -21,22 +21,18 @@ public class PaymentFacade {
     private final OrderQueryService orderQueryService;
     private final OrderStatusChangeService orderStatusChangeService;
     private final OrderDataPlatformSendService orderDataPlatformSendService;
-    private final IdempotencyService idempotencyService;
+    private final IdempotencyCheckService idempotencyCheckService;
 
     @Transactional
     public PaymentResponse payOrder(PaymentRequest paymentRequest) {
         //멱등성 검사
-        PaymentIdempotencyCheckResponse response = idempotencyService.idempotencyCheck(paymentRequest);
+        PaymentIdempotencyCheckResponse response = idempotencyCheckService.idempotencyCheck(paymentRequest);
         if (response.isIdempotencyKeyExists()) {
             return response.getPayment();
         }
 
         //포인트 차감
-        PointRequest pointRequest = PointRequest.builder()
-                .amount(paymentRequest.getAmount())
-                .build();
-
-        Long leftPoint = pointUseService.usePoint(paymentRequest.getCustomerId(), pointRequest);
+        pointUseService.usePoint(paymentRequest.getCustomerId(), PointRequest.of(paymentRequest.getAmount()));
 
         //결제
         Order order = orderQueryService.getOrder(paymentRequest.getOrderId());

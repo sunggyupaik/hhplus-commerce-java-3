@@ -17,4 +17,10 @@ public class CustomerReaderImpl implements CustomerReader {
         return customerRepository.findById(customerId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
+
+    @Override
+    public Customer getCustomerWithPessimisticLock(Long id) {
+        return customerRepository.findByIdWithPessimisticLock(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CUSTOMER_NOT_FOUND));
+    }
 }
