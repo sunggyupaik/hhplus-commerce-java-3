@@ -8,6 +8,7 @@ import com.hhplus.commerce.domain.order.item.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -43,8 +44,8 @@ public class ItemStockService {
         });
     }
 
-    @Transactional
     @Scheduled(cron = "0 * * * * *")
+    @Transactional
     public void increaseStockBatch() {
         List<Order> orders = orderReader.getInitOrders();
 
@@ -54,7 +55,7 @@ public class ItemStockService {
                 List<OrderItem> orderItems = order.getOrderItems();
 
                 orderItems.forEach(orderItem -> {
-                    increaseStock(orderItem.getItemId(), Long.valueOf(orderItem.getOrderCount()));
+                    increaseStockWithRequiresNew(orderItem.getItemId(), Long.valueOf(orderItem.getOrderCount()));
                 });
             }
         });
@@ -62,6 +63,14 @@ public class ItemStockService {
 
     @Transactional
     public Long increaseStock(Long itemOptionId, Long quantity) {
+        ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
+        Long increasedQuantity = itemInventory.increaseStock(quantity);
+
+        return increasedQuantity;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Long increaseStockWithRequiresNew(Long itemOptionId, Long quantity) {
         ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
         Long increasedQuantity = itemInventory.increaseStock(quantity);
 
