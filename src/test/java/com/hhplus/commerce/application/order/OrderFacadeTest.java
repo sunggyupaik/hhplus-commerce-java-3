@@ -60,10 +60,10 @@ class OrderFacadeTest {
         Item item = createItemAggregateFixture();
         OrderRequest orderRequest = createOrderRequest(item.getId());
 
-        Order createdOrder = orderFacade.order(orderRequest);
+        Order createdOrder = orderFacade.order(1L, orderRequest);
 
         ItemInventory itemInventory = itemInventoryRepository.findById(item.getId()).orElseThrow();
-        Assertions.assertEquals(itemInventory.getQuantity(), 8,
+        Assertions.assertEquals(8, itemInventory.getQuantity(),
                 "10개 중 2개를 주문하면 재고는 8개가 남는다");
 
         List<Order> all = orderRepository.findAll();
@@ -87,7 +87,7 @@ class OrderFacadeTest {
             executorService.submit(() -> {
                 try {
                     OrderRequest orderRequest = createOrderRequest(item.getId());
-                    orderFacade.order(orderRequest);
+                    orderFacade.order(1L, orderRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
@@ -146,11 +146,11 @@ class OrderFacadeTest {
         List<OrderRequest.OrderItemRequest> orderItemRequestList =
                 List.of(
                         OrderRequest.OrderItemRequest.builder()
-                            .orderItemOptionRequest(orderItemOptionRequest)
-                            .itemId(itemId)
-                            .orderCount(2)
-                            .itemPrice(1000L)
-                            .build()
+                                .orderItemOptionRequest(orderItemOptionRequest)
+                                .itemId(itemId)
+                                .orderCount(2)
+                                .itemPrice(1000L)
+                                .build()
                 );
 
         return OrderRequest.builder()
