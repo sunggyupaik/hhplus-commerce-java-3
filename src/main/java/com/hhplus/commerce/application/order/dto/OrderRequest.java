@@ -31,7 +31,7 @@ public class OrderRequest {
     @Schema(description = "주문 상품 요청")
     private List<OrderItemRequest> orderItemRequestList;
 
-    public Order toEntity() {
+    public Order toEntity(Long customerId) {
         Address address = Address.builder()
                 .receiverCity(receiverCity)
                 .receiverStreet(receiverStreet)
