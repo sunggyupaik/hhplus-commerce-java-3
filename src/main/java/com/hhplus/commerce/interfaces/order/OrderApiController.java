@@ -19,8 +19,7 @@ public class OrderApiController implements OrderApiSpecification {
             @RequestHeader("customerId") Long customerId,
             @RequestBody OrderRequest orderRequest
     ) {
-        orderRequest.addCustomerId(customerId);
-        Order createdOrder = orderFacade.order(orderRequest);
+        Order createdOrder = orderFacade.order(customerId, orderRequest);
 
         return CommonResponse.success(OrderResponse.of(createdOrder));
     }

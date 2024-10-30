@@ -14,7 +14,7 @@ public class OrderFacade {
     private final OrderCreateService orderCreateService;
 
     @Transactional
-    public Order order(OrderRequest request) {
+    public Order order(Long customerId, OrderRequest request) {
         // 재고 차감
         request.getOrderItemRequestList().forEach(orderItemRequest -> {
             OrderRequest.OrderItemOptionRequest orderItemOptionRequest
@@ -27,6 +27,6 @@ public class OrderFacade {
         });
 
         //주문 저장
-        return orderCreateService.createOrder(request);
+        return orderCreateService.createOrder(customerId, request);
     }
 }

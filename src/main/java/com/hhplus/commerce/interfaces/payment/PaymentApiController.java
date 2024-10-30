@@ -17,11 +17,10 @@ public class PaymentApiController {
     public CommonResponse payOrder(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @RequestHeader("customerId") Long customerId,
-            @RequestBody PaymentRequest request
+            @RequestBody PaymentDto.PayOrderRequest request
     ) {
-        request.addCustomerId(customerId);
-        request.addIdempotencyKey(idempotencyKey);
-        PaymentResponse paymentResponse = paymentFacade.payOrder(request);
+        PaymentRequest paymentRequest = PaymentRequest.of(request, customerId, idempotencyKey);
+        PaymentResponse paymentResponse = paymentFacade.payOrder(paymentRequest);
 
         return CommonResponse.success(paymentResponse);
     }
