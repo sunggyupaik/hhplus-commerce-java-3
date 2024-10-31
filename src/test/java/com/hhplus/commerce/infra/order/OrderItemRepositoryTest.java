@@ -34,14 +34,14 @@ class OrderItemRepositoryTest {
     @Test
     void testFindTop5ByOrderCountSum() {
         Customer customer = customerFixture();
-        Order order1 = orderFixture(customer.getId(), 1, 1L);
-        Order order2 = orderFixture(customer.getId(), 2, 2L);
-        Order order3 = orderFixture(customer.getId(), 3, 3L);
-        Order order4 = orderFixture(customer.getId(), 4, 4L);
-        Order order5 = orderFixture(customer.getId(), 5, 5L);
-        Order order6 = orderFixture(customer.getId(), 6, 6L);
-        Order order7 = orderFixture(customer.getId(), 7, 1L);
-        Order order8 = orderFixture(customer.getId(), 8, 2L);
+        orderFixture(customer.getId(), 1, 1L);
+        orderFixture(customer.getId(), 2, 2L);
+        orderFixture(customer.getId(), 3, 3L);
+        orderFixture(customer.getId(), 4, 4L);
+        orderFixture(customer.getId(), 5, 5L);
+        orderFixture(customer.getId(), 6, 6L);
+        orderFixture(customer.getId(), 7, 1L);
+        orderFixture(customer.getId(), 8, 2L);
 
         /*
         * 1. 2L -> 10
