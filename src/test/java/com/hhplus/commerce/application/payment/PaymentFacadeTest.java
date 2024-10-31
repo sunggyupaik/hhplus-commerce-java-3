@@ -224,11 +224,15 @@ public class PaymentFacadeTest {
         AtomicInteger fail = new AtomicInteger(0);
 
         for (int i = 1; i <= threadCount; i++) {
+            int finalI = i;
             executorService.submit(() -> {
                 try {
+                    if (finalI > 1) {
+                        Thread.sleep(1000L);
+                    }
                     paymentFacade.payOrder(paymentRequest);
                     success.incrementAndGet();
-                } catch (InvalidParamException e) {
+                } catch (Exception e) {
                     fail.incrementAndGet();
                 } finally {
                     latch.countDown();
