@@ -250,22 +250,6 @@ public class PaymentFacadeTest {
                 "결제를 성공한 최초만 이력이 저장된다");
     }
 
-    //payment
-    private Payment paymentFixture(Long orderId, Long customerId, String paymentMethod, Long amount) {
-        Payment payment = createPayment(orderId, customerId, paymentMethod, amount);
-
-        return paymentStore.savePayment(payment);
-    }
-
-    private Payment createPayment(Long orderId, Long customerId, String paymentMethod, Long amount) {
-        return Payment.builder()
-                .orderId(orderId)
-                .customerId(customerId)
-                .paymentMethod(PaymentMethod.valueOf(paymentMethod))
-                .amount(amount)
-                .build();
-    }
-
     //paymentIdempotency
     private PaymentIdempotency paymentIdempotencyFixture(Long orderId, String idempotencyKey) {
         PaymentIdempotency paymentIdempotency = createPaymentIdempotency(orderId, idempotencyKey);

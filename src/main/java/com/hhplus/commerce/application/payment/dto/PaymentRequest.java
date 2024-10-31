@@ -4,6 +4,7 @@ import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentHistory;
 import com.hhplus.commerce.domain.payment.PaymentMethod;
+import com.hhplus.commerce.interfaces.payment.PaymentDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -28,6 +29,16 @@ public class PaymentRequest {
     @Schema(description = "결제 멱등성 키", example = "12345")
     private String idempotencyKey;
 
+    public static PaymentRequest of(PaymentDto.PayOrderRequest request, Long customerId, String idempotencyKey) {
+        return PaymentRequest.builder()
+                .orderId(request.getOrderId())
+                .customerId(customerId)
+                .paymentMethod(request.getPaymentMethod())
+                .amount(request.getAmount())
+                .idempotencyKey(idempotencyKey)
+                .build();
+    }
+
     public Payment toEntity() {
         return Payment.builder()
                 .orderId(orderId)
@@ -46,13 +57,5 @@ public class PaymentRequest {
                 .code(errorCode == null ? "SUCCESS" : errorCode.name())
                 .message(errorCode == null ? "SUCCESS" : errorCode.getErrorMsg())
                 .build();
-    }
-
-    public void addCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public void addIdempotencyKey(String idempotencyKey) {
-        this.idempotencyKey = idempotencyKey;
     }
 }
