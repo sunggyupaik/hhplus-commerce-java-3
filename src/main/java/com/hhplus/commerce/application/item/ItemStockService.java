@@ -6,9 +6,7 @@ import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderReader;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -29,39 +27,6 @@ public class ItemStockService {
     }
 
     @Transactional
-    public void increaseStockWithTime(int minute, LocalDateTime now) {
-        List<Order> orders = orderReader.getInitOrders();
-
-        orders.forEach(order -> {
-            LocalDateTime orderCreatedTime = order.getCreatedDate();
-            if (orderCreatedTime.plusMinutes(minute).isAfter(now)) {
-                List<OrderItem> orderItems = order.getOrderItems();
-
-                orderItems.forEach(orderItem -> {
-                    increaseStock(orderItem.getItemId(), Long.valueOf(orderItem.getOrderCount()));
-                });
-            }
-        });
-    }
-
-    @Scheduled(cron = "0 * * * * *")
-    @Transactional
-    public void increaseStockBatch() {
-        List<Order> orders = orderReader.getInitOrders();
-
-        orders.forEach(order -> {
-            LocalDateTime orderCreatedTime = order.getCreatedDate();
-            if (orderCreatedTime.plusMinutes(15).isAfter(LocalDateTime.now())) {
-                List<OrderItem> orderItems = order.getOrderItems();
-
-                orderItems.forEach(orderItem -> {
-                    increaseStockWithRequiresNew(orderItem.getItemId(), Long.valueOf(orderItem.getOrderCount()));
-                });
-            }
-        });
-    }
-
-    @Transactional
     public Long increaseStock(Long itemOptionId, Long quantity) {
         ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
         Long increasedQuantity = itemInventory.increaseStock(quantity);
@@ -69,11 +34,17 @@ public class ItemStockService {
         return increasedQuantity;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Long increaseStockWithRequiresNew(Long itemOptionId, Long quantity) {
-        ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(itemOptionId);
-        Long increasedQuantity = itemInventory.increaseStock(quantity);
+    @Transactional
+    public void increaseStockWithTime(Order order, LocalDateTime dateTime, int minute) {
+        LocalDateTime orderCreatedTime = order.getCreatedDate();
 
-        return increasedQuantity;
+        if (orderCreatedTime.plusMinutes(minute).isAfter(dateTime)) {
+            List<OrderItem> orderItems = order.getOrderItems();
+
+            orderItems.forEach(orderItem -> {
+                ItemInventory itemInventory = itemReader.getItemInventoryWithPessimisticLock(orderItem.getItemId());
+                itemInventory.increaseStock(Long.valueOf(orderItem.getOrderCount()));
+            });
+        }
     }
 }

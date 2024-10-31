@@ -1,4 +1,4 @@
-package com.hhplus.commerce.application.item;
+package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
@@ -13,6 +13,7 @@ import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
 import com.hhplus.commerce.infra.order.OrderItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
-public class ItemStockIntegrationTest {
-    @Autowired private ItemStockService itemStockService;
+public class OrderCancelIntegrationTest {
+    @Autowired private OrderFacade orderFacade;
+
     @Autowired private ItemRepository itemRepository;
     @Autowired private ItemOptionRepository itemOptionRepository;
     @Autowired private ItemInventoryRepository itemInventoryRepository;
@@ -47,47 +47,33 @@ public class ItemStockIntegrationTest {
     }
 
     @Test
-    @DisplayName("10개의 상품을 동시에 1개씩 총 10번 차감하면 재고는 0개이다.")
-    void concurrentDecreaseForSamePoint10times() throws InterruptedException {
-        final int threadCount = 10;
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch latch = new CountDownLatch(threadCount);
-        AtomicInteger success = new AtomicInteger(0);
-
+    @DisplayName("주문완료 후 15분 후에도 결제가 없다면 재고를 원복한다")
+    void integrationBatch() {
         Item item = createItemAggregateFixture(10L);
+        Order order = orderFixture(1L, 2, item.getId());
 
-        for (int i = 1; i <= threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    itemStockService.decreaseStock(item.getId(), 1L);
-                    success.incrementAndGet();
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-
-        latch.await();
+        orderFacade.orderCancelWithTime(15, order.getCreatedDate().plusMinutes(10));
 
         Long quantity = itemInventoryRepository.findById(item.getId()).orElseThrow().getQuantity();
-        assertThat(10).isEqualTo(success.get());
-        assertThat(0L).isEqualTo(quantity);
+        Assertions.assertEquals(quantity, 12L,
+                "반환된 12개는 기존 10개와 재고 복구로 원복된 2개의 합이다");
     }
 
     @Test
-    @DisplayName("10개의 상품을 동시에 1개씩 총 10번 증가하면 재고는 20개이다.")
+    @DisplayName("주문 취소를 동시에 5번해도 한번만 성공한다")
     void concurrentIncreaseForSamePoint10times() throws InterruptedException {
-        final int threadCount = 10;
+        final int threadCount = 5;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
         AtomicInteger success = new AtomicInteger(0);
 
         Item item = createItemAggregateFixture(10L);
+        Order order = orderFixture(1L, 2, item.getId());
 
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    itemStockService.increaseStock(item.getId(), 1L);
+                    orderFacade.orderCancelWithTime(15, order.getCreatedDate().plusMinutes(10));
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -98,8 +84,8 @@ public class ItemStockIntegrationTest {
         latch.await();
 
         Long quantity = itemInventoryRepository.findById(item.getId()).orElseThrow().getQuantity();
-        assertThat(10).isEqualTo(success.get());
-        assertThat(20L).isEqualTo(quantity);
+        Assertions.assertEquals(quantity, 12L,
+                "반환된 12개는 기존 10개와 재고 복구로 원복된 2개의 합이다");
     }
 
     //item

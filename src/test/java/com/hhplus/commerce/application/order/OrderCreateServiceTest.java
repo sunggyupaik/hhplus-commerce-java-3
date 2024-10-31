@@ -47,7 +47,7 @@ class OrderCreateServiceTest {
 
                 given(orderStore.save(any(Order.class))).willReturn(order);
 
-                Order createdOrder = orderCreateService.createOrder(orderRequest);
+                Order createdOrder = orderCreateService.createOrder(1L, orderRequest);
 
                 assertThat(createdOrder.getId()).isEqualTo(createdOrderId);
                 verify(orderStore, times(1)).save(any(Order.class));

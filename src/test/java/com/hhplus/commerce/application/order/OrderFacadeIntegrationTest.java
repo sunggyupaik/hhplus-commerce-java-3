@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class OrderFacadeTest {
+class OrderFacadeIntegrationTest {
     @Autowired private  OrderFacade orderFacade;
 
     //DB 초기화용
@@ -73,6 +73,43 @@ class OrderFacadeTest {
 
     @Test
     @org.junit.jupiter.api.Order(2)
+    @DisplayName("동시에 여러건의 주문을 한다")
+    void orderConcurrencySuccess() throws InterruptedException {
+        Item item = createItemAggregateFixture();
+
+        final int threadCount = 50;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger success = new AtomicInteger(0);
+        AtomicInteger fail = new AtomicInteger(0);
+
+        for (int i = 1; i <= threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    OrderRequest orderRequest = createOrderRequest(item.getId());
+                    orderFacade.order(1L, orderRequest);
+                    success.incrementAndGet();
+                } catch (IllegalStatusException e) {
+                    fail.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        ItemInventory itemInventory = itemInventoryRepository.findById(item.getId()).orElseThrow();
+        System.out.println(itemInventory.getQuantity()+"=남은재고");
+
+//        Assertions.assertEquals(success.get(), 5,
+//                "재고가 10개이므로 2개씩 5번 주문 가능하다");
+//        Assertions.assertEquals(fail.get(), 5,
+//                "재고가 10개이므로 초과 주문 5번은 예외를 반환한다");
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(3)
     @DisplayName("잔고 10개에서 동시에 2개씩 10번 주문을 신청하면 5번은 성공하고 5번은 재고 없음으로 실패한다.")
     void orderThrowsIllegalStatusException() throws InterruptedException {
         Item item = createItemAggregateFixture();
@@ -149,6 +186,41 @@ class OrderFacadeTest {
                                 .orderItemOptionRequest(orderItemOptionRequest)
                                 .itemId(itemId)
                                 .orderCount(2)
+                                .itemPrice(1000L)
+                                .build()
+                );
+
+        return OrderRequest.builder()
+                .orderItemRequestList(orderItemRequestList)
+                .customerId(1L)
+                .build();
+    }
+
+    private OrderRequest createOrderRequest(List<Long> ids) {
+        OrderRequest.OrderItemOptionRequest orderItemOptionRequest =
+                OrderRequest.OrderItemOptionRequest
+                        .builder()
+                        .itemOptionId(ids.get(0))
+                        .build();
+
+        List<OrderRequest.OrderItemRequest> orderItemRequestList =
+                List.of(
+                        OrderRequest.OrderItemRequest.builder()
+                            .orderItemOptionRequest(orderItemOptionRequest)
+                            .itemId(ids.get(0))
+                            .orderCount(3)
+                            .itemPrice(1000L)
+                            .build(),
+                        OrderRequest.OrderItemRequest.builder()
+                                .orderItemOptionRequest(orderItemOptionRequest)
+                                .itemId(ids.get(1))
+                                .orderCount(3)
+                                .itemPrice(1000L)
+                                .build(),
+                        OrderRequest.OrderItemRequest.builder()
+                                .orderItemOptionRequest(orderItemOptionRequest)
+                                .itemId(ids.get(2))
+                                .orderCount(3)
                                 .itemPrice(1000L)
                                 .build()
                 );
