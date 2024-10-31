@@ -12,4 +12,9 @@ public class OrderStatusChangeService {
     public void changeToComplete(Order order) {
         order.changeToOrderComplete();
     }
+
+    @Transactional
+    public void changeToCancel(Order order) {
+        order.changeToOrderCancel();
+    }
 }

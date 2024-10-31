@@ -17,6 +17,8 @@ import java.util.List;
 @Getter
 @ToString
 public class Order extends BaseTimeEntity {
+    public static final int PAY_CHECK_MINUTE = 15;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -66,5 +68,13 @@ public class Order extends BaseTimeEntity {
         }
 
         status = OrderStatus.ORDER_COMPLETE;
+    }
+
+    public void changeToOrderCancel() {
+        if (status == OrderStatus.CANCEL) {
+            throw new IllegalStatusException(ErrorCode.COMMON_ILLEGAL_STATUS);
+        }
+
+        status = OrderStatus.CANCEL;
     }
 }

@@ -10,4 +10,6 @@ public interface OrderReader {
     List<ItemBestResponse> getBestItems();
 
     List<Order> getInitOrders();
+
+    Order getOrderWithPessimisticLock(Long id);
 }
