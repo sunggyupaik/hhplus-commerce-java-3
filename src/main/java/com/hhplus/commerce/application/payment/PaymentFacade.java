@@ -34,8 +34,8 @@ public class PaymentFacade {
         //포인트 차감
         pointUseService.usePoint(paymentRequest.getCustomerId(), PointRequest.of(paymentRequest.getAmount()));
 
-        //결제
-        Order order = orderQueryService.getOrder(paymentRequest.getOrderId());
+        //결제 저장
+        Order order = orderQueryService.getOrderWithPessimisticLock(paymentRequest.getOrderId());
         PaymentResponse paymentResponse = paymentCreateService.createPayment(order, paymentRequest);
 
         // 주문 완료

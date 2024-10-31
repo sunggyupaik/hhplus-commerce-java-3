@@ -18,8 +18,8 @@ public class OrderReaderImpl implements OrderReader {
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public Order getOrder(Long orderId) {
-        return orderRepository.findById(orderId)
+    public Order getOrder(Long id) {
+        return orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
     }
 
@@ -33,5 +33,11 @@ public class OrderReaderImpl implements OrderReader {
     @Override
     public List<Order> getInitOrders() {
         return orderRepository.getInitOrders();
+    }
+
+    @Override
+    public Order getOrderWithPessimisticLock(Long id) {
+        return orderRepository.findByIdWithPessimisticLock(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
     }
 }
