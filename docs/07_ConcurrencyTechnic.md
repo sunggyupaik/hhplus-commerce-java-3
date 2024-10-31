@@ -156,3 +156,36 @@ DB에서도 분산 락(Named Lock)을 사용할 수 있습니다. 만약 MySQL�
 결제에서 `Redisson` 방법을 택한 이유는 스핀 락에 비해 부하가 적습니다. 비지니스 로직에서 적절한 트랜잭션 범위 설정, 
 트랜잭션 실패 이후 보상처리에 대해 고민해 볼 수 있습니다. 또한 AOP를 활용한 재사용, 락 설정/해제가 가능하므로 락과 
 트랜잭션 설정 순서의 중요성을 학습할 수 있습니다.
+
+
+## k6 테스트 결과
+
+### 포인트 충전
+- 30명의 가상 유저가 약 10초동안 계속 포인트 충전을 요청합니다.
+- 낙관적 락은 성공할때까지 계속 재시도를 합니다. 대기시간은 변경하며 테스트합니다. 
+
+```java
+k6 run --vus 30 --duration 10s script_charge.js
+```
+
+- 비관적 락
+![img_4.png](images_ConcurrencyTechnic/img_4.png)
+
+- 낙관적 락
+- 50ms sleep
+![img_5.png](images_ConcurrencyTechnic/img_5.png)
+
+- 1000ms sleep
+![img_6.png](images_ConcurrencyTechnic/img_6.png)
+
+- 10000ms sleep
+![img_7.png](images_ConcurrencyTechnic/img_7.png)
+
+- 분산 락
+![img_8.png](images_ConcurrencyTechnic/img_8.png)
+
+### 결과
+
+- DB에서 배타락을 거는 비관적 락이 가장 적은 시간이 걸림
+- 낙관적 락은 충돌이 높은 환경에서 대기시간과 상관없이 실패 확률이 높음
+- 분산 락은 비관적 락보다 속도는 느리지만 DB 부하를 줄일 수 있는 효과가 있음
