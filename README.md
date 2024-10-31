@@ -13,3 +13,5 @@
 ### [API Documentation](./docs/05_APIDocumentation.md)
 
 ### [Tech Stack & Package](./docs/06_TechStackPackage.md)
+
+### [동시성 제어 관리 전략](./docs/07_ConcurrencyTechnic.md)
