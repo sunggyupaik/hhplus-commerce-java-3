@@ -13,7 +13,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Query(
             nativeQuery = true,
             value = "SELECT oi.ITEM_ID, sum(oi.ORDER_COUNT) AS COUNT " +
-                    "FROM \"ORDER_ITEMS\" oi " +
+                    "FROM ORDER_ITEMS oi " +
                     "WHERE oi.CREATED_DATE " +
                     "BETWEEN :startDate AND :endDate " +
                     "GROUP BY oi.ITEM_ID " +
