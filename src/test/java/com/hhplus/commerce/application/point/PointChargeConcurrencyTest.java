@@ -6,6 +6,7 @@ import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
+import com.hhplus.commerce.infra.point.history.PointHistoryRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PointChargeConcurrencyTest {
     @Autowired private PointChargeService pointChargeService;
     @Autowired private PointRepository pointRepository;
+    @Autowired private PointHistoryRepository pointHistoryRepository;
     @Autowired private CustomerRepository customerRepository;
 
     @AfterEach
     void tearDown() {
         pointRepository.deleteAllInBatch();
         customerRepository.deleteAllInBatch();
+        pointHistoryRepository.deleteAllInBatch();
     }
 
     @Test
