@@ -3,10 +3,7 @@ package com.hhplus.commerce.application.payment;
 import com.hhplus.commerce.application.order.OrderDataPlatformSendService;
 import com.hhplus.commerce.application.order.OrderQueryService;
 import com.hhplus.commerce.application.order.OrderStatusChangeService;
-<<<<<<< HEAD
-=======
 import com.hhplus.commerce.application.order.dto.OrderResponse;
->>>>>>> e1c04b89e691ca26f1cf8d4c15233190a736d599
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.point.PointUseService;
 import com.hhplus.commerce.application.point.dto.PointRequest;
@@ -41,11 +38,7 @@ public class PaymentFacade {
         orderStatusChangeService.changeToComplete(order);
 
         // 데이터 플랫폼 전송
-<<<<<<< HEAD
         orderDataPlatformSendService.send(order);
-=======
-        orderDataPlatformSendService.send(OrderResponse.of(order));
->>>>>>> e1c04b89e691ca26f1cf8d4c15233190a736d599
 
         return leftPoint;
     }
