@@ -3,11 +3,7 @@ package com.hhplus.commerce.application.payment;
 import com.hhplus.commerce.application.order.OrderDataPlatformSendService;
 import com.hhplus.commerce.application.order.OrderQueryService;
 import com.hhplus.commerce.application.order.OrderStatusChangeService;
-<<<<<<< HEAD
-import com.hhplus.commerce.application.order.dto.OrderResponse;
-=======
 import com.hhplus.commerce.application.payment.dto.PaymentIdempotencyCheckResponse;
->>>>>>> week5-step10
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.application.point.PointUseService;
