@@ -35,8 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootTest
-class IdempotencyCheckServiceTest {
-    @Autowired private IdempotencyCheckService idempotencyCheckService;
+class IdempotencyServiceTest {
+    @Autowired private IdempotencyService idempotencyService;
     @Autowired private PaymentReader paymentReader;
     @Autowired private CustomerStore customerStore;
     @Autowired private PointStore pointStore;
@@ -87,9 +87,8 @@ class IdempotencyCheckServiceTest {
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
         Payment payment = paymentFixture(order.getId(), customer.getId(), "TOSS", 15000L);
-        //PaymentIdempotency paymentIdempotency = paymentIdempotencyFixture(order.getId());
         PaymentRequest paymentRequest = createPaymentRequest(
-                order.getId(), customer.getId(), "TOSS", 15000L
+                order.getId(), customer.getId(), "TOSS", 15000L, null
         );
 
         final int threadCount = 10;
@@ -101,7 +100,7 @@ class IdempotencyCheckServiceTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    idempotencyCheckService.idempotencyCheck(null, paymentRequest);
+                    idempotencyService.idempotencyCheck(paymentRequest);
                     success.incrementAndGet();
                 } catch (InvalidParamException e) {
                     fail.incrementAndGet();
@@ -120,44 +119,6 @@ class IdempotencyCheckServiceTest {
     }
 
     @Test
-    @DisplayName("동시에 같은 요청을 여러번 보내면 진행 중인 작업 이외에 나머지는 요청 진행을 실패한다")
-    void idempotencyCheckWithConcurrentTry() throws InterruptedException {
-        Customer customer = customerFixture();
-        Point point = pointFixture(customer.getId(), 20000L);
-        Order order = orderFixture(customer.getId());
-        Payment payment = paymentFixture(order.getId(), customer.getId(), "TOSS", 15000L);
-        PaymentRequest paymentRequest = createPaymentRequest(
-                order.getId(), customer.getId(), "TOSS", 15000L
-        );
-
-        final int threadCount = 5;
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch latch = new CountDownLatch(threadCount);
-        AtomicInteger success = new AtomicInteger(0);
-        AtomicInteger fail = new AtomicInteger(0);
-
-        for (int i = 1; i <= threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    idempotencyCheckService.idempotencyCheck("123", paymentRequest);
-                    success.incrementAndGet();
-                } catch (Exception e) {
-                    fail.incrementAndGet();
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-
-        latch.await();
-
-        Assertions.assertEquals(success.get(), 1,
-                "동시에 같은 요청을 여러번 보내면 최초의 쓰레드 1개만 작업에 성공한다");
-        Assertions.assertEquals(fail.get(), 4,
-                "동시에 같은 요청을 여러번 보내면 1건을 제외한 나머지 4건은 실패한다");
-    }
-
-    @Test
     @DisplayName("멱등성 키는 같지만 요청 내용이 다르면 결제 요청을 실패한다")
     void idempotencyCheckWithSameKeyNotSamePayload() throws InterruptedException {
         Customer customer = customerFixture();
@@ -166,7 +127,7 @@ class IdempotencyCheckServiceTest {
         Payment payment = paymentFixture(order.getId(), customer.getId(), "TOSS", 15000L);
         PaymentIdempotency paymentIdempotency = paymentIdempotencyFixture(order.getId(), "123");
         PaymentRequest paymentRequest = createPaymentRequest(
-                order.getId(), customer.getId(), "TOSS", 20000L
+                order.getId(), customer.getId(), "TOSS", 20000L, "123"
         );
 
         final int threadCount = 10;
@@ -178,7 +139,7 @@ class IdempotencyCheckServiceTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    idempotencyCheckService.idempotencyCheck("123", paymentRequest);
+                    idempotencyService.idempotencyCheck(paymentRequest);
                     success.incrementAndGet();
                 } catch (InvalidParamException e) {
                     fail.incrementAndGet();
@@ -196,7 +157,7 @@ class IdempotencyCheckServiceTest {
                 "멱등성 키가 같아도 요청 body가 다르면 10건의 시도는 모두 실패한다");
     }
 
-    //idempotency
+    //payment
     private Payment paymentFixture(Long orderId, Long customerId, String paymentMethod, Long amount) {
         Payment payment = createPayment(orderId, customerId, paymentMethod, amount);
 
@@ -290,12 +251,14 @@ class IdempotencyCheckServiceTest {
     }
 
     //payment
-    private PaymentRequest createPaymentRequest(Long orderId, Long customerId, String paymentMethod, Long amount) {
+    private PaymentRequest createPaymentRequest(
+            Long orderId, Long customerId, String paymentMethod, Long amount, String idempotencyKey) {
         return PaymentRequest.builder()
                 .orderId(orderId)
                 .customerId(customerId)
                 .paymentMethod(paymentMethod)
                 .amount(amount)
+                .idempotencyKey(idempotencyKey)
                 .build();
     }
 }

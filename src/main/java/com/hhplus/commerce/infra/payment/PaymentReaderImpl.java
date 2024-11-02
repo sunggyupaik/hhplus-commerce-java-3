@@ -15,14 +15,25 @@ public class PaymentReaderImpl implements PaymentReader {
     private final PaymentIdempotencyRepository paymentIdempotencyRepository;
 
     @Override
-    public Payment getPayment(Long orderId) {
-        return paymentRepository.findById(orderId)
+    public Payment getPaymentWithPessimisticLock(Long orderId) {
+        return paymentRepository.findByIdWithPessimisticLock(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PAYMENT_NOT_FOUND));
     }
 
     @Override
-    public PaymentIdempotency getPaymentIdempotencyWithPessimisticLock(Long orderId) {
-        return paymentIdempotencyRepository.findByOrderId(orderId)
+    public PaymentIdempotency getPaymentIdempotencyWithPessimisticLock(Long orderId, String idempotencyKey) {
+        return paymentIdempotencyRepository.findByOrderIdWithPessimisticLock(orderId, idempotencyKey)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PAYMENT_IDEMPOTENCY_NULL));
+    }
+
+    @Override
+    public PaymentIdempotency getPaymentIdempotency(Long orderId, String idempotencyKey) {
+        return paymentIdempotencyRepository.findByOrderIdAndIdempotencyKey(orderId, idempotencyKey)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PAYMENT_IDEMPOTENCY_NULL));
+    }
+
+    @Override
+    public boolean exists(Long orderId, String idempotencyKey) {
+        return paymentIdempotencyRepository.existsByOrderIdAndIdempotencyKey(orderId, idempotencyKey);
     }
 }

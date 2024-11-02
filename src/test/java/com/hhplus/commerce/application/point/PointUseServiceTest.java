@@ -47,7 +47,7 @@ class PointUseServiceTest {
                 given(pointReader.getPointWithPessimisticLock(CUSTOMER_ID_1L)).willReturn(point);
                 given(pointHistoryStore.save(pointHistory)).willReturn(pointHistory);
 
-                Long leftPoint = pointUseService.usePoint(CUSTOMER_ID_1L, request);
+                Long leftPoint = pointUseService.usePointWithPessimisticLock(CUSTOMER_ID_1L, request);
 
                 Assertions.assertEquals(leftPoint, POINT_5000L - request.getAmount(),
                         "반환된 금액은 기존에 보유한 금액에서 요청한 금액을 뺀 값이다.");
@@ -69,7 +69,7 @@ class PointUseServiceTest {
                         .willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> pointUseService.usePoint(notExistedCustomerId, request)
+                        () -> pointUseService.usePointWithPessimisticLock(notExistedCustomerId, request)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
@@ -88,7 +88,7 @@ class PointUseServiceTest {
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 assertThatThrownBy(
-                        () -> pointUseService.usePoint(existedCustomerId, request)
+                        () -> pointUseService.usePointWithPessimisticLock(existedCustomerId, request)
                 )
                         .isInstanceOf(IllegalStatusException.class);
             }

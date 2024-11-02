@@ -1,14 +1,15 @@
 package com.hhplus.commerce.domain.payment;
 
+import com.hhplus.commerce.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "payment_idempotency")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
-public class PaymentIdempotency {
+public class PaymentIdempotency extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,5 +27,13 @@ public class PaymentIdempotency {
         this.id = id;
         this.orderId = orderId;
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public void changeIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public boolean isIdempotencyKeySame(String idempotencyKey) {
+        return this.idempotencyKey.equals(idempotencyKey);
     }
 }

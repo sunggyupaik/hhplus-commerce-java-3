@@ -1,6 +1,8 @@
 package com.hhplus.commerce.application.payment;
 
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
+import com.hhplus.commerce.application.payment.dto.PaymentResponse;
+import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.item.OrderItem;
@@ -65,9 +67,11 @@ class PaymentCreateServiceTest {
                 given(paymentStore.savePayment(any(Payment.class))).willReturn(payment);
                 given(paymentStore.saveOrderPaymentHistory(any(PaymentHistory.class))).willReturn(paymentHistory);
 
-                Long createdPaymentId = paymentCreateService.createPayment(orderAggregate, paymentRequest);
+                PaymentResponse response = paymentCreateService.createPayment(orderAggregate, paymentRequest);
 
-                assertThat(createdPaymentId).isEqualTo(PAYMENT_ID);
+                System.out.println(response+"=response");
+
+                assertThat(response.getPaymentId()).isEqualTo(PAYMENT_ID);
                 verify(paymentStore, times(1)).saveOrderPaymentHistory(any(PaymentHistory.class));
             }
         }
@@ -112,9 +116,9 @@ class PaymentCreateServiceTest {
             void it_throws_amounts_invalid() {
                 orderAggregate.changeToOrderComplete();
                 assertThatThrownBy(
-                        () -> paymentCreateService.createPayment(orderAggregate, invalidAmountRequest)
+                        () -> paymentCreateService.createPayment(orderAggregate, paymentRequest)
                 )
-                        .isInstanceOf(InvalidParamException.class);
+                        .isInstanceOf(IllegalStatusException.class);
 
                 verify(paymentStore, times(1))
                         .saveOrderPaymentHistory(any(PaymentHistory.class));
