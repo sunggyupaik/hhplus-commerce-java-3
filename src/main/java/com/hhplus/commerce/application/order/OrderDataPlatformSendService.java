@@ -17,7 +17,6 @@ public class OrderDataPlatformSendService {
         } catch (Exception e) {
             log.error("cause = {}, errorMsg = {}", e, e.getMessage());
         }
-
+      
         return false;
-    }
 }
