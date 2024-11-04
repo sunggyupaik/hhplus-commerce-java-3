@@ -4,4 +4,6 @@ public interface PointReader {
     Point getPoint(Long customerId);
 
     Point getPointWithPessimisticLock(Long customerId);
+
+    Point getPointWithOptimisticLock(Long customerId);
 }
