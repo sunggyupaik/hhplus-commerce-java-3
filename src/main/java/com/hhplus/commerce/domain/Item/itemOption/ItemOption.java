@@ -1,5 +1,6 @@
 package com.hhplus.commerce.domain.Item.itemOption;
 
+import com.hhplus.commerce.common.BaseTimeEntity;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
-public class ItemOption {
+public class ItemOption extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

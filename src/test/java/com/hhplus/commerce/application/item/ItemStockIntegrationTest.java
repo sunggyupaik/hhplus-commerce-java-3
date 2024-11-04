@@ -59,7 +59,7 @@ public class ItemStockIntegrationTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    itemStockService.decreaseStock(item.getId(), 1L);
+                    itemStockService.decreaseStockPessimistic(item.getId(), 1L);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();

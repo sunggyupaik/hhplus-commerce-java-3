@@ -4,7 +4,6 @@ import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
-import com.hhplus.commerce.domain.order.OrderReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,20 +12,18 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 @SuppressWarnings({"InnerClassMayBeStatic"})
 @DisplayName("ItemStockDecreaseService 클래스")
 class ItemStockServiceTest {
     private ItemReader itemReader;
-    private OrderReader orderReader;
     private ItemStockService itemStockService;
 
     @BeforeEach
     void setUp() {
         itemReader = mock(ItemReader.class);
-        orderReader = mock(OrderReader.class);
-        itemStockService = new ItemStockService(itemReader, orderReader);
+        itemStockService = new ItemStockService(itemReader);
     }
 
     @Nested
@@ -45,7 +42,7 @@ class ItemStockServiceTest {
                 ItemInventory itemInventory = createItemInventory(existedItemInventoryId, 20L);
                 given(itemReader.getItemInventoryWithPessimisticLock(existedItemOptionId)).willReturn(itemInventory);
 
-                Long leftQuantity = itemStockService.decreaseStock(existedItemOptionId, quantity);
+                Long leftQuantity = itemStockService.decreaseStockPessimistic(existedItemOptionId, quantity);
 
                 assertThat(leftQuantity).isEqualTo(20L - quantity);
             }
@@ -63,7 +60,7 @@ class ItemStockServiceTest {
                         .willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> itemStockService.decreaseStock(notExistedItemOptionId, 10L)
+                        () -> itemStockService.decreaseStockPessimistic(notExistedItemOptionId, 10L)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
@@ -83,7 +80,7 @@ class ItemStockServiceTest {
                 given(itemReader.getItemInventoryWithPessimisticLock(existedItemOptionId)).willReturn(itemInventory);
 
                 assertThatThrownBy(
-                        () -> itemStockService.decreaseStock(existedItemOptionId, quantity)
+                        () -> itemStockService.decreaseStockPessimistic(existedItemOptionId, quantity)
                 )
                         .isInstanceOf(IllegalStatusException.class);
             }

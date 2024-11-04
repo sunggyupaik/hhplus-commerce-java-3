@@ -1,5 +1,6 @@
 package com.hhplus.commerce.domain.Item.itemInventory;
 
+import com.hhplus.commerce.common.BaseTimeEntity;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
@@ -11,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
-public class ItemInventory {
+public class ItemInventory extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +21,9 @@ public class ItemInventory {
     @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @ToString.Exclude
     private ItemOption itemOption;
+
+    @Version
+    private Long Version;
 
     private Long quantity;
 
