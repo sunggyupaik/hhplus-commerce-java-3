@@ -60,7 +60,7 @@ class OrderFacadeIntegrationTest {
         Item item = createItemAggregateFixture();
         OrderRequest orderRequest = createOrderRequest(item.getId());
 
-        Order createdOrder = orderFacade.order(1L, orderRequest);
+        Order createdOrder = orderFacade.orderPessimisticLock(1L, orderRequest);
 
         ItemInventory itemInventory = itemInventoryRepository.findById(item.getId()).orElseThrow();
         Assertions.assertEquals(8, itemInventory.getQuantity(),
@@ -87,7 +87,7 @@ class OrderFacadeIntegrationTest {
             executorService.submit(() -> {
                 try {
                     OrderRequest orderRequest = createOrderRequest(item.getId());
-                    orderFacade.order(1L, orderRequest);
+                    orderFacade.orderPessimisticLock(1L, orderRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();

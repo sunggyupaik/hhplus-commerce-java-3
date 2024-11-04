@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/points")
-public class PointApiTestTestController {
+public class PointApiStrategyController {
     private final PointChargeService pointChargeService;
 
     @PostMapping("/charge/p")

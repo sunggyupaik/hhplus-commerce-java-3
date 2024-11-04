@@ -15,4 +15,8 @@ public interface ItemInventoryRepository extends JpaRepository<ItemInventory, Lo
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("select iv from ItemInventory iv where iv.itemOption.id = :itemOptionId")
     Optional<ItemInventory> findByItemOptionIdWithPessimisticLock(@Param("itemOptionId") Long itemOptionId);
+
+    @Lock(value = LockModeType.OPTIMISTIC)
+    @Query("select iv from ItemInventory iv where iv.itemOption.id = :itemOptionId")
+    Optional<ItemInventory> findByItemOptionIdWithOptimisticLock(@Param("itemOptionId") Long itemOptionId);
 }

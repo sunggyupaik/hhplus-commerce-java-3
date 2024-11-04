@@ -11,4 +11,6 @@ public interface ItemReader {
     ItemInventory getItemInventory(Long itemOptionId);
 
     ItemInventory getItemInventoryWithPessimisticLock(Long itemOptionId);
+
+    ItemInventory getItemInventoryWithOptimisticLock(Long itemOptionId);
 }
