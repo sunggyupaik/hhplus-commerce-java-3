@@ -23,6 +23,9 @@ public class Point extends BaseTimeEntity {
 
     private Long point;
 
+    @Version
+    private Long Version;
+
     @Builder
     public Point(
             Long id,

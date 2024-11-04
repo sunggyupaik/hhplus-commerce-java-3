@@ -29,7 +29,7 @@ public class PointApiController implements PointApiSpecification {
             @RequestHeader("customerId") Long customerId,
             @RequestBody PointRequest request
     ) {
-        Long chargedPoint = pointChargeService.chargePoint(customerId, request);
+        Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(customerId, request);
 
         return CommonResponse.success(chargedPoint);
     }

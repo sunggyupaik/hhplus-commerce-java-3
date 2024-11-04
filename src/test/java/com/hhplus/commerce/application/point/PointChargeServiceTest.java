@@ -47,7 +47,7 @@ class PointChargeServiceTest {
                 given(pointReader.getPointWithPessimisticLock(EXISTED_CUSTOMER_ID)).willReturn(point);
                 given(pointHistoryStore.save(pointHistory)).willReturn(pointHistory);
 
-                Long chargedPoint = pointChargeService.chargePoint(EXISTED_CUSTOMER_ID, request);
+                Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(EXISTED_CUSTOMER_ID, request);
 
                 Assertions.assertEquals(chargedPoint, AMOUNT_1000 + request.getAmount(),
                         "반환된 금액은 보유한 금액과 요청한 금액의 합이다");
@@ -69,7 +69,7 @@ class PointChargeServiceTest {
                 given(pointReader.getPointWithPessimisticLock(notExistedCustomerId)).willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> pointChargeService.chargePoint(notExistedCustomerId, request)
+                        () -> pointChargeService.chargePointWithPessimisticLock(notExistedCustomerId, request)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
@@ -88,7 +88,7 @@ class PointChargeServiceTest {
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 assertThatThrownBy(
-                        () -> pointChargeService.chargePoint(existedCustomerId, request)
+                        () -> pointChargeService.chargePointWithPessimisticLock(existedCustomerId, request)
                 )
                         .isInstanceOf(IllegalStatusException.class);
             }

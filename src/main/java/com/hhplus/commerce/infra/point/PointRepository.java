@@ -13,4 +13,8 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Point p where p.customerId = :customerId")
     Optional<Point> findByIdWithPessimisticLock(@Param("customerId") Long customerId);
+
+    @Lock(value = LockModeType.OPTIMISTIC)
+    @Query("select p from Point p where p.customerId = :customerId")
+    Optional<Point> findByIdWithOptimisticLock(Long customerId);
 }

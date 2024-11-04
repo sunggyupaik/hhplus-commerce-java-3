@@ -8,6 +8,7 @@ import com.hhplus.commerce.infra.customer.CustomerRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import com.hhplus.commerce.infra.point.history.PointHistoryRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class PointChargeConcurrencyTest {
     }
 
     @Test
-    @DisplayName("1명이 100원씩 10번을 동시에 충전하면 총 1000원이 충전된다")
-    void concurrentChargeForSamePoint10times() throws InterruptedException {
+    @DisplayName("1명이 100원씩 10번을 동시에 충전하면 총 1000원이 충전된다 - 비관락")
+    void concurrentChargeForSamePoint10timesPessimistic() throws InterruptedException {
         final int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -49,7 +50,7 @@ public class PointChargeConcurrencyTest {
             executorService.submit(() -> {
                 try {
                     PointRequest pointRequest = createPointChargeRequest(100L);
-                    pointChargeService.chargePoint(savedCustomer.getId(), pointRequest);
+                    pointChargeService.chargePointWithPessimisticLock(savedCustomer.getId(), pointRequest);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -59,10 +60,78 @@ public class PointChargeConcurrencyTest {
 
         latch.await();
 
-        assertThat(success.get()).isEqualTo(10);
+        Assertions.assertEquals(success.get(), 10,
+                "반환된 성공 횟수 10은 동시에 시도한 충전 횟수이다");
 
         Long chargedPoint = pointRepository.findById(savedPoint.getId()).orElseThrow().getPoint();
-        assertThat(chargedPoint).isEqualTo(1000L);
+        Assertions.assertEquals(chargedPoint, 1000L,
+                "반환된 1000원은 100원을 10번 충전한 결과이다");
+    }
+
+    @Test
+    @DisplayName("1명이 100원씩 10번을 동시에 충전하면 총 1000원이 충전된다 - 낙관락")
+    void concurrentChargeForSamePoint10timesOptimistic() throws InterruptedException {
+        final int threadCount = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger success = new AtomicInteger(0);
+
+        Customer savedCustomer = customerRepository.save(createCustomer());
+        Point savedPoint = pointRepository.save(createPoint(savedCustomer.getId()));
+
+        for (int i = 1; i <= threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    PointRequest pointRequest = createPointChargeRequest(100L);
+                    pointChargeService.chargePointWithOptimisticLock(savedCustomer.getId(), pointRequest);
+                    success.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        Assertions.assertEquals(success.get(), 10,
+                "반환된 성공 횟수 10은 동시에 시도한 충전 횟수이다");
+
+        Long chargedPoint = pointRepository.findById(savedPoint.getId()).orElseThrow().getPoint();
+        Assertions.assertEquals(chargedPoint, 1000L,
+                "반환된 1000원은 100원을 10번 충전한 결과이다");
+    }
+
+    @Test
+    @DisplayName("1명이 100원씩 10번을 동시에 충전하면 총 1000원이 충전된다 - 분산락")
+    void concurrentChargeForSamePoint10timesDistributed() throws InterruptedException {
+        final int threadCount = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger success = new AtomicInteger(0);
+
+        Customer savedCustomer = customerRepository.save(createCustomer());
+        Point savedPoint = pointRepository.save(createPoint(savedCustomer.getId()));
+
+        for (int i = 1; i <= threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    PointRequest pointRequest = createPointChargeRequest(100L);
+                    pointChargeService.chargePointWithDistributedLock(savedCustomer.getId(), pointRequest);
+                    success.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        Assertions.assertEquals(success.get(), 10,
+                "반환된 성공 횟수 10은 동시에 시도한 충전 횟수이다");
+
+        Long chargedPoint = pointRepository.findById(savedPoint.getId()).orElseThrow().getPoint();
+        Assertions.assertEquals(chargedPoint, 1000L,
+                "반환된 1000원은 100원을 10번 충전한 결과이다");
     }
 
     @Test
@@ -81,7 +150,7 @@ public class PointChargeConcurrencyTest {
             executorService.submit(() -> {
                 try {
                     PointRequest pointRequest = createPointChargeRequest(40000L);
-                    pointChargeService.chargePoint(savedCustomer.getId(), pointRequest);
+                    pointChargeService.chargePointWithPessimisticLock(savedCustomer.getId(), pointRequest);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
