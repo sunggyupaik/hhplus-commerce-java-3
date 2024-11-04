@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     //common
+    COMMON_SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "잠시 후 다시 시도해주세요."),
     COMMON_ILLEGAL_STATUS(HttpStatus.BAD_REQUEST.value(), "잘못된 상태값 입니다."),
     COMMON_INVALID_PARAMETER(HttpStatus.BAD_REQUEST.value(), "잘못된 매개변수값 입니다."),
 
