@@ -6,7 +6,6 @@ import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.common.distributedLock.DistributedLock;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
-import com.hhplus.commerce.domain.customer.CustomerReader;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentIdempotency;
 import com.hhplus.commerce.domain.payment.PaymentReader;
@@ -19,10 +18,8 @@ import org.springframework.stereotype.Service;
 public class IdempotencyCheckService {
     private final PaymentReader paymentReader;
     private final PaymentStore paymentStore;
-    private final CustomerReader customerReader;
 
-//    @DistributedLock(key = "#paymentRequest.getIdempotencyKey().concat('-').concat(#paymentRequest.getOrderId()")
-    @DistributedLock(key = "#paymentRequest.getIdempotencyKey()")
+    @DistributedLock(key = "'idempotencyKey'.concat(':').concat(#paymentRequest.getIdempotencyKey())")
     public PaymentIdempotencyCheckResponse idempotencyCheck(PaymentRequest paymentRequest) {
         //400 Bad Request 멱등키가 존재하지 않을 때
         String requestIdempotencyKey = paymentRequest.getIdempotencyKey();
