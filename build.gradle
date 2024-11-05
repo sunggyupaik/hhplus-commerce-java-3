@@ -35,15 +35,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	//aop
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
-
 	//db
 	//runtimeOnly 'com.h2database:h2'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
-	//redis
+	//reddison + redis
 	implementation 'org.redisson:redisson-spring-boot-starter:3.37.0'
 
 	//retry
