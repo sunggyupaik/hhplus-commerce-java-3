@@ -1,15 +1,13 @@
 package com.hhplus.commerce.interfaces.payment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 public class PaymentDto {
     @Builder
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     @ToString
     @Schema(description = "결제 요청")
     public static class PayOrderRequest {
