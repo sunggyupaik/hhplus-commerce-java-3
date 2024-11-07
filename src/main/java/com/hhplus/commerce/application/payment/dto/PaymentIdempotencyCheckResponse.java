@@ -13,12 +13,15 @@ public class PaymentIdempotencyCheckResponse {
     private boolean idempotencyKeyExists;
 
     @Schema(description = "결제 응답")
-    private PaymentResponse payment;
+    private PaymentResponse paymentResponse;
 
-    public static PaymentIdempotencyCheckResponse from(boolean idempotencyKeyExists, PaymentResponse paymentResponse) {
+    public static PaymentIdempotencyCheckResponse from(
+            boolean idempotencyKeyExists,
+            PaymentResponse paymentResponse
+    ) {
         return PaymentIdempotencyCheckResponse.builder()
                 .idempotencyKeyExists(idempotencyKeyExists)
-                .payment(paymentResponse)
+                .paymentResponse(paymentResponse)
                 .build();
     }
 }

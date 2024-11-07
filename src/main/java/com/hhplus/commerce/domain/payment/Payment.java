@@ -37,4 +37,8 @@ public class Payment extends BaseTimeEntity {
         this.paymentMethod = paymentMethod;
         this.amount = amount;
     }
+
+    public static Payment empty() {
+        return Payment.builder().build();
+    }
 }

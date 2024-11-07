@@ -6,4 +6,8 @@ public interface PaymentStore {
     PaymentHistory saveOrderPaymentHistory(PaymentHistory paymentHistory);
 
     PaymentIdempotency savePaymentIdempotency(PaymentIdempotency paymentIdempotency);
+
+    Object savePaymentIdempotencyRedis(String key, Object value, Long expireMinute);
+
+    Boolean setIfAbsent(String key, Object value, Long expireMinute);
 }

@@ -34,14 +34,14 @@ public class PaymentIdempotency extends BaseTimeEntity {
         this.idempotencyKey = idempotencyKey;
     }
 
-    public boolean isIdempotencyKeySame(String idempotencyKey) {
-        return this.idempotencyKey.equals(idempotencyKey);
-    }
-
     public static PaymentIdempotency of(PaymentRequest paymentRequest) {
         return PaymentIdempotency.builder()
                 .idempotencyKey(paymentRequest.getIdempotencyKey())
                 .orderId(paymentRequest.getOrderId())
                 .build();
+    }
+
+    public boolean isIdempotencyKeySame(String idempotencyKey) {
+        return this.idempotencyKey.equals(idempotencyKey);
     }
 }

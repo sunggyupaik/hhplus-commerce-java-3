@@ -4,6 +4,7 @@ import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.config.RedisContainersConfig;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.order.Order;
@@ -27,6 +28,7 @@ import com.hhplus.commerce.infra.payment.PaymentIdempotencyRepository;
 import com.hhplus.commerce.infra.payment.PaymentRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -39,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@ExtendWith(RedisContainersConfig.class)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PaymentFacadeTest {
@@ -217,7 +220,7 @@ public class PaymentFacadeTest {
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
-        final int threadCount = 5;
+        final int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
         AtomicInteger success = new AtomicInteger(0);
@@ -230,7 +233,7 @@ public class PaymentFacadeTest {
                     if (finalI > 1) {
                         Thread.sleep(1000L);
                     }
-                    paymentFacade.payOrder(paymentRequest);
+                    paymentFacade.payOrderRedis(paymentRequest);
                     success.incrementAndGet();
                 } catch (Exception e) {
                     fail.incrementAndGet();

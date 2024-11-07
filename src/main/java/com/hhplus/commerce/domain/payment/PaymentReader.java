@@ -6,4 +6,6 @@ public interface PaymentReader {
     boolean exists(Long orderId, String idempotencyKey);
 
     Payment getPayment(Long orderId);
+
+    Object getPaymentByIdempotencyKeyRedis(String key);
 }

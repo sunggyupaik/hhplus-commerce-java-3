@@ -1,5 +1,6 @@
 package com.hhplus.commerce.application.payment;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hhplus.commerce.application.payment.dto.PaymentIdempotencyCheckResponse;
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.payment.dto.PaymentResponse;
@@ -12,10 +13,12 @@ import com.hhplus.commerce.domain.payment.PaymentReader;
 import com.hhplus.commerce.domain.payment.PaymentStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class IdempotencyCheckService {
+    private final ObjectMapper objectMapper;
     private final PaymentReader paymentReader;
     private final PaymentStore paymentStore;
 
@@ -75,5 +78,52 @@ public class IdempotencyCheckService {
                 && payment.getCustomerId().equals(paymentRequest.getCustomerId())
                 && payment.getOrderId().equals(paymentRequest.getOrderId())
                 && payment.getAmount().equals(paymentRequest.getAmount());
+    }
+
+    @Transactional
+    public PaymentIdempotencyCheckResponse idempotencyCheckRedis(PaymentRequest paymentRequest) {
+        //400 Bad Request 멱등키가 존재하지 않을 때
+        String requestIdempotencyKey = paymentRequest.getIdempotencyKey();
+        if (requestIdempotencyKey == null) {
+            throw new InvalidParamException(ErrorCode.PAYMENT_IDEMPOTENCY_KEY_INVALID);
+        }
+
+        // 멱등키에 결과 정보가 존재하지 않으면 결제 진행
+        Boolean valueIsAbsent = paymentStore.setIfAbsent(
+                requestIdempotencyKey,
+                "processing",
+                1L
+        );
+
+        if (valueIsAbsent.equals(true)) {
+            return PaymentIdempotencyCheckResponse.from(
+                    false,
+                    PaymentResponse.of(Payment.empty())
+            );
+        }
+
+        //409 Conflict 이미 요청을 처리중인데 동일한 요청을 했을 때
+        Object value = paymentReader.getPaymentByIdempotencyKeyRedis(requestIdempotencyKey);
+        if (value.toString().equals("processing")) {
+            throw new InvalidParamException(ErrorCode.PAYMENT_ALREADY_PROCESSING);
+        }
+
+        //422 Unprocessable Entity 재시도 된 요청 본문(payload)이 처음 요청과 다른데 같은 멱등키를 또 사용했을 때
+        PaymentResponse paymentResponse = objectMapper.convertValue(value, PaymentResponse.class);
+        if (!isSame(paymentResponse, paymentRequest)) {
+            throw new InvalidParamException(ErrorCode.PAYMENT_IDEMPOTENCY_KEY_INVALID);
+        }
+
+        return PaymentIdempotencyCheckResponse.from(
+                true,
+                paymentResponse
+        );
+    }
+
+    private boolean isSame(PaymentResponse paymentResponse, PaymentRequest paymentRequest) {
+        return paymentResponse.getPaymentMethod().equals(paymentRequest.getPaymentMethod())
+                && paymentResponse.getCustomerId().equals(paymentRequest.getCustomerId())
+                && paymentResponse.getOrderId().equals(paymentRequest.getOrderId())
+                && paymentResponse.getAmount().equals(paymentRequest.getAmount());
     }
 }
