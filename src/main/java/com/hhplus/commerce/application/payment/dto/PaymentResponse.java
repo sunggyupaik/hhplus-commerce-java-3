@@ -7,11 +7,15 @@ import lombok.*;
 @Builder
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @Schema(description = "결제 응답")
 public class PaymentResponse {
     @Schema(description = "결제 식별자", example = "10")
     private Long paymentId;
+
+    @Schema(description = "고객 식별자", example = "10")
+    private Long customerId;
 
     @Schema(description = "주문 식별자", example = "1")
     private Long orderId;
@@ -25,6 +29,7 @@ public class PaymentResponse {
     public static PaymentResponse of(Payment payment) {
         return PaymentResponse.builder()
                 .paymentId(payment.getId())
+                .customerId(payment.getCustomerId())
                 .orderId(payment.getOrderId())
                 .paymentMethod(payment.getPaymentMethod() == null? null : payment.getPaymentMethod().name())
                 .amount(payment.getAmount())
