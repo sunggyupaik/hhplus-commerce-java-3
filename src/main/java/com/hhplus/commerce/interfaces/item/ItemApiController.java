@@ -29,6 +29,13 @@ public class ItemApiController implements ItemApiSpecification {
         return CommonResponse.success(itemResponse);
     }
     
+    @GetMapping("/best/r")
+    public CommonResponse getBestItemsRedis() {
+        List<ItemBestResponse> bestItems = itemBestQueryService.getBestItemsRedis();
+
+        return CommonResponse.success(bestItems);
+    }
+
     @GetMapping("/best")
     public CommonResponse getBestItems() {
         List<ItemBestResponse> bestItems = itemBestQueryService.getBestItems();

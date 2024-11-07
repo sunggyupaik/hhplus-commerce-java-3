@@ -13,12 +13,16 @@ import java.util.List;
 public class ItemBestQueryService {
     private final OrderReader orderReader;
 
+    public List<ItemBestResponse> getBestItems() {
+        return orderReader.getBestItems();
+    }
+
     @Cacheable(
             cacheNames = "ItemBestQueryService:getBestItems",
             key = "'getBestItems'",
             cacheManager = "thirtyMinutesCacheManager"
     )
-    public List<ItemBestResponse> getBestItems() {
+    public List<ItemBestResponse> getBestItemsRedis() {
         return orderReader.getBestItems();
     }
 }
