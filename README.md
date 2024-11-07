@@ -15,3 +15,5 @@
 ### [Tech Stack & Package](./docs/06_TechStackPackage.md)
 
 ### [동시성 제어 관리 전략](./docs/07_ConcurrencyTechnic.md)
+
+### [Redis 활용하기](./docs/08_RedisTech.md)
