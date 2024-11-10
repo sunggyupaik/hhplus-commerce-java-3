@@ -4,33 +4,25 @@ import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
-import com.hhplus.commerce.config.RedisContainersConfig;
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
-import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.order.Order;
-import com.hhplus.commerce.domain.order.OrderReader;
 import com.hhplus.commerce.domain.order.OrderStatus;
 import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
-import com.hhplus.commerce.domain.payment.*;
+import com.hhplus.commerce.domain.payment.Payment;
+import com.hhplus.commerce.domain.payment.PaymentHistory;
+import com.hhplus.commerce.domain.payment.PaymentIdempotency;
 import com.hhplus.commerce.domain.point.Point;
-import com.hhplus.commerce.domain.point.PointStore;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
-import com.hhplus.commerce.infra.item.ItemInventoryRepository;
-import com.hhplus.commerce.infra.item.ItemOptionRepository;
-import com.hhplus.commerce.infra.item.ItemRepository;
-import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
-import com.hhplus.commerce.infra.order.OrderItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
 import com.hhplus.commerce.infra.payment.PaymentHistoryRepository;
 import com.hhplus.commerce.infra.payment.PaymentIdempotencyRepository;
 import com.hhplus.commerce.infra.payment.PaymentRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -41,58 +33,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(RedisContainersConfig.class)
-@SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TearDownDatabase
 public class PaymentFacadeTest {
     @Autowired private PaymentFacade paymentFacade;
     @Autowired private OrderStore orderStore;
-    @Autowired private OrderReader orderReader;
-    @Autowired private PaymentReader paymentReader;
-    @Autowired private PointStore pointStore;
-    @Autowired private CustomerStore customerStore;
-    @Autowired private PaymentStore paymentStore;
-    @Autowired private PaymentIdempotencyRepository paymentIdempotencyRepository;
 
-    //DB 초기화용
-    @Autowired private PointRepository pointRepository;
+    @Autowired private PaymentIdempotencyRepository paymentIdempotencyRepository;
     @Autowired private CustomerRepository customerRepository;
+    @Autowired private PointRepository pointRepository;
     @Autowired private PaymentRepository paymentRepository;
     @Autowired private PaymentHistoryRepository paymentHistoryRepository;
-    @Autowired private ItemRepository itemRepository;
-    @Autowired private ItemOptionRepository itemOptionRepository;
-    @Autowired private ItemInventoryRepository itemInventoryRepository;
     @Autowired private OrderRepository orderRepository;
-    @Autowired private OrderItemRepository orderItemRepository;
-    @Autowired private OrderItemOptionRepository orderItemOptionRepository;
-
-    @AfterEach
-    void tearDown() {
-        customerRepository.deleteAllInBatch();
-        pointRepository.deleteAllInBatch();
-
-        paymentAggregateDeleteAllInBatch();
-        itemAggregateDeleteAllInBatch();
-        orderAggregateDeleteAllInBatch();
-    }
-
-    private void paymentAggregateDeleteAllInBatch() {
-        paymentRepository.deleteAllInBatch();
-        paymentHistoryRepository.deleteAllInBatch();
-        paymentIdempotencyRepository.deleteAllInBatch();
-    }
-
-    private void orderAggregateDeleteAllInBatch() {
-        orderItemOptionRepository.deleteAllInBatch();
-        orderItemRepository.deleteAllInBatch();
-        orderRepository.deleteAllInBatch();
-    }
-
-    private void itemAggregateDeleteAllInBatch() {
-        itemInventoryRepository.deleteAllInBatch();
-        itemOptionRepository.deleteAllInBatch();
-        itemRepository.deleteAllInBatch();
-    }
 
     @Test
     @org.junit.jupiter.api.Order(1)
@@ -119,7 +71,7 @@ public class PaymentFacadeTest {
         Assertions.assertEquals( all.size(), 1,
                 "결제가 정상이면 새로운 결제 정보가 생성된다");
 
-        Order findOrder = orderReader.getOrder(order.getId());
+        Order findOrder = orderRepository.findById(order.getId()).orElseThrow();
         Assertions.assertEquals(findOrder.getStatus(), OrderStatus.ORDER_COMPLETE,
                 "주문은 주문완료 상태로 변경된다.");
     }
@@ -211,7 +163,7 @@ public class PaymentFacadeTest {
 
     @Test
     @org.junit.jupiter.api.Order(6)
-    @DisplayName("같은 결제 요청을 동시에 5번하면 5번 모두 응답을 성공한다")
+    @DisplayName("같은 결제 요청을 동시에 100번하면 100번 모두 응답을 성공한다")
     void orderThrowsIllegalStatusException() throws InterruptedException {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
@@ -227,15 +179,11 @@ public class PaymentFacadeTest {
         AtomicInteger fail = new AtomicInteger(0);
 
         for (int i = 1; i <= threadCount; i++) {
-            int finalI = i;
             executorService.submit(() -> {
                 try {
-                    if (finalI > 1) {
-                        Thread.sleep(1000L);
-                    }
                     paymentFacade.payOrderRedis(paymentRequest);
                     success.incrementAndGet();
-                } catch (Exception e) {
+                } catch (InvalidParamException e) {
                     fail.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -245,8 +193,11 @@ public class PaymentFacadeTest {
 
         latch.await();
 
-        Assertions.assertEquals(success.get(), threadCount,
-                "같은 10번의 결제 요청은 모두 성공을 응답한다");
+        Assertions.assertEquals(success.get(), 1,
+                "분산환경에서 동시에 100건의 결제 시도를 하면 1건만 성공한다");
+
+        Assertions.assertEquals(fail.get(), 99,
+                "분산환경에서 동시에 100건의 결제 시도를 하면 99건은 처리중이라는 예외를 던진다");
 
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
         Assertions.assertEquals(paymentHistories.size(), 1,
@@ -257,7 +208,7 @@ public class PaymentFacadeTest {
     private PaymentIdempotency paymentIdempotencyFixture(Long orderId, String idempotencyKey) {
         PaymentIdempotency paymentIdempotency = createPaymentIdempotency(orderId, idempotencyKey);
 
-        return paymentStore.savePaymentIdempotency(paymentIdempotency);
+        return paymentIdempotencyRepository.save(paymentIdempotency);
     }
 
     private PaymentIdempotency createPaymentIdempotency(Long orderId, String idempotencyKey) {
@@ -271,7 +222,7 @@ public class PaymentFacadeTest {
     private Point pointFixture(Long customerId, Long pointAmount) {
         Point point = createPoint(customerId, pointAmount);
 
-        return pointStore.save(point);
+        return pointRepository.save(point);
     }
 
     //point
@@ -286,7 +237,7 @@ public class PaymentFacadeTest {
     private Customer customerFixture() {
         Customer customer = createCustomer();
 
-        return customerStore.save(customer);
+        return customerRepository.save(customer);
     }
 
     private Customer createCustomer() {
