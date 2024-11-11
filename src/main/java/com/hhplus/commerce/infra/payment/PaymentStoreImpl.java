@@ -1,6 +1,9 @@
 package com.hhplus.commerce.infra.payment;
 
-import com.hhplus.commerce.domain.payment.*;
+import com.hhplus.commerce.domain.payment.Payment;
+import com.hhplus.commerce.domain.payment.PaymentHistory;
+import com.hhplus.commerce.domain.payment.PaymentIdempotency;
+import com.hhplus.commerce.domain.payment.PaymentStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
