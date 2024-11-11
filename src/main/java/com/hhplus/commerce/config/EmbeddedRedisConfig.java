@@ -3,8 +3,11 @@ package com.hhplus.commerce.config;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.util.StringUtils;
 import redis.embedded.RedisServer;
 
@@ -13,11 +16,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Configuration
+@Profile("local")
 public class EmbeddedRedisConfig {
+    @Value("${spring.data.redis.host}")
+    private String host;
+
     @Value("${spring.data.redis.port}")
     private int port;
 
     private RedisServer redisServer;
+
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory(host, port);
+    }
 
     @PostConstruct
     public void redisServer() throws IOException {
@@ -38,14 +50,13 @@ public class EmbeddedRedisConfig {
      * Embedded Redis가 현재 실행중인지 확인
      */
     private boolean isRedisRunning() throws IOException {
-        return isRunning(executeGrepProcessCommandMacLinux(port));
+        return isRunning(executeGrepProcessCommandWindow(port));
     }
 
     /**
      * 현재 PC/서버에서 사용가능한 포트 조회
      */
     public int findAvailablePort() throws IOException {
-
         for (int port = 10000; port <= 65535; port++) {
             Process process = executeGrepProcessCommandWindow(port);
             if (!isRunning(process)) {
