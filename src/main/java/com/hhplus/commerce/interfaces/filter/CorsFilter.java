@@ -1,4 +1,4 @@
-package com.hhplus.commerce.common.filter;
+package com.hhplus.commerce.interfaces.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
