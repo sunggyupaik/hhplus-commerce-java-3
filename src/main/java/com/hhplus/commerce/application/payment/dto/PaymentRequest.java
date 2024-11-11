@@ -6,7 +6,10 @@ import com.hhplus.commerce.domain.payment.PaymentHistory;
 import com.hhplus.commerce.domain.payment.PaymentMethod;
 import com.hhplus.commerce.interfaces.payment.PaymentDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 @Builder
 @Getter

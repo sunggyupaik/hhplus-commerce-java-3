@@ -8,7 +8,11 @@ import com.hhplus.commerce.domain.point.PointReader;
 import com.hhplus.commerce.domain.point.history.PointHistory;
 import com.hhplus.commerce.domain.point.history.PointHistoryStore;
 import com.hhplus.commerce.domain.point.history.PointType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;

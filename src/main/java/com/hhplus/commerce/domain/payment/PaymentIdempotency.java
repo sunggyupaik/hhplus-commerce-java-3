@@ -2,8 +2,16 @@ package com.hhplus.commerce.domain.payment;
 
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.BaseTimeEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "payment_idempotency")

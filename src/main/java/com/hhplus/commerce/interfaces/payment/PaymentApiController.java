@@ -5,7 +5,11 @@ import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
