@@ -1,6 +1,6 @@
 package com.hhplus.commerce.config;
 
-import com.hhplus.commerce.common.intetceptor.LogInterceptor;
+import com.hhplus.commerce.interfaces.intetceptor.LogInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -14,6 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(logInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns("/api/**");
     }
 }

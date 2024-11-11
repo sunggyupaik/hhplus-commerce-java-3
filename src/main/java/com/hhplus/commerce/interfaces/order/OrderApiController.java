@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/orders")
+@RequestMapping("/api/v1/orders")
 public class OrderApiController implements OrderApiSpecification {
     private final OrderFacade orderFacade;
 
