@@ -1,6 +1,5 @@
 package com.hhplus.commerce.common.distributedLock;
 
-import com.hhplus.commerce.common.aop.AopForTransactionNew;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
