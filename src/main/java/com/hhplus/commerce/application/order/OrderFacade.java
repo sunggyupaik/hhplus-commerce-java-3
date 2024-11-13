@@ -2,6 +2,7 @@ package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.item.ItemStockService;
 import com.hhplus.commerce.application.order.dto.OrderRequest;
+import com.hhplus.commerce.application.order.dto.OrderResultResponse;
 import com.hhplus.commerce.domain.order.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -95,5 +96,10 @@ public class OrderFacade {
         orders.forEach(order -> {
             orderCancelHandler.cancelOrder(order, dateTime, minute);
         });
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResultResponse.OrderDetailResponse> getOrders(Long customerId) {
+        return orderQueryService.getDetailOrders(customerId);
     }
 }
