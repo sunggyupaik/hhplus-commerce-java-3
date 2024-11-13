@@ -12,4 +12,6 @@ public interface OrderReader {
     List<Order> getInitOrders();
 
     Order getOrderWithPessimisticLock(Long id);
+
+    List<Order> getOrderByCustomerId(Long customerId);
 }

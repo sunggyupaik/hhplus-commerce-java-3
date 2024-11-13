@@ -40,4 +40,9 @@ public class OrderReaderImpl implements OrderReader {
         return orderRepository.findByIdWithPessimisticLock(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
     }
+
+    @Override
+    public List<Order> getOrderByCustomerId(Long customerId) {
+        return orderRepository.findByCustomerId(customerId);
+    }
 }
