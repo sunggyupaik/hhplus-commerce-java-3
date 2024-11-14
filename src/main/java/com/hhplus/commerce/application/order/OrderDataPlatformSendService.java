@@ -1,20 +1,18 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPayload;
+import com.hhplus.commerce.common.exception.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @Slf4j
 public class OrderDataPlatformSendService {
     public boolean send(OrderDataPlatformPayload payload) {
         try {
-            log.info("orderDataPlatformPayload: {}", payload);
             return true;
-        } catch (Exception e) {
-            log.error("DataPlatformSend error, cause = {}, errorMsg = {}", e, e.getMessage());
+        } catch (TimeoutException e) {
+            return false;
         }
-
-        return false;
     }
 }
