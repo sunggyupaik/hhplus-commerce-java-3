@@ -12,4 +12,6 @@ public interface PaymentStore {
     Object savePaymentIdempotencyRedis(String key, Object value, Long expireMinute);
 
     Boolean setIfAbsent(String key, Object value, Long expireMinute);
+
+    String deleteIdempotencyPayment(String idempotencyKey);
 }

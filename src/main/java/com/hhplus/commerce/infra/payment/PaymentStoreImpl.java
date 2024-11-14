@@ -47,4 +47,9 @@ public class PaymentStoreImpl implements PaymentStore {
     public Boolean setIfAbsent(String key, Object value, Long expireMinute) {
         return paymentRedisRepository.setIfAbsent(key, value, expireMinute);
     }
+
+    @Override
+    public String deleteIdempotencyPayment(String idempotencyKey) {
+        return paymentRedisRepository.delete(idempotencyKey);
+    }
 }
