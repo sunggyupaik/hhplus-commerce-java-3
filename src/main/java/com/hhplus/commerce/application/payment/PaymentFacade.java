@@ -3,6 +3,8 @@ package com.hhplus.commerce.application.payment;
 import com.hhplus.commerce.application.order.OrderDataPlatformSendService;
 import com.hhplus.commerce.application.order.OrderQueryService;
 import com.hhplus.commerce.application.order.OrderStatusChangeService;
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPublisher;
 import com.hhplus.commerce.application.payment.dto.PaymentIdempotencyCheckResponse;
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.payment.dto.PaymentResponse;
@@ -24,6 +26,7 @@ public class PaymentFacade {
     private final OrderDataPlatformSendService orderDataPlatformSendService;
     private final IdempotencyCheckService idempotencyCheckService;
     private final IdempotencyManageService idempotencyManageService;
+    private final OrderDataPlatformPublisher orderDataPlatformPublisher;
 
     /**
      * 분산락과 멱등성 DB로 결제한다
@@ -48,19 +51,21 @@ public class PaymentFacade {
         // 주문 완료
         orderStatusChangeService.changeToComplete(order);
 
-        // 데이터 플랫폼 전송
-        orderDataPlatformSendService.send(order);
+        // 데이터 플랫폼 전송 이벤트
+        orderDataPlatformPublisher.success(OrderDataPlatformEvent.of(order));
 
         return paymentResponse;
     }
 
     /**
-     * 분산락과 멱등성 Redis로 결제한다
+     * 분산락과 Redis로 결제한다
+     * 만약 type가 1이면 모든 로직이 끝나고 RuntimeException을 던진다
      * @param paymentRequest 결제 요청
+     * @param type 예외 타입
      * @return 결제 응답
      */
     @Transactional
-    public PaymentResponse payOrderRedis(PaymentRequest paymentRequest) {
+    public PaymentResponse payOrderRedis(PaymentRequest paymentRequest, String type) {
         //멱등성 검사
         PaymentIdempotencyCheckResponse response = idempotencyCheckService.idempotencyCheckRedis(paymentRequest);
         if (response.isIdempotencyKeyExists()) {
@@ -77,13 +82,17 @@ public class PaymentFacade {
         // 주문 완료
         orderStatusChangeService.changeToComplete(order);
 
-        // 데이터 플랫폼 전송
-        orderDataPlatformSendService.send(order);
-
         // 레디스에 <멱등성 키, 결제> 캐시 저장
         idempotencyManageService.saveIdempotencyPayment(
                 paymentRequest.getIdempotencyKey(), paymentResponse, EXPIRE_MINUTE_15
         );
+
+        // 데이터 플랫폼 전송 이벤트
+        orderDataPlatformPublisher.success(OrderDataPlatformEvent.of(order));
+
+        if (type.equals("1")) {
+            throw new RuntimeException();
+        }
 
         return paymentResponse;
     }
