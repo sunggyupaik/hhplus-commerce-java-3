@@ -23,8 +23,13 @@ public class PaymentStoreImpl implements PaymentStore {
     }
 
     @Override
+    public PaymentHistory saveOrderPaymentHistorySuccess(PaymentHistory paymentHistory) {
+        return paymentHistoryRepository.save(paymentHistory);
+    }
+
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public PaymentHistory saveOrderPaymentHistory(PaymentHistory paymentHistory) {
+    public PaymentHistory saveOrderPaymentHistoryFail(PaymentHistory paymentHistory) {
         return paymentHistoryRepository.save(paymentHistory);
     }
 

@@ -25,28 +25,30 @@ public class PaymentCreateService {
         Payment payment = paymentRequest.toEntity();
         Payment createdPayment = paymentStore.savePayment(payment);
         PaymentHistory paymentHistory = paymentRequest.toPaymentHistoryEntity(null);
-        paymentStore.saveOrderPaymentHistory(paymentHistory);
+        if (paymentHistory.isSuccessHistory()) {
+            paymentStore.saveOrderPaymentHistorySuccess(paymentHistory);
+        }
 
         return PaymentResponse.of(createdPayment);
     }
 
     private void validate(Order order, PaymentRequest paymentRequest) {
         if (!order.calculatePrice().equals(paymentRequest.getAmount())) {
-            paymentStore.saveOrderPaymentHistory(
+            paymentStore.saveOrderPaymentHistoryFail(
                     paymentRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_INVALID_PRICE)
             );
             throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_PRICE);
         }
 
         if (!order.getCustomerId().equals(paymentRequest.getCustomerId())) {
-            paymentStore.saveOrderPaymentHistory(
+            paymentStore.saveOrderPaymentHistoryFail(
                     paymentRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_INVALID_CUSTOMER)
             );
             throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_CUSTOMER);
         }
 
         if (!order.paymentAvailable()) {
-            paymentStore.saveOrderPaymentHistory(
+            paymentStore.saveOrderPaymentHistoryFail(
                     paymentRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_ALREADY_FINISHED)
             );
             throw new IllegalStatusException(ErrorCode.PAYMENT_ALREADY_FINISHED);

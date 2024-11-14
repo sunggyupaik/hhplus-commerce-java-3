@@ -19,6 +19,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class PaymentHistory {
+    private static final String SUCCESS = "SUCCESS";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,5 +55,9 @@ public class PaymentHistory {
         this.amount = amount;
         this.code = code;
         this.message = message;
+    }
+
+    public boolean isSuccessHistory() {
+        return code.equals(SUCCESS) && message.equals(SUCCESS);
     }
 }
