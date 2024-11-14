@@ -49,7 +49,7 @@ SELECT * FROM ORDERS WHERE STATUS = 'INIT' AND CREATED_DATE < DATE_ADD(NOW(), IN
 SELECT * FROM ORDERS WHERE STATUS = 'INIT' CREATED_DATE > DATE_ADD(NOW(), INTERVAL - 1 MONTH) AND CREATED_DATE < DATE_ADD(NOW(), INTERVAL - 15 minute) ;
 ```
 
-### 1. 인덱스가 없는 경우
+## 1. 인덱스가 없는 경우(0.439s)
 
 ![img_1.png](images_index/img_1.png)
 
@@ -63,7 +63,11 @@ SELECT * FROM ORDERS WHERE STATUS = 'INIT' CREATED_DATE > DATE_ADD(NOW(), INTERV
 
 결과는 `Full scan` 입니다. 인덱스가 없기 때문이며 풀스캔 이후  Where 조건절을 확인합니다. 모든 데이터를 조회하기 때문에 비효율적입니다. 
 
-### 2. (status, created_date) 인덱스 추가
+## 2. (status, created_date) 인덱스 추가(0.138s)
+
+```sql
+CREATE INDEX idx_status ON orders (status, created_date);
+```
 
 ![img.png](images_index/img.png)
 
@@ -78,7 +82,11 @@ with index condition: ((orders.`status` = 'INIT') and (orders.created_date > <ca
 
 결과는 `Index range scan` 입니다. 첫번째 인덱스 칼럼인 `status`를 기준으로 하였고 두번째 인덱스 칼럼인 `created_date`을 이용했습니다.
 
-### 3. (created_date, status) 인덱스 추가
+## 3. (created_date, status) 인덱스 추가(0.472s)
+
+```sql
+CREATE INDEX idx_status2 ON orders (created_date, status);
+```
 
 ![img_2.png](images_index/img_2.png)
 
@@ -94,7 +102,11 @@ with index condition: ((orders.`status` = 'INIT') and (orders.created_date > <ca
 결과는 `Full scan` 입니다. 인덱스 칼럼을 첫번째가 `created_date` 인데 옵티마이저는 인덱스를 활용하는 대신 풀스캔을 선택했습니다.
 풀스캔 이후 Filter로 `INIT`을 먼저 확인합니다. 사실상 인덱스가 없는 경우와 비슷합니다. 인덱스 칼럼의 순서만 바꿨을 뿐인데 결과는 다를 수 있습니다. 
 
-### 4. (status) 인덱스 추가
+## 4. (status) 인덱스 추가(0.101s)
+
+```sql
+CREATE INDEX idx_status3 ON orders (status);
+```
 
 ![img_3.png](images_index/img_3.png)
 
@@ -110,7 +122,7 @@ with index condition: ((orders.`status` = 'INIT') and (orders.created_date > <ca
 
 결과는 `lookup` 입니다. `status=INIT`으로 등가비교를 합니다. 그 이후에 where 조건절에서 추가로 `created_date`를 확인합니다.
 
-### 결과
+## 결과
 
 | 인덱스 조건               | type    | ref   | key         | rows   | filtered | Extra               | EXPLAN ANALYZE times |
 |----------------------|---------|-------|-------------|--------|----------|---------------------|----------------------|
@@ -122,12 +134,13 @@ with index condition: ((orders.`status` = 'INIT') and (orders.created_date > <ca
 만약 3개의 인덱스가 모두 사용되고 있다면 옵티마이저는 최종적으로 `index_status(status, created_date)`를 사용합니다. 인덱스를
 `range`로 가장 효율적으로 사용하며 rows도 조회하고 싶은 갯수를 100% 조회합니다.
 
-- 인덱스 조건의 성능 비교
+### 인덱스 조건의 성능 비교
 ```sql
 (status, created_date) > (status) > (created_date, status) > NULL
 ```
 
 `status`와 `created_date`의 순서만 바껴도 인덱스의 사용 방법이 달라지며 사실상 `idx_status2`는 인덱스가 없는 것과 성능이 비슷합니다.
+카디널리티를 고려해 칼럼의 순서를 잘 정해야 합니다. 또한 인덱스로 사용하지 않는 칼럼이 있는지 주의합니다.
 
 `status`를 첫번째 칼럼으로 둔 이유는 데이터 종류 자체는 적어 카디널리티가 낮을 수도 있으나 주문 이후 결제 직전이거나 결제를 하지 않은 경우가
 굉장히 적을 것이라고 생각했기 때문입니다. 그래서 데이터를 만들 때 `INIT(주문시작)`을 거의 1%만 설정헀습니다.
