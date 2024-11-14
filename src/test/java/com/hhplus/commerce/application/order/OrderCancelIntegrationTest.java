@@ -1,5 +1,6 @@
 package com.hhplus.commerce.application.order;
 
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
@@ -12,19 +13,17 @@ import com.hhplus.commerce.infra.item.ItemRepository;
 import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
 import com.hhplus.commerce.infra.order.OrderItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SpringBootTest
+@TearDownDatabase
 public class OrderCancelIntegrationTest {
     @Autowired private OrderFacade orderFacade;
 
@@ -34,17 +33,6 @@ public class OrderCancelIntegrationTest {
     @Autowired private OrderRepository orderRepository;
     @Autowired private OrderItemRepository orderItemRepository;
     @Autowired private OrderItemOptionRepository orderItemOptionRepository;
-
-    @AfterEach
-    void tearDown() {
-        itemInventoryRepository.deleteAllInBatch();
-        itemOptionRepository.deleteAllInBatch();
-        itemRepository.deleteAllInBatch();
-
-        orderItemOptionRepository.deleteAllInBatch();
-        orderItemRepository.deleteAllInBatch();
-        orderRepository.deleteAllInBatch();
-    }
 
     @Test
     @DisplayName("주문완료 후 15분 후에도 결제가 없다면 재고를 원복한다")

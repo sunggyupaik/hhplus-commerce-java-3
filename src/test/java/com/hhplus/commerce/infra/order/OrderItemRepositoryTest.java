@@ -1,35 +1,27 @@
 package com.hhplus.commerce.infra.order;
 
 import com.hhplus.commerce.application.item.dto.ItemBestResponse;
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerStore;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@TearDownDatabase
 class OrderItemRepositoryTest {
     @Autowired private CustomerStore customerStore;
     @Autowired private OrderRepository orderRepository;
     @Autowired private OrderItemRepository orderItemRepository;
     @Autowired private OrderItemOptionRepository orderItemOptionRepository;
-
-    @BeforeEach
-    void tearDown() {
-        orderItemOptionRepository.deleteAllInBatch();
-        orderItemRepository.deleteAllInBatch();
-        orderRepository.deleteAllInBatch();
-    }
 
     @Test
     void testFindTop5ByOrderCountSum() {
