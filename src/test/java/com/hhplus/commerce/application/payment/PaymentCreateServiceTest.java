@@ -67,12 +67,12 @@ class PaymentCreateServiceTest {
             @DisplayName("결제, 결제이력 생성 후 결제 식별자를 반환한다.")
             void it_returns_created_payment_id() {
                 given(paymentStore.savePayment(any(Payment.class))).willReturn(payment);
-                given(paymentStore.saveOrderPaymentHistory(any(PaymentHistory.class))).willReturn(paymentHistory);
+                given(paymentStore.saveOrderPaymentHistorySuccess(any(PaymentHistory.class))).willReturn(paymentHistory);
 
                 PaymentResponse response = paymentCreateService.createPayment(orderAggregate, paymentRequest);
 
                 assertThat(response.getPaymentId()).isEqualTo(PAYMENT_ID);
-                verify(paymentStore, times(1)).saveOrderPaymentHistory(any(PaymentHistory.class));
+                verify(paymentStore, times(1)).saveOrderPaymentHistorySuccess(any(PaymentHistory.class));
             }
         }
 
@@ -88,7 +88,7 @@ class PaymentCreateServiceTest {
                         .isInstanceOf(InvalidParamException.class);
 
                 verify(paymentStore, times(1))
-                        .saveOrderPaymentHistory(any(PaymentHistory.class));
+                        .saveOrderPaymentHistoryFail(any(PaymentHistory.class));
             }
         }
 
@@ -104,7 +104,7 @@ class PaymentCreateServiceTest {
                         .isInstanceOf(InvalidParamException.class);
 
                 verify(paymentStore, times(1))
-                        .saveOrderPaymentHistory(any(PaymentHistory.class));
+                        .saveOrderPaymentHistoryFail(any(PaymentHistory.class));
             }
         }
 
@@ -121,7 +121,7 @@ class PaymentCreateServiceTest {
                         .isInstanceOf(IllegalStatusException.class);
 
                 verify(paymentStore, times(1))
-                        .saveOrderPaymentHistory(any(PaymentHistory.class));
+                        .saveOrderPaymentHistoryFail(any(PaymentHistory.class));
             }
         }
     }

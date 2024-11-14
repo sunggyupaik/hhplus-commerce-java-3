@@ -1,5 +1,8 @@
 package com.hhplus.commerce.application.payment;
 
+import com.hhplus.commerce.application.order.OrderDataPlatformSendService;
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPayload;
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
@@ -27,6 +30,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -36,6 +40,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TearDownDatabase
@@ -49,6 +57,7 @@ public class PaymentFacadeTest {
     @Autowired private PaymentRepository paymentRepository;
     @Autowired private PaymentHistoryRepository paymentHistoryRepository;
     @Autowired private OrderRepository orderRepository;
+    @SpyBean private OrderDataPlatformSendService orderDataPlatformSendService;
 
     @Test
     @org.junit.jupiter.api.Order(1)
@@ -168,7 +177,8 @@ public class PaymentFacadeTest {
     @Test
     @org.junit.jupiter.api.Order(6)
     @DisplayName("같은 결제 요청을 동시에 100번하면 100번 모두 응답을 성공한다")
-    void orderThrowsIllegalStatusException() throws InterruptedException {
+    void orderConccurencySucceed() throws InterruptedException {
+        given(orderDataPlatformSendService.send(any())).willReturn(true);
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
@@ -185,7 +195,7 @@ public class PaymentFacadeTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    paymentFacade.payOrderRedis(paymentRequest);
+                    paymentFacade.payOrderRedis(paymentRequest, "nothing");
                     success.incrementAndGet();
                 } catch (InvalidParamException e) {
                     fail.incrementAndGet();
@@ -198,14 +208,62 @@ public class PaymentFacadeTest {
         latch.await();
 
         Assertions.assertEquals(success.get(), 1,
-                "분산환경에서 동시에 100건의 결제 시도를 하면 1건만 성공한다");
+                "반환된 1건은 분산환경에서 동시에 100건의 결제 시도 중 성공한 최초 시도이다");
 
         Assertions.assertEquals(fail.get(), 99,
-                "분산환경에서 동시에 100건의 결제 시도를 하면 99건은 처리중이라는 예외를 던진다");
+                "반환된 99건은 분산환경에서 동시에 100건의 결제 시도 중 처리중이라는 예외이다");
 
         List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
         Assertions.assertEquals(paymentHistories.size(), 1,
-                "결제를 성공한 최초만 이력이 저장된다");
+                "반환된 1건은 최초로 성공한 결제이력이다");
+
+        OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
+        verify(orderDataPlatformSendService, times(1)).send(orderDataPlatformPayload);
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(7)
+    @DisplayName("결제 요청의 마지막에 예외가 발생하면 데이터 플랫폼 전송 이벤트는 발생하지 않는다")
+    void runtimeExceptionPreventDataPlatformSendEvent() throws InterruptedException {
+        given(orderDataPlatformSendService.send(any())).willReturn(true);
+        Customer customer = customerFixture();
+        Point point = pointFixture(customer.getId(), 20000L);
+        Order order = orderFixture(customer.getId());
+        PaymentRequest paymentRequest = createPaymentRequest(
+                order.getId(), customer.getId(), "TOSS", 10000L, "123"
+        );
+
+        final int threadCount = 100;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger success = new AtomicInteger(0);
+        AtomicInteger fail = new AtomicInteger(0);
+
+        for (int i = 1; i <= threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    paymentFacade.payOrderRedis(paymentRequest, "1");
+                    success.incrementAndGet();
+                } catch (Exception e) {
+                    fail.incrementAndGet();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        Assertions.assertEquals(fail.get(), 100,
+                "반환된 100건은 분산환경에서 동시에 100건의 결제 시도 예외 건수이다");
+
+        List<Payment> payments = paymentRepository.findAll();
+        List<PaymentHistory> paymentHistories = paymentHistoryRepository.findAll();
+        Assertions.assertEquals(paymentHistories.size(), 0,
+                "반환된 결제 이력 0건이다");
+
+        OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
+        verify(orderDataPlatformSendService, times(0)).send(orderDataPlatformPayload);
     }
 
     //paymentIdempotency
