@@ -26,4 +26,9 @@ public class PaymentRedisRepository {
     public Boolean setIfAbsent(String key, Object value, Long expireMinute) {
         return redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(expireMinute));
     }
+
+    public String delete(String idempotencyKey) {
+        redisTemplate.delete(idempotencyKey);
+        return idempotencyKey;
+    }
 }
