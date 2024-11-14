@@ -19,3 +19,5 @@
 ### [Redis 활용하기](./docs/08_RedisTech.md)
 
 ### [Index 활용하기](./docs/09_Index.md)
+
+### [트랜잭션 개선하기](./docs/10_Transaction.md)
