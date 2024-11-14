@@ -23,6 +23,7 @@ public enum ErrorCode {
 
     //order
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 주문입니다."),
+    ORDER_DATA_PLATFORM_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "데이터플랫폼 전송 요청 시간초과입니다."),
 
     //point
     POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 포인트입니다."),

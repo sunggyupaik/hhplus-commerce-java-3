@@ -15,4 +15,9 @@ public class IdempotencyManageService {
     public void saveIdempotencyPayment(String idempotencyKey, PaymentResponse paymentResponse, Long expireMinute) {
         paymentStore.savePaymentIdempotencyRedis(idempotencyKey, paymentResponse, expireMinute);
     }
+
+    @Transactional
+    public void deleteIdempotencyPayment(String idempotencyKey) {
+        paymentStore.deleteIdempotencyPayment(idempotencyKey);
+    }
 }
