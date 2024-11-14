@@ -1,5 +1,6 @@
 package com.hhplus.commerce.application.item;
 
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
@@ -12,11 +13,9 @@ import com.hhplus.commerce.infra.item.ItemRepository;
 import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
 import com.hhplus.commerce.infra.order.OrderItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@TearDownDatabase
 public class ItemStockIntegrationTest {
     @Autowired private ItemStockService itemStockService;
     @Autowired private ItemRepository itemRepository;
@@ -34,17 +33,6 @@ public class ItemStockIntegrationTest {
     @Autowired private OrderRepository orderRepository;
     @Autowired private OrderItemRepository orderItemRepository;
     @Autowired private OrderItemOptionRepository orderItemOptionRepository;
-
-    @AfterEach
-    void tearDown() {
-        itemInventoryRepository.deleteAllInBatch();
-        itemOptionRepository.deleteAllInBatch();
-        itemRepository.deleteAllInBatch();
-
-        orderItemOptionRepository.deleteAllInBatch();
-        orderItemRepository.deleteAllInBatch();
-        orderRepository.deleteAllInBatch();
-    }
 
     @Test
     @DisplayName("10개의 상품을 동시에 1개씩 총 10번 차감하면 재고는 0개이다.")

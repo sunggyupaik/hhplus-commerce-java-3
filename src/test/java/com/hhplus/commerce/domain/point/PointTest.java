@@ -1,15 +1,15 @@
 package com.hhplus.commerce.domain.point;
 
 import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
+@TearDownDatabase
 class PointTest {
     @Autowired private PointStore pointStore;
 

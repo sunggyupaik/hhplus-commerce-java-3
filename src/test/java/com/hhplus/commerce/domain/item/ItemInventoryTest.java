@@ -1,6 +1,7 @@
 package com.hhplus.commerce.domain.item;
 
 import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.infra.item.ItemInventoryRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,14 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
+@TearDownDatabase
 public class ItemInventoryTest {
     @Autowired private ItemInventoryRepository itemInventoryRepository;
-
-    @AfterEach
-    void tearDown() {
-        itemInventoryRepository.deleteAllInBatch();
-    }
 
     @Test
     @DisplayName("재고수량 10개에서 5개를 차감하면 5개가 남는다")

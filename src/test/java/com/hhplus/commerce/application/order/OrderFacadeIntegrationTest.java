@@ -2,6 +2,7 @@ package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
@@ -9,17 +10,13 @@ import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.infra.item.ItemInventoryRepository;
 import com.hhplus.commerce.infra.item.ItemOptionRepository;
 import com.hhplus.commerce.infra.item.ItemRepository;
-import com.hhplus.commerce.infra.order.OrderItemOptionRepository;
-import com.hhplus.commerce.infra.order.OrderItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -27,36 +24,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SpringBootTest
+@TearDownDatabase
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderFacadeIntegrationTest {
     @Autowired private  OrderFacade orderFacade;
 
-    //DB 초기화용
     @Autowired private  ItemRepository itemRepository;
     @Autowired private  ItemOptionRepository itemOptionRepository;
     @Autowired private  ItemInventoryRepository itemInventoryRepository;
     @Autowired private  OrderRepository orderRepository;
-    @Autowired private  OrderItemRepository orderItemRepository;
-    @Autowired private  OrderItemOptionRepository orderItemOptionRepository;
-
-    @BeforeEach
-    void tearDown() {
-        itemAggregateDeleteAllInBatch();
-        orderAggregateDeleteAllInBatch();
-    }
-
-    private void orderAggregateDeleteAllInBatch() {
-        orderItemOptionRepository.deleteAllInBatch();
-        orderItemRepository.deleteAllInBatch();
-        orderRepository.deleteAllInBatch();
-    }
-
-    private void itemAggregateDeleteAllInBatch() {
-        itemInventoryRepository.deleteAllInBatch();
-        itemOptionRepository.deleteAllInBatch();
-        itemRepository.deleteAllInBatch();
-    }
 
     @Test
     @org.junit.jupiter.api.Order(1)

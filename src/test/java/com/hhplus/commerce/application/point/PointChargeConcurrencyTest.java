@@ -2,17 +2,16 @@ package com.hhplus.commerce.application.point;
 
 import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import com.hhplus.commerce.infra.point.history.PointHistoryRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -21,19 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@TearDownDatabase
 public class PointChargeConcurrencyTest {
     @Autowired private PointChargeService pointChargeService;
     @Autowired private PointRepository pointRepository;
     @Autowired private PointHistoryRepository pointHistoryRepository;
     @Autowired private CustomerRepository customerRepository;
-
-    @AfterEach
-    void tearDown() {
-        pointRepository.deleteAllInBatch();
-        customerRepository.deleteAllInBatch();
-        pointHistoryRepository.deleteAllInBatch();
-    }
 
     @Test
     @DisplayName("1명이 100원씩 10번을 동시에 충전하면 총 1000원이 충전된다 - 비관락")
