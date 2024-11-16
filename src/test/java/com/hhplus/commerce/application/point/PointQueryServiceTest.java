@@ -1,8 +1,8 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointResponse;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.domain.point.Point;
+import com.hhplus.commerce.domain.point.PointInfo;
 import com.hhplus.commerce.domain.point.PointReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,10 +41,10 @@ class PointQueryServiceTest {
 
                 given(pointReader.getPoint(existedCustomerId)).willReturn(point);
 
-                PointResponse pointResponse = pointQueryService.getPoint(existedCustomerId);
+                PointInfo.DetailResponse pointInfo = pointQueryService.getPoint(existedCustomerId);
 
-                assertThat(pointResponse.getCustomerId()).isEqualTo(existedCustomerId);
-                assertThat(pointResponse.getPoint()).isEqualTo(1000L);
+                assertThat(pointInfo.getCustomerId()).isEqualTo(existedCustomerId);
+                assertThat(pointInfo.getPoint()).isEqualTo(1000L);
             }
         }
 

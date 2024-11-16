@@ -1,8 +1,8 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.distributedLock.DistributedLock;
 import com.hhplus.commerce.domain.point.Point;
+import com.hhplus.commerce.domain.point.PointCommand;
 import com.hhplus.commerce.domain.point.PointReader;
 import com.hhplus.commerce.domain.point.history.PointHistory;
 import com.hhplus.commerce.domain.point.history.PointHistoryStore;
@@ -22,18 +22,17 @@ public class PointChargeService {
 
     /**
      * 비관 락으로 고객 포인트를 충전합니다
-     * @param customerId 고객 식별자
-     * @param pointRequest 포인트
+     * @param request 충전 요청 정보
      * @return 충전된 금액
      */
     @Transactional
-    public Long chargePointWithPessimisticLock(Long customerId, PointRequest pointRequest) {
-        Point point = pointReader.getPointWithPessimisticLock(customerId);
-        Long chargedPoint = point.charge(pointRequest.getAmount());
+    public Long chargePointWithPessimisticLock(PointCommand.ChargeRequest request) {
+        Point point = pointReader.getPointWithPessimisticLock(request.getCustomerId());
+        Long chargedPoint = point.charge(request.getAmount());
 
         PointHistory pointHistory = PointHistory.builder()
-                .customerId(customerId)
-                .amount(pointRequest.getAmount())
+                .customerId(request.getCustomerId())
+                .amount(request.getAmount())
                 .type(PointType.CHARGE)
                 .build();
 
@@ -44,8 +43,7 @@ public class PointChargeService {
 
     /**
      * 낙관 락으로 고객 포인트를 충전합니다
-     * @param customerId 고객 식별자
-     * @param pointRequest 포인트
+     * @param request 충전 요청 정보
      * @return 충전된 금액
      */
     @Transactional
@@ -54,13 +52,13 @@ public class PointChargeService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 500)
     )
-    public Long chargePointWithOptimisticLock(Long customerId, PointRequest pointRequest) {
-        Point point = pointReader.getPointWithOptimisticLock(customerId);
-        Long chargedPoint = point.charge(pointRequest.getAmount());
+    public Long chargePointWithOptimisticLock(PointCommand.ChargeRequest request) {
+        Point point = pointReader.getPointWithOptimisticLock(request.getCustomerId());
+        Long chargedPoint = point.charge(request.getAmount());
 
         PointHistory pointHistory = PointHistory.builder()
-                .customerId(customerId)
-                .amount(pointRequest.getAmount())
+                .customerId(request.getCustomerId())
+                .amount(request.getAmount())
                 .type(PointType.CHARGE)
                 .build();
 
@@ -71,18 +69,17 @@ public class PointChargeService {
 
     /**
      * 분산 락으로 고객 포인트를 충전합니다
-     * @param customerId 고객 식별자
-     * @param pointRequest 포인트
+     * @param request 충전 요청 정보
      * @return 충전된 금액
      */
     @DistributedLock(key = "'point'.concat(':').concat(#customerId)")
-    public Long chargePointWithDistributedLock(Long customerId, PointRequest pointRequest) {
-        Point point = pointReader.getPoint(customerId);
-        Long chargedPoint = point.charge(pointRequest.getAmount());
+    public Long chargePointWithDistributedLock(PointCommand.ChargeRequest request) {
+        Point point = pointReader.getPoint(request.getCustomerId());
+        Long chargedPoint = point.charge(request.getAmount());
 
         PointHistory pointHistory = PointHistory.builder()
-                .customerId(customerId)
-                .amount(pointRequest.getAmount())
+                .customerId(request.getCustomerId())
+                .amount(request.getAmount())
                 .type(PointType.CHARGE)
                 .build();
 

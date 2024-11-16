@@ -1,8 +1,9 @@
 package com.hhplus.commerce.interfaces.point;
 
 import com.hhplus.commerce.application.point.PointChargeService;
-import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.domain.point.PointCommand;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +20,10 @@ public class PointApiStrategyController {
     @PostMapping("/charge/p")
     public CommonResponse chargePointPessimisticLock(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody PointRequest request
+            @RequestBody @Valid PointDto.ChargeRequest request
     ) {
-        Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(customerId, request);
+        var command = PointCommand.ChargeRequest.of(customerId, request);
+        Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(command);
 
         return CommonResponse.success(chargedPoint);
     }
@@ -29,9 +31,10 @@ public class PointApiStrategyController {
     @PostMapping("/charge/o")
     public CommonResponse chargePointOptimisticLock(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody PointRequest request
+            @RequestBody @Valid PointDto.ChargeRequest request
     ) {
-        Long chargedPoint = pointChargeService.chargePointWithOptimisticLock(customerId, request);
+        var command = PointCommand.ChargeRequest.of(customerId, request);
+        Long chargedPoint = pointChargeService.chargePointWithOptimisticLock(command);
 
         return CommonResponse.success(chargedPoint);
     }
@@ -39,9 +42,10 @@ public class PointApiStrategyController {
     @PostMapping("/charge/d")
     public CommonResponse chargePointDistributedLock(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody PointRequest request
+            @RequestBody @Valid PointDto.ChargeRequest request
     ) {
-        Long chargedPoint = pointChargeService.chargePointWithDistributedLock(customerId, request);
+        var command = PointCommand.ChargeRequest.of(customerId, request);
+        Long chargedPoint = pointChargeService.chargePointWithDistributedLock(command);
 
         return CommonResponse.success(chargedPoint);
     }

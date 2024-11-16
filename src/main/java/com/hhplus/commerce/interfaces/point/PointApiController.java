@@ -2,9 +2,9 @@ package com.hhplus.commerce.interfaces.point;
 
 import com.hhplus.commerce.application.point.PointChargeService;
 import com.hhplus.commerce.application.point.PointQueryService;
-import com.hhplus.commerce.application.point.dto.PointRequest;
-import com.hhplus.commerce.application.point.dto.PointResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.domain.point.PointCommand;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,17 +24,19 @@ public class PointApiController implements PointApiSpecification {
     public CommonResponse getPoint(
             @RequestHeader("customerId") Long customerId
     ) {
-        PointResponse pointResponse = pointQueryService.getPoint(customerId);
+        var pointInfo = pointQueryService.getPoint(customerId);
+        PointDto.DetailResponse detailResponse = PointDto.DetailResponse.of(pointInfo);
 
-        return CommonResponse.success(pointResponse);
+        return CommonResponse.success(detailResponse);
     }
 
     @PostMapping("/charge")
     public CommonResponse chargePoint(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody PointRequest request
+            @RequestBody @Valid PointDto.ChargeRequest request
     ) {
-        Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(customerId, request);
+        var pointCommand = PointCommand.ChargeRequest.of(customerId, request);
+        Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(pointCommand);
 
         return CommonResponse.success(chargedPoint);
     }

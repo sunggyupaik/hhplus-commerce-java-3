@@ -1,10 +1,10 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.point.Point;
+import com.hhplus.commerce.domain.point.PointCommand;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
 import com.hhplus.commerce.infra.point.history.PointHistoryRepository;
@@ -41,8 +41,8 @@ public class PointChargeConcurrencyTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    PointRequest pointRequest = createPointChargeRequest(100L);
-                    pointChargeService.chargePointWithPessimisticLock(savedCustomer.getId(), pointRequest);
+                    PointCommand.ChargeRequest command = createPointChargeCommand(savedCustomer.getId(), 100L);
+                    pointChargeService.chargePointWithPessimisticLock(command);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -74,8 +74,8 @@ public class PointChargeConcurrencyTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    PointRequest pointRequest = createPointChargeRequest(100L);
-                    pointChargeService.chargePointWithOptimisticLock(savedCustomer.getId(), pointRequest);
+                    PointCommand.ChargeRequest command = createPointChargeCommand(savedCustomer.getId(),100L);
+                    pointChargeService.chargePointWithOptimisticLock(command);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -107,8 +107,8 @@ public class PointChargeConcurrencyTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    PointRequest pointRequest = createPointChargeRequest(100L);
-                    pointChargeService.chargePointWithDistributedLock(savedCustomer.getId(), pointRequest);
+                    PointCommand.ChargeRequest command = createPointChargeCommand(savedCustomer.getId(), 100L);
+                    pointChargeService.chargePointWithDistributedLock(command);
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
@@ -141,8 +141,8 @@ public class PointChargeConcurrencyTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    PointRequest pointRequest = createPointChargeRequest(40000L);
-                    pointChargeService.chargePointWithPessimisticLock(savedCustomer.getId(), pointRequest);
+                    PointCommand.ChargeRequest command = createPointChargeCommand(savedCustomer.getId(),40000L);
+                    pointChargeService.chargePointWithPessimisticLock(command);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
@@ -158,8 +158,9 @@ public class PointChargeConcurrencyTest {
         assertThat(fail.get()).isEqualTo(8);
     }
 
-    private PointRequest createPointChargeRequest(Long amount) {
-        return PointRequest.builder()
+    private PointCommand.ChargeRequest createPointChargeCommand(Long customerId, Long amount) {
+        return PointCommand.ChargeRequest.builder()
+                .customerId(customerId)
                 .amount(amount)
                 .build();
     }
