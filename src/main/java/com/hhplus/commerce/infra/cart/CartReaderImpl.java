@@ -21,12 +21,12 @@ public class CartReaderImpl implements CartReader {
 
     @Override
     public Cart getCart(Long customerId, Long itemOptionId) {
-        return cartRepository.findByCustomerIdAndItemOptionId(customerId, itemOptionId)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CART_NOT_FOUND));
+        return cartRepository.findByCustomerIdAndItemOptionId(customerId, itemOptionId).orElseGet(null);
     }
 
     @Override
-    public boolean exists(Long customerId, Long itemOptionId) {
-        return cartRepository.existsByCustomerIdAndItemOptionId(customerId, itemOptionId);
+    public Cart findCart(Long customerId, Long itemOptionId) {
+        return cartRepository.findByCustomerIdAndItemOptionId(customerId, itemOptionId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CART_NOT_FOUND));
     }
 }

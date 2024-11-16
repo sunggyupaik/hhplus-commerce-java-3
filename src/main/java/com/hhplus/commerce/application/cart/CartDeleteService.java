@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.cart;
 
-import com.hhplus.commerce.application.cart.dto.CartDeleteRequest;
+import com.hhplus.commerce.domain.cart.CartCommand;
 import com.hhplus.commerce.domain.cart.CartReader;
 import com.hhplus.commerce.domain.cart.CartStore;
 import com.hhplus.commerce.domain.customer.CustomerReader;
@@ -18,16 +18,14 @@ public class CartDeleteService {
     private final CustomerReader customerReader;
 
     @Transactional
-    public Integer deleteCart(Long customerId, CartDeleteRequest request) {
-        customerReader.getCustomer(customerId);
+    public Integer deleteCart(CartCommand.DeleteRequest request) {
+        customerReader.getCustomer(request.getCustomerId());
 
-        List<Long> itemOptionIds = request.getItemOptionIds();
+        List<Long> itemOptionIds = request.getItemOptionIdList();
         for (Long itemOptionId : itemOptionIds) {
-            if (cartReader.exists(customerId, itemOptionId)) {
-                cartStore.deleteCart(customerId, itemOptionId);
-            }
+            cartStore.deleteCart(request.getCustomerId(), itemOptionId);
         }
 
-        return request.getItemOptionIds().size();
+        return request.getItemOptionIdList().size();
     }
 }
