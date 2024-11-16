@@ -3,10 +3,9 @@ package com.hhplus.commerce.interfaces.cart;
 import com.hhplus.commerce.application.cart.CartAddService;
 import com.hhplus.commerce.application.cart.CartDeleteService;
 import com.hhplus.commerce.application.cart.CartQueryService;
-import com.hhplus.commerce.application.cart.dto.CartDeleteRequest;
-import com.hhplus.commerce.application.cart.dto.CartItemRequest;
-import com.hhplus.commerce.application.cart.dto.CartItemResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.domain.cart.CartCommand;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,17 +27,19 @@ public class CartApiController implements CartSpecification {
     public CommonResponse getCart(
             @RequestHeader(value = "customerId") Long customerId
     ) {
-        List<CartItemResponse> cartItemResponseList = cartQueryService.getCart(customerId);
+        var cartInfo = cartQueryService.getCart(customerId);
+        CartDto.DetailResponse response = CartDto.DetailResponse.of(cartInfo);
 
-        return CommonResponse.success(cartItemResponseList);
+        return CommonResponse.success(response);
     }
 
     @PostMapping
     public CommonResponse addCart(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody CartItemRequest request
+            @RequestBody @Valid CartDto.AddRequest request
     ) {
-        Long cartId = cartAddService.addCart(customerId, request);
+        var command = CartCommand.AddRequest.of(customerId, request);
+        Long cartId = cartAddService.addCart(command);
 
         return CommonResponse.success(cartId);
     }
@@ -48,9 +47,10 @@ public class CartApiController implements CartSpecification {
     @DeleteMapping
     public CommonResponse deleteCart(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody CartDeleteRequest request
+            @RequestBody @Valid CartDto.DeleteRequest request
     ) {
-        Integer count = cartDeleteService.deleteCart(customerId, request);
+        var command = CartCommand.DeleteRequest.of(customerId, request);
+        Integer count = cartDeleteService.deleteCart(command);
 
         return CommonResponse.success(count);
     }

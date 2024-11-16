@@ -1,12 +1,12 @@
 package com.hhplus.commerce.application.cart;
 
-import com.hhplus.commerce.application.cart.dto.CartItemResponse;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import com.hhplus.commerce.domain.cart.Cart;
+import com.hhplus.commerce.domain.cart.CartInfo;
 import com.hhplus.commerce.domain.cart.CartReader;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerReader;
@@ -72,9 +72,9 @@ class CartQueryServiceTest {
                 given(itemReader.getItemInventory(itemOptionId_2)).willReturn(itemInventory_2);
                 given(cartReader.getCarts(customerId)).willReturn(carts);
 
-                List<CartItemResponse> cartItemResponses = cartQueryService.getCart(customerId);
+                CartInfo.DetailResponse detailResponse = cartQueryService.getCart(customerId);
 
-                assertThat(cartItemResponses).hasSize(2);
+                assertThat(detailResponse.getItemList()).hasSize(2);
 
             }
         }

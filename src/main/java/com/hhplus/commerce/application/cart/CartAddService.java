@@ -1,7 +1,7 @@
 package com.hhplus.commerce.application.cart;
 
-import com.hhplus.commerce.application.cart.dto.CartItemRequest;
 import com.hhplus.commerce.domain.cart.Cart;
+import com.hhplus.commerce.domain.cart.CartCommand;
 import com.hhplus.commerce.domain.cart.CartReader;
 import com.hhplus.commerce.domain.cart.CartStore;
 import com.hhplus.commerce.domain.customer.CustomerReader;
@@ -17,17 +17,17 @@ public class CartAddService {
     private final CustomerReader customerReader;
 
     @Transactional
-    public Long addCart(Long customerId, CartItemRequest cartItemRequest) {
-        customerReader.getCustomer(customerId);
+    public Long addCart(CartCommand.AddRequest request) {
+        customerReader.getCustomer(request.getCustomerId());
 
-        if (cartReader.exists(customerId, cartItemRequest.getItemOptionId())) {
-            Cart cart = cartReader.getCart(customerId, cartItemRequest.getItemOptionId());
-            cart.addQuantity(cartItemRequest.getQuantity());
-            return cart.getId();
-        } else {
-            Cart cart = cartItemRequest.toEntity(customerId);
+        Cart savedCart = cartReader.getCart(request.getCustomerId(), request.getItemOptionId());
+        if (savedCart == null) {
+            Cart cart = request.toEntity(request.getCustomerId());
             Cart createdCart = cartStore.save(cart);
             return createdCart.getId();
         }
+
+        savedCart.addQuantity(request.getQuantity());
+        return savedCart.getId();
     }
 }

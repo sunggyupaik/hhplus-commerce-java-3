@@ -7,5 +7,5 @@ public interface CartReader {
 
     Cart getCart(Long customerId, Long itemOptionId);
 
-    boolean exists(Long customerId, Long itemOptionId);
+    Cart findCart(Long customerId, Long itemOptionId);
 }

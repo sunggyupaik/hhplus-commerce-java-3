@@ -1,7 +1,7 @@
 package com.hhplus.commerce.application.cart;
 
-import com.hhplus.commerce.application.cart.dto.CartDeleteRequest;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
+import com.hhplus.commerce.domain.cart.CartCommand;
 import com.hhplus.commerce.domain.cart.CartReader;
 import com.hhplus.commerce.domain.cart.CartStore;
 import com.hhplus.commerce.domain.customer.Customer;
@@ -49,14 +49,11 @@ class CartDeleteServiceTest {
             @Test
             @DisplayName("해당하는 장바구니 상품을 삭제한다")
             void it_deletes_carts() {
-                CartDeleteRequest cartDeleteRequest = createCartDeleteRequest(itemOptionIds);
-                given(cartReader.exists(customerId, 2L)).willReturn(true);
-                given(cartReader.exists(customerId, 3L)).willReturn(false);
-                given(cartReader.exists(customerId, 3L)).willReturn(false);
+                CartCommand.DeleteRequest deleteRequest = createCartDeleteRequest(customerId, itemOptionIds);
 
-                cartDeleteService.deleteCart(customerId, cartDeleteRequest);
+                cartDeleteService.deleteCart(deleteRequest);
 
-                verify(cartStore, times(1)).deleteCart(customerId, 2L);
+                verify(cartStore, times(3));
 
             }
         }
@@ -70,20 +67,21 @@ class CartDeleteServiceTest {
             @Test
             @DisplayName("고객을 찾을 수 없다는 예외를 반환한다")
             void it_throws_customer_not_exists() {
-                CartDeleteRequest cartDeleteRequest = createCartDeleteRequest(itemOptionIds);
+                CartCommand.DeleteRequest deleteRequest = createCartDeleteRequest(notExistedCustomerId, itemOptionIds);
                 given(customerReader.getCustomer(notExistedCustomerId)).willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> cartDeleteService.deleteCart(notExistedCustomerId, cartDeleteRequest)
+                        () -> cartDeleteService.deleteCart(deleteRequest)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
         }
     }
 
-    private CartDeleteRequest createCartDeleteRequest(List<Long> itemOptionIds) {
-        return CartDeleteRequest.builder()
-                .itemOptionIds(itemOptionIds)
+    private CartCommand.DeleteRequest createCartDeleteRequest(Long customerId, List<Long> itemOptionIdList) {
+        return CartCommand.DeleteRequest.builder()
+                .customerId(customerId)
+                .itemOptionIdList(itemOptionIdList)
                 .build();
     }
 

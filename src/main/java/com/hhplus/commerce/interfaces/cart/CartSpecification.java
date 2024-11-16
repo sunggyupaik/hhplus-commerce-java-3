@@ -1,8 +1,5 @@
 package com.hhplus.commerce.interfaces.cart;
 
-import com.hhplus.commerce.application.cart.dto.CartDeleteRequest;
-import com.hhplus.commerce.application.cart.dto.CartItemRequest;
-import com.hhplus.commerce.application.cart.dto.CartItemResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,19 +18,19 @@ public interface CartSpecification {
     @Operation(summary = "장바구니 추가", description = "💡주어진 고객 식별자, 상품정보로 장바구니에 상품을 추가합니다.")
     CommonResponse addCart(
             @Parameter(description = "고객 식별자") Long customerId,
-            @Parameter(description = "상품 정보") CartItemRequest request
+            @Parameter(description = "상품 정보") CartDto.AddRequest request
     );
 
     @Operation(summary = "장바구니 삭제", description = "💡주어진 고객, 상품, 상품옵션 식별자로 장바구니 상품을 삭제합니다.")
     CommonResponse deleteCart(
             @Parameter(description = "고객 식별자") Long customerId,
-            @Parameter(description = "상품 삭제 정보") CartDeleteRequest request
+            @Parameter(description = "상품 삭제 정보") CartDto.DeleteRequest request
     );
 
     final class Fake implements CartSpecification {
         @Override
         public CommonResponse getCart(Long customerId) {
-            CartItemResponse.CartItemOptionResponse cartItemOptionResponse1 = CartItemResponse.CartItemOptionResponse.builder()
+            CartDto.ItemOptionResponse itemOptionResponse1 = CartDto.ItemOptionResponse.builder()
                     .itemOptionId(1L)
                     .itemOptionSize("95")
                     .itemOptionColor("빨강")
@@ -41,14 +38,14 @@ public interface CartSpecification {
                     .quantity(1L)
                     .build();
 
-            CartItemResponse cartItemResponse1 = CartItemResponse.builder()
+            CartDto.ItemResponse itemResponse1 = CartDto.ItemResponse.builder()
                     .itemId(21L)
                     .itemName("겨울 코트")
                     .itemPrice(10000L)
-                    .cartItemOption(cartItemOptionResponse1)
+                    .itemOption(itemOptionResponse1)
                     .build();
 
-            CartItemResponse.CartItemOptionResponse cartItemOptionResponse2 = CartItemResponse.CartItemOptionResponse.builder()
+            CartDto.ItemOptionResponse itemOptionResponse2 = CartDto.ItemOptionResponse.builder()
                     .itemOptionId(10L)
                     .itemOptionSize("105")
                     .itemOptionColor("파랑")
@@ -56,25 +53,25 @@ public interface CartSpecification {
                     .quantity(12L)
                     .build();
 
-            CartItemResponse cartItemResponse2 = CartItemResponse.builder()
+            CartDto.ItemResponse itemResponse2 = CartDto.ItemResponse.builder()
                     .itemId(22L)
                     .itemName("가을 난방")
                     .itemPrice(20000L)
-                    .cartItemOption(cartItemOptionResponse2)
+                    .itemOption(itemOptionResponse2)
                     .build();
 
-            List<CartItemResponse> cartItemResponses = Arrays.asList(cartItemResponse1, cartItemResponse2);
+            List<CartDto.ItemResponse> itemResponseList = Arrays.asList(itemResponse1, itemResponse2);
 
-            return CommonResponse.success(cartItemResponses);
+            return CommonResponse.success(itemResponseList);
         }
 
         @Override
-        public CommonResponse addCart(Long customerId, CartItemRequest request) {
+        public CommonResponse addCart(Long customerId, CartDto.AddRequest request) {
             return CommonResponse.success(1L);
         }
 
         @Override
-        public CommonResponse deleteCart(Long customerId, CartDeleteRequest request) {
+        public CommonResponse deleteCart(Long customerId, CartDto.DeleteRequest request) {
             return CommonResponse.success(1L);
         }
     }
