@@ -1,9 +1,9 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.point.Point;
+import com.hhplus.commerce.domain.point.PointCommand;
 import com.hhplus.commerce.domain.point.PointReader;
 import com.hhplus.commerce.domain.point.history.PointHistory;
 import com.hhplus.commerce.domain.point.history.PointHistoryStore;
@@ -47,13 +47,13 @@ class PointChargeServiceTest {
             void it_returns_charged_point() {
                 Point point = createPoint(EXISTED_CUSTOMER_ID, AMOUNT_1000);
                 PointHistory pointHistory = createPointHistory(EXISTED_CUSTOMER_ID, CHARGE_AMOUNT_5000, PointType.CHARGE);
-                PointRequest request = createPointRequest(CHARGE_AMOUNT_5000);
+                PointCommand.ChargeRequest command = createPointRequest(EXISTED_CUSTOMER_ID, CHARGE_AMOUNT_5000);
                 given(pointReader.getPointWithPessimisticLock(EXISTED_CUSTOMER_ID)).willReturn(point);
                 given(pointHistoryStore.save(pointHistory)).willReturn(pointHistory);
 
-                Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(EXISTED_CUSTOMER_ID, request);
+                Long chargedPoint = pointChargeService.chargePointWithPessimisticLock(command);
 
-                Assertions.assertEquals(chargedPoint, AMOUNT_1000 + request.getAmount(),
+                Assertions.assertEquals(chargedPoint, AMOUNT_1000 + command.getAmount(),
                         "반환된 금액은 보유한 금액과 요청한 금액의 합이다");
                 Assertions.assertEquals(pointHistory.getType(), PointType.CHARGE,
                         "포인트의 타입은 충전이다");
@@ -69,11 +69,11 @@ class PointChargeServiceTest {
             @Test
             @DisplayName("포인트가 존재하지 않다는 예외를 반환한다")
             void it_throws_point_not_exists() {
-                PointRequest request = createPointRequest(5000L);
+                PointCommand.ChargeRequest command = createPointRequest(notExistedCustomerId, 5000L);
                 given(pointReader.getPointWithPessimisticLock(notExistedCustomerId)).willThrow(EntityNotFoundException.class);
 
                 assertThatThrownBy(
-                        () -> pointChargeService.chargePointWithPessimisticLock(notExistedCustomerId, request)
+                        () -> pointChargeService.chargePointWithPessimisticLock(command)
                 )
                         .isInstanceOf(EntityNotFoundException.class);
             }
@@ -88,11 +88,11 @@ class PointChargeServiceTest {
             @DisplayName("포인트가 최대를 초과했다는 예외를 반환한다.")
             void it_throws_point_overs_max() {
                 Point point = createPoint(existedCustomerId, 1000L);
-                PointRequest request = createPointRequest(5000000L);
+                PointCommand.ChargeRequest command = createPointRequest(existedCustomerId, 5000000L);
                 given(pointReader.getPointWithPessimisticLock(existedCustomerId)).willReturn(point);
 
                 assertThatThrownBy(
-                        () -> pointChargeService.chargePointWithPessimisticLock(existedCustomerId, request)
+                        () -> pointChargeService.chargePointWithPessimisticLock(command)
                 )
                         .isInstanceOf(IllegalStatusException.class);
             }
@@ -114,8 +114,9 @@ class PointChargeServiceTest {
                 .build();
     }
 
-    private PointRequest createPointRequest(Long amount) {
-        return PointRequest.builder()
+    private PointCommand.ChargeRequest createPointRequest(Long customerId, Long amount) {
+        return PointCommand.ChargeRequest.builder()
+                .customerId(customerId)
                 .amount(amount)
                 .build();
     }

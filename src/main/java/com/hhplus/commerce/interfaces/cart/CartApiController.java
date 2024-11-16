@@ -38,8 +38,8 @@ public class CartApiController implements CartSpecification {
             @RequestHeader("customerId") Long customerId,
             @RequestBody @Valid CartDto.AddRequest request
     ) {
-        var command = CartCommand.AddRequest.of(customerId, request);
-        Long cartId = cartAddService.addCart(command);
+        var cartCommand = CartCommand.AddRequest.of(customerId, request);
+        Long cartId = cartAddService.addCart(cartCommand);
 
         return CommonResponse.success(cartId);
     }
@@ -49,8 +49,8 @@ public class CartApiController implements CartSpecification {
             @RequestHeader("customerId") Long customerId,
             @RequestBody @Valid CartDto.DeleteRequest request
     ) {
-        var command = CartCommand.DeleteRequest.of(customerId, request);
-        Integer count = cartDeleteService.deleteCart(command);
+        var cartCommand = CartCommand.DeleteRequest.of(customerId, request);
+        Integer count = cartDeleteService.deleteCart(cartCommand);
 
         return CommonResponse.success(count);
     }

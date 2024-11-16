@@ -9,8 +9,8 @@ import com.hhplus.commerce.application.payment.dto.PaymentIdempotencyCheckRespon
 import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.application.point.PointUseService;
-import com.hhplus.commerce.application.point.dto.PointRequest;
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.point.PointCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +42,10 @@ public class PaymentFacade {
         }
 
         //포인트 차감
-        pointUseService.usePoint(paymentRequest.getCustomerId(), PointRequest.of(paymentRequest.getAmount()));
+        PointCommand.ChargeRequest command = PointCommand.ChargeRequest.of(
+                paymentRequest.getCustomerId(), paymentRequest.getAmount()
+        );
+        pointUseService.usePoint(command);
 
         //결제 저장
         Order order = orderQueryService.getOrderWithPessimisticLock(paymentRequest.getOrderId());
@@ -77,7 +80,10 @@ public class PaymentFacade {
         PaymentResponse paymentResponse = paymentCreateService.createPayment(order, paymentRequest);
 
         //포인트 차감
-        pointUseService.usePoint(paymentRequest.getCustomerId(), PointRequest.of(paymentRequest.getAmount()));
+        PointCommand.ChargeRequest command = PointCommand.ChargeRequest.of(
+                paymentRequest.getCustomerId(), paymentRequest.getAmount()
+        );
+        pointUseService.usePoint(command);
 
         // 주문 완료
         orderStatusChangeService.changeToComplete(order);
