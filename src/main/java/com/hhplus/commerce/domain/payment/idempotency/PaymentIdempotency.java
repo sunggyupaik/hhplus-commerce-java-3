@@ -1,6 +1,5 @@
-package com.hhplus.commerce.domain.payment;
+package com.hhplus.commerce.domain.payment.idempotency;
 
-import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,17 +35,6 @@ public class PaymentIdempotency extends BaseTimeEntity {
         this.id = id;
         this.orderId = orderId;
         this.idempotencyKey = idempotencyKey;
-    }
-
-    public void changeIdempotencyKey(String idempotencyKey) {
-        this.idempotencyKey = idempotencyKey;
-    }
-
-    public static PaymentIdempotency of(PaymentRequest paymentRequest) {
-        return PaymentIdempotency.builder()
-                .idempotencyKey(paymentRequest.getIdempotencyKey())
-                .orderId(paymentRequest.getOrderId())
-                .build();
     }
 
     public boolean isIdempotencyKeySame(String idempotencyKey) {

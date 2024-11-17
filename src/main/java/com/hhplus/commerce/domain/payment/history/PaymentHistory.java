@@ -1,5 +1,6 @@
-package com.hhplus.commerce.domain.payment;
+package com.hhplus.commerce.domain.payment.history;
 
+import com.hhplus.commerce.domain.payment.PaymentMethod;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -1,16 +1,16 @@
 package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.application.payment.dto.PaymentRequest;
-import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import com.hhplus.commerce.domain.payment.Payment;
-import com.hhplus.commerce.domain.payment.PaymentHistory;
+import com.hhplus.commerce.domain.payment.PaymentCommand;
+import com.hhplus.commerce.domain.payment.PaymentInfo;
 import com.hhplus.commerce.domain.payment.PaymentMethod;
 import com.hhplus.commerce.domain.payment.PaymentStore;
+import com.hhplus.commerce.domain.payment.history.PaymentHistory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,9 +53,9 @@ class PaymentCreateServiceTest {
         Order orderAggregate = createOrderAggregate(order, orderItem, orderItemOption);
         Payment payment = createPayment(PAYMENT_ID, order.getId(), CUSTOMER_ID_1, "TOSS", 10000L);
         PaymentHistory paymentHistory = createPaymentHistory(PAYMENT_HISTORY_ID, order.getId(), "SUCCESS", "SUCCESS");
-        PaymentRequest paymentRequest = createPaymentRequest(PAYMENT_ID, CUSTOMER_ID_1, "TOSS", 10000L);
+        PaymentCommand.PayOrderRequest paymentRequest = createPaymentRequest(PAYMENT_ID, CUSTOMER_ID_1, "TOSS", 10000L);
 
-        PaymentRequest invalidAmountRequest = createPaymentRequest(PAYMENT_ID, CUSTOMER_ID_1, "TOSS", 20000L);
+        PaymentCommand.PayOrderRequest invalidAmountRequest = createPaymentRequest(PAYMENT_ID, CUSTOMER_ID_1, "TOSS", 20000L);
 
         Order order_2 = createOrder(ORDER_ID, CUSTOMER_ID_2);
         Order orderAggregate_2 = createOrderAggregate(order_2, orderItem, orderItemOption);
@@ -69,7 +69,7 @@ class PaymentCreateServiceTest {
                 given(paymentStore.savePayment(any(Payment.class))).willReturn(payment);
                 given(paymentStore.saveOrderPaymentHistorySuccess(any(PaymentHistory.class))).willReturn(paymentHistory);
 
-                PaymentResponse response = paymentCreateService.createPayment(orderAggregate, paymentRequest);
+                PaymentInfo.PayOrderResponse response = paymentCreateService.createPayment(orderAggregate, paymentRequest);
 
                 assertThat(response.getPaymentId()).isEqualTo(PAYMENT_ID);
                 verify(paymentStore, times(1)).saveOrderPaymentHistorySuccess(any(PaymentHistory.class));
@@ -176,8 +176,8 @@ class PaymentCreateServiceTest {
                 .build();
     }
 
-    private PaymentRequest createPaymentRequest(Long orderId, Long customerId, String paymentMethod, Long amount) {
-        return PaymentRequest.builder()
+    private PaymentCommand.PayOrderRequest createPaymentRequest(Long orderId, Long customerId, String paymentMethod, Long amount) {
+        return PaymentCommand.PayOrderRequest.builder()
                 .orderId(orderId)
                 .customerId(customerId)
                 .paymentMethod(paymentMethod)

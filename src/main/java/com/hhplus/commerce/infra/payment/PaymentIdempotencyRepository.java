@@ -1,6 +1,6 @@
 package com.hhplus.commerce.infra.payment;
 
-import com.hhplus.commerce.domain.payment.PaymentIdempotency;
+import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

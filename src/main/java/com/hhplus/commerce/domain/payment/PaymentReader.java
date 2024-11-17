@@ -1,5 +1,7 @@
 package com.hhplus.commerce.domain.payment;
 
+import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
+
 public interface PaymentReader {
     PaymentIdempotency getPaymentIdempotency(Long orderId, String idempotencyKey);
 
