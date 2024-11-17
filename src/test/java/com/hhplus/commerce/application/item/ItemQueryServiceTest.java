@@ -1,8 +1,8 @@
 package com.hhplus.commerce.application.item;
 
-import com.hhplus.commerce.application.item.dto.ItemResponse;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.domain.Item.Item;
+import com.hhplus.commerce.domain.Item.ItemInfo;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
@@ -50,10 +50,10 @@ class ItemQueryServiceTest {
 
                 given(itemReader.getItem(existedItemId)).willReturn(item);
 
-                ItemResponse itemResponse = itemQueryService.getItem(existedItemId);
+                ItemInfo.DetailResponse itemInfo = itemQueryService.getItem(existedItemId);
 
-                assertThat(itemResponse.getItemId()).isEqualTo(existedItemId);
-                assertThat(itemResponse.getItemOptionResponseList()).hasSize(1)
+                assertThat(itemInfo.getItemId()).isEqualTo(existedItemId);
+                assertThat(itemInfo.getItemOptionList()).hasSize(1)
                         .extracting("itemOptionId", "quantity")
                         .containsExactlyInAnyOrder(
                                 Tuple.tuple(existedItemOptionId, 10L)

@@ -1,7 +1,6 @@
 package com.hhplus.commerce.interfaces.item;
 
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.application.item.dto.ItemResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +21,7 @@ public interface ItemApiSpecification {
     final class Fake implements ItemApiSpecification {
         @Override
         public CommonResponse getItem(Long id) {
-            ItemResponse.ItemOptionResponse itemOptionResponse = ItemResponse.ItemOptionResponse.builder()
+            ItemDto.ItemOptionResponse itemOptionResponse = ItemDto.ItemOptionResponse.builder()
                     .itemOptionId(10L)
                     .itemOptionSize("95")
                     .itemOptionColor("빨강")
@@ -30,11 +29,11 @@ public interface ItemApiSpecification {
                     .quantity(10L)
                     .build();
 
-            ItemResponse itemResponse = ItemResponse.builder()
+            ItemDto.DetailResponse itemResponse = ItemDto.DetailResponse.builder()
                     .itemId(id)
                     .itemName("겨울 코트")
                     .itemPrice(10000L)
-                    .itemOptionResponseList(List.of(itemOptionResponse))
+                    .itemOptionList(List.of(itemOptionResponse))
                     .build();
 
             return CommonResponse.success(itemResponse);
@@ -42,42 +41,42 @@ public interface ItemApiSpecification {
 
         @Override
         public CommonResponse getBestItems() {
-            ItemResponse.ItemOptionResponse itemOptionResponse1 = new ItemResponse.ItemOptionResponse(
+            ItemDto.ItemOptionResponse itemOptionResponse1 = new ItemDto.ItemOptionResponse(
                     1L, "95", "파랑", 0L, 15L
             );
-            ItemResponse itemResponse1 = new ItemResponse(
+            ItemDto.DetailResponse itemResponse1 = new ItemDto.DetailResponse(
                     11L, "가을 코트", 40000L, List.of(itemOptionResponse1)
             );
 
-            ItemResponse.ItemOptionResponse itemOptionResponse2 = new ItemResponse.ItemOptionResponse(
+            ItemDto.ItemOptionResponse itemOptionResponse2 = new ItemDto.ItemOptionResponse(
                     2L, "100", "빨강", 0L, 25L
             );
-            ItemResponse itemResponse2 = new ItemResponse(
+            ItemDto.DetailResponse itemResponse2 = new ItemDto.DetailResponse(
                     22L, "가을 코트", 30000L, List.of(itemOptionResponse2)
             );
 
-            ItemResponse.ItemOptionResponse itemOptionResponse3 = new ItemResponse.ItemOptionResponse(
+            ItemDto.ItemOptionResponse itemOptionResponse3 = new ItemDto.ItemOptionResponse(
                     3L, "105", "노랑", 0L, 20L
             );
-            ItemResponse itemResponse3 = new ItemResponse(
+            ItemDto.DetailResponse itemResponse3 = new ItemDto.DetailResponse(
                     33L, "여성 코트", 25000L, List.of(itemOptionResponse3)
             );
 
-            ItemResponse.ItemOptionResponse itemOptionResponse4 = new ItemResponse.ItemOptionResponse(
+            ItemDto.ItemOptionResponse itemOptionResponse4 = new ItemDto.ItemOptionResponse(
                     4L, "95", "파랑", 0L, 5L
             );
-            ItemResponse itemResponse4 = new ItemResponse(
+            ItemDto.DetailResponse itemResponse4 = new ItemDto.DetailResponse(
                     44L, "남성 코트", 10000L, List.of(itemOptionResponse4)
             );
 
-            ItemResponse.ItemOptionResponse itemOptionResponse5 = new ItemResponse.ItemOptionResponse(
+            ItemDto.ItemOptionResponse itemOptionResponse5 = new ItemDto.ItemOptionResponse(
                     5L, "100", "검정", 0L, 10L
             );
-            ItemResponse itemResponse5 = new ItemResponse(
+            ItemDto.DetailResponse itemResponse5 = new ItemDto.DetailResponse(
                     55L, "겨울 코트", 20000L, List.of(itemOptionResponse5)
             );
 
-            List<ItemResponse> iemResponses = Arrays.asList(
+            List<ItemDto.DetailResponse> iemResponses = Arrays.asList(
                     itemResponse1, itemResponse2, itemResponse3, itemResponse4, itemResponse5
             );
 

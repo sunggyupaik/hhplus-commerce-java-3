@@ -2,16 +2,13 @@ package com.hhplus.commerce.interfaces.item;
 
 import com.hhplus.commerce.application.item.ItemBestQueryService;
 import com.hhplus.commerce.application.item.ItemQueryService;
-import com.hhplus.commerce.application.item.dto.ItemBestResponse;
-import com.hhplus.commerce.application.item.dto.ItemResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.domain.Item.ItemInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,22 +21,25 @@ public class ItemApiController implements ItemApiSpecification {
     public CommonResponse getItem(
             @PathVariable("id") Long id
     ) {
-        ItemResponse itemResponse = itemQueryService.getItem(id);
+        var itemInfo = itemQueryService.getItem(id);
+        ItemDto.DetailResponse response = ItemDto.DetailResponse.of(itemInfo);
 
-        return CommonResponse.success(itemResponse);
+        return CommonResponse.success(response);
     }
     
     @GetMapping("/best/r")
     public CommonResponse getBestItemsRedis() {
-        List<ItemBestResponse> bestItems = itemBestQueryService.getBestItemsRedis();
+        var itemInfo = itemBestQueryService.getBestItemsRedis();
+        ItemDto.BestResult bestResult = ItemDto.BestResult.of(itemInfo);
 
-        return CommonResponse.success(bestItems);
+        return CommonResponse.success(bestResult);
     }
 
     @GetMapping("/best")
     public CommonResponse getBestItems() {
-        List<ItemBestResponse> bestItems = itemBestQueryService.getBestItems();
+        ItemInfo.BestResult itemInfo = itemBestQueryService.getBestItems();
+        ItemDto.BestResult bestResult = ItemDto.BestResult.of(itemInfo);
 
-        return CommonResponse.success(bestItems);
+        return CommonResponse.success(bestResult);
     }
 }

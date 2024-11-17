@@ -1,6 +1,7 @@
 package com.hhplus.commerce.application.item;
 
 import com.hhplus.commerce.application.item.dto.ItemBestResponse;
+import com.hhplus.commerce.domain.Item.ItemInfo;
 import com.hhplus.commerce.domain.order.OrderReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,8 +14,9 @@ import java.util.List;
 public class ItemBestQueryService {
     private final OrderReader orderReader;
 
-    public List<ItemBestResponse> getBestItems() {
-        return orderReader.getBestItems();
+    public ItemInfo.BestResult getBestItems() {
+        List<ItemBestResponse> bestItems = orderReader.getBestItems();
+        return ItemInfo.BestResult.of(bestItems);
     }
 
     @Cacheable(
@@ -22,7 +24,8 @@ public class ItemBestQueryService {
             key = "'getBestItems'",
             cacheManager = "thirtyMinutesCacheManager"
     )
-    public List<ItemBestResponse> getBestItemsRedis() {
-        return orderReader.getBestItems();
+    public ItemInfo.BestResult getBestItemsRedis() {
+        List<ItemBestResponse> bestItems = orderReader.getBestItems();
+        return ItemInfo.BestResult.of(bestItems);
     }
 }
