@@ -3,7 +3,6 @@ package com.hhplus.commerce.application.payment;
 import com.hhplus.commerce.application.order.OrderDataPlatformSendService;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPayload;
-import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
@@ -15,8 +14,9 @@ import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import com.hhplus.commerce.domain.payment.Payment;
-import com.hhplus.commerce.domain.payment.PaymentHistory;
-import com.hhplus.commerce.domain.payment.PaymentIdempotency;
+import com.hhplus.commerce.domain.payment.PaymentCommand;
+import com.hhplus.commerce.domain.payment.history.PaymentHistory;
+import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
@@ -66,11 +66,11 @@ public class PaymentFacadeTest {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
-        paymentFacade.payOrder(paymentRequest);
+        paymentFacade.payOrder(payOrderRequest);
 
         Point findPoint = pointRepository.findById(point.getId()).orElseThrow();
         Assertions.assertEquals(findPoint.getPoint(), 10000L,
@@ -97,12 +97,12 @@ public class PaymentFacadeTest {
         Point point = pointFixture(customer.getId(), 10000L);
         Order order = orderFixture(customer.getId());
         PaymentIdempotency paymentIdempotency = paymentIdempotencyFixture(order.getId(), null);
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 20000L, "123"
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(paymentRequest)
+                () -> paymentFacade.payOrder(payOrderRequest)
         )
                 .isInstanceOf(IllegalStatusException.class);
     }
@@ -114,12 +114,12 @@ public class PaymentFacadeTest {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 5000L, "123"
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(paymentRequest)
+                () -> paymentFacade.payOrder(payOrderRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
 
@@ -137,12 +137,12 @@ public class PaymentFacadeTest {
         Point point_1 = pointFixture(customer_1.getId(), 20000L);
         Point point_2 = pointFixture(customer_2.getId(), 20000L);
         Order order = orderFixture(customer_1.getId());
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer_2.getId(), "TOSS", 10000L, "123"
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(paymentRequest)
+                () -> paymentFacade.payOrder(payOrderRequest)
         )
                 .isInstanceOf(InvalidParamException.class);
 
@@ -160,12 +160,12 @@ public class PaymentFacadeTest {
         Order order = orderFixture(customer.getId());
         order.changeToOrderComplete();
         orderRepository.save(order);
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
         assertThatThrownBy(
-                () -> paymentFacade.payOrder(paymentRequest)
+                () -> paymentFacade.payOrder(payOrderRequest)
         )
                 .isInstanceOf(IllegalStatusException.class);
 
@@ -182,7 +182,7 @@ public class PaymentFacadeTest {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
@@ -195,7 +195,7 @@ public class PaymentFacadeTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    paymentFacade.payOrderRedis(paymentRequest, "nothing");
+                    paymentFacade.payOrderRedis(payOrderRequest, "nothing");
                     success.incrementAndGet();
                 } catch (InvalidParamException e) {
                     fail.incrementAndGet();
@@ -228,7 +228,7 @@ public class PaymentFacadeTest {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
@@ -241,7 +241,7 @@ public class PaymentFacadeTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    paymentFacade.payOrderRedis(paymentRequest, "1");
+                    paymentFacade.payOrderRedis(payOrderRequest, "1");
                     success.incrementAndGet();
                 } catch (Exception e) {
                     fail.incrementAndGet();
@@ -272,7 +272,7 @@ public class PaymentFacadeTest {
         Customer customer = customerFixture();
         Point point = pointFixture(customer.getId(), 20000L);
         Order order = orderFixture(customer.getId());
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest payOrderRequest = createPaymentRequest(
                 order.getId(), customer.getId(), "TOSS", 10000L, "123"
         );
 
@@ -285,7 +285,7 @@ public class PaymentFacadeTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    paymentFacade.payOrderRedis(paymentRequest, "nothing");
+                    paymentFacade.payOrderRedis(payOrderRequest, "nothing");
                     success.incrementAndGet();
                 } catch (InvalidParamException e) {
                     fail.incrementAndGet();
@@ -393,9 +393,9 @@ public class PaymentFacadeTest {
     }
 
     //payment
-    private PaymentRequest createPaymentRequest(
+    private PaymentCommand.PayOrderRequest createPaymentRequest(
             Long orderId, Long customerId, String paymentMethod, Long amount, String idempotencyKey) {
-        return PaymentRequest.builder()
+        return PaymentCommand.PayOrderRequest.builder()
                 .orderId(orderId)
                 .customerId(customerId)
                 .paymentMethod(paymentMethod)

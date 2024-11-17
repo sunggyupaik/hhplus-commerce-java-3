@@ -5,11 +5,10 @@ import com.hhplus.commerce.application.order.OrderQueryService;
 import com.hhplus.commerce.application.order.OrderStatusChangeService;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPublisher;
-import com.hhplus.commerce.application.payment.dto.PaymentIdempotencyCheckResponse;
-import com.hhplus.commerce.application.payment.dto.PaymentRequest;
-import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.application.point.PointUseService;
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.payment.PaymentCommand;
+import com.hhplus.commerce.domain.payment.PaymentInfo;
 import com.hhplus.commerce.domain.point.PointCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,26 +29,26 @@ public class PaymentFacade {
 
     /**
      * 분산락과 멱등성 DB로 결제한다
-     * @param paymentRequest 결제 요청
+     * @param request 결제 요청
      * @return 결제 응답
      */
     @Transactional
-    public PaymentResponse payOrder(PaymentRequest paymentRequest) {
+    public PaymentInfo.PayOrderResponse payOrder(PaymentCommand.PayOrderRequest request) {
         //멱등성 검사
-        PaymentIdempotencyCheckResponse response = idempotencyCheckService.idempotencyCheck(paymentRequest);
+        PaymentInfo.PaymentIdempotencyCheckResponse response = idempotencyCheckService.idempotencyCheck(request);
         if (response.isIdempotencyKeyExists()) {
             return response.getPaymentResponse();
         }
 
         //포인트 차감
         PointCommand.ChargeRequest command = PointCommand.ChargeRequest.of(
-                paymentRequest.getCustomerId(), paymentRequest.getAmount()
+                request.getCustomerId(), request.getAmount()
         );
         pointUseService.usePoint(command);
 
         //결제 저장
-        Order order = orderQueryService.getOrderWithPessimisticLock(paymentRequest.getOrderId());
-        PaymentResponse paymentResponse = paymentCreateService.createPayment(order, paymentRequest);
+        Order order = orderQueryService.getOrderWithPessimisticLock(request.getOrderId());
+        PaymentInfo.PayOrderResponse paymentResponse = paymentCreateService.createPayment(order, request);
 
         // 주문 완료
         orderStatusChangeService.changeToComplete(order);
@@ -63,25 +62,25 @@ public class PaymentFacade {
     /**
      * 분산락과 Redis로 결제한다
      * 만약 type가 1이면 모든 로직이 끝나고 RuntimeException을 던진다
-     * @param paymentRequest 결제 요청
+     * @param payOrderRequest 결제 요청
      * @param type 예외 타입
      * @return 결제 응답
      */
     @Transactional
-    public PaymentResponse payOrderRedis(PaymentRequest paymentRequest, String type) {
+    public PaymentInfo.PayOrderResponse payOrderRedis(PaymentCommand.PayOrderRequest payOrderRequest, String type) {
         //멱등성 검사
-        PaymentIdempotencyCheckResponse response = idempotencyCheckService.idempotencyCheckRedis(paymentRequest);
+        PaymentInfo.PaymentIdempotencyCheckResponse response = idempotencyCheckService.idempotencyCheckRedis(payOrderRequest);
         if (response.isIdempotencyKeyExists()) {
             return response.getPaymentResponse();
         }
 
         //결제 저장
-        Order order = orderQueryService.getOrderWithPessimisticLock(paymentRequest.getOrderId());
-        PaymentResponse paymentResponse = paymentCreateService.createPayment(order, paymentRequest);
+        Order order = orderQueryService.getOrderWithPessimisticLock(payOrderRequest.getOrderId());
+        PaymentInfo.PayOrderResponse paymentResponse = paymentCreateService.createPayment(order, payOrderRequest);
 
         //포인트 차감
         PointCommand.ChargeRequest command = PointCommand.ChargeRequest.of(
-                paymentRequest.getCustomerId(), paymentRequest.getAmount()
+                payOrderRequest.getCustomerId(), payOrderRequest.getAmount()
         );
         pointUseService.usePoint(command);
 
@@ -90,7 +89,7 @@ public class PaymentFacade {
 
         // 레디스에 <멱등성 키, 결제> 캐시 저장
         idempotencyManageService.saveIdempotencyPayment(
-                paymentRequest.getIdempotencyKey(), paymentResponse, EXPIRE_MINUTE_15
+                payOrderRequest.getIdempotencyKey(), paymentResponse, EXPIRE_MINUTE_15
         );
 
         // 데이터 플랫폼 전송 이벤트

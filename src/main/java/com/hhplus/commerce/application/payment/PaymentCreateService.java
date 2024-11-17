@@ -1,14 +1,14 @@
 package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.application.payment.dto.PaymentRequest;
-import com.hhplus.commerce.application.payment.dto.PaymentResponse;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.payment.Payment;
-import com.hhplus.commerce.domain.payment.PaymentHistory;
+import com.hhplus.commerce.domain.payment.PaymentCommand;
+import com.hhplus.commerce.domain.payment.PaymentInfo;
 import com.hhplus.commerce.domain.payment.PaymentStore;
+import com.hhplus.commerce.domain.payment.history.PaymentHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,37 +19,37 @@ public class PaymentCreateService {
     private final PaymentStore paymentStore;
 
     @Transactional
-    public PaymentResponse createPayment(Order order, PaymentRequest paymentRequest) {
-        validate(order, paymentRequest);
+    public PaymentInfo.PayOrderResponse createPayment(Order order, PaymentCommand.PayOrderRequest payOrderRequest) {
+        validate(order, payOrderRequest);
 
-        Payment payment = paymentRequest.toEntity();
+        Payment payment = payOrderRequest.toEntity();
         Payment createdPayment = paymentStore.savePayment(payment);
-        PaymentHistory paymentHistory = paymentRequest.toPaymentHistoryEntity(null);
+        PaymentHistory paymentHistory = payOrderRequest.toPaymentHistoryEntity(null);
         if (paymentHistory.isSuccessHistory()) {
             paymentStore.saveOrderPaymentHistorySuccess(paymentHistory);
         }
 
-        return PaymentResponse.of(createdPayment);
+        return PaymentInfo.PayOrderResponse.of(createdPayment);
     }
 
-    private void validate(Order order, PaymentRequest paymentRequest) {
-        if (!order.calculatePrice().equals(paymentRequest.getAmount())) {
+    private void validate(Order order, PaymentCommand.PayOrderRequest payOrderRequest) {
+        if (!order.calculatePrice().equals(payOrderRequest.getAmount())) {
             paymentStore.saveOrderPaymentHistoryFail(
-                    paymentRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_INVALID_PRICE)
+                    payOrderRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_INVALID_PRICE)
             );
             throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_PRICE);
         }
 
-        if (!order.getCustomerId().equals(paymentRequest.getCustomerId())) {
+        if (!order.getCustomerId().equals(payOrderRequest.getCustomerId())) {
             paymentStore.saveOrderPaymentHistoryFail(
-                    paymentRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_INVALID_CUSTOMER)
+                    payOrderRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_INVALID_CUSTOMER)
             );
             throw new InvalidParamException(ErrorCode.PAYMENT_INVALID_CUSTOMER);
         }
 
         if (!order.paymentAvailable()) {
             paymentStore.saveOrderPaymentHistoryFail(
-                    paymentRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_ALREADY_FINISHED)
+                    payOrderRequest.toPaymentHistoryEntity(ErrorCode.PAYMENT_ALREADY_FINISHED)
             );
             throw new IllegalStatusException(ErrorCode.PAYMENT_ALREADY_FINISHED);
         }

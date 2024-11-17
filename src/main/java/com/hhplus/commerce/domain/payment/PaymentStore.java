@@ -1,5 +1,8 @@
 package com.hhplus.commerce.domain.payment;
 
+import com.hhplus.commerce.domain.payment.history.PaymentHistory;
+import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
+
 public interface PaymentStore {
     Payment savePayment(Payment payment);
 

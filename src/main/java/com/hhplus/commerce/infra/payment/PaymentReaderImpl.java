@@ -3,7 +3,7 @@ package com.hhplus.commerce.infra.payment;
 import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.domain.payment.Payment;
-import com.hhplus.commerce.domain.payment.PaymentIdempotency;
+import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
 import com.hhplus.commerce.domain.payment.PaymentReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

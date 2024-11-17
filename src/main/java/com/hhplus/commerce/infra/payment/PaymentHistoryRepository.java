@@ -1,6 +1,6 @@
 package com.hhplus.commerce.infra.payment;
 
-import com.hhplus.commerce.domain.payment.PaymentHistory;
+import com.hhplus.commerce.domain.payment.history.PaymentHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PaymentHistoryRepository extends JpaRepository<PaymentHistory, Long> {

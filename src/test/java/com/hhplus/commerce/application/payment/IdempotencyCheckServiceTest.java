@@ -1,14 +1,13 @@
 package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.application.payment.dto.PaymentRequest;
 import com.hhplus.commerce.common.exception.InvalidParamException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.payment.Payment;
-import com.hhplus.commerce.domain.payment.PaymentIdempotency;
+import com.hhplus.commerce.domain.payment.PaymentCommand;
 import com.hhplus.commerce.domain.payment.PaymentMethod;
+import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
-import com.hhplus.commerce.infra.payment.PaymentHistoryRepository;
 import com.hhplus.commerce.infra.payment.PaymentIdempotencyRepository;
 import com.hhplus.commerce.infra.payment.PaymentRepository;
 import org.junit.jupiter.api.Assertions;
@@ -27,13 +26,12 @@ class IdempotencyCheckServiceTest {
 
     @Autowired private CustomerRepository customerRepository;
     @Autowired private PaymentRepository paymentRepository;
-    @Autowired private PaymentHistoryRepository paymentHistoryRepository;
     @Autowired private PaymentIdempotencyRepository paymentIdempotencyRepository;
 
     @Test
     @DisplayName("멱등성 키가 없으면 결제 요청을 실패한다")
     void idempotencyCheckWithIdempotencyNull() throws InterruptedException {
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest paymentRequest = createPaymentRequest(
                 1L, 1L, "TOSS", 15000L, null
         );
 
@@ -71,7 +69,7 @@ class IdempotencyCheckServiceTest {
         paymentIdempotencyFixture(1L, "123");
         Customer customer = customerFixture();
 
-        PaymentRequest paymentRequest = createPaymentRequest(
+        PaymentCommand.PayOrderRequest paymentRequest = createPaymentRequest(
                 1L, customer.getId(), "TOSS", 19000L, "123"
         );
 
@@ -145,9 +143,9 @@ class IdempotencyCheckServiceTest {
     }
 
     //payment
-    private PaymentRequest createPaymentRequest(
+    private PaymentCommand.PayOrderRequest createPaymentRequest(
             Long orderId, Long customerId, String paymentMethod, Long amount, String idempotencyKey) {
-        return PaymentRequest.builder()
+        return PaymentCommand.PayOrderRequest.builder()
                 .orderId(orderId)
                 .customerId(customerId)
                 .paymentMethod(paymentMethod)
