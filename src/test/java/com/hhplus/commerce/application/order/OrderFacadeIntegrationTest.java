@@ -1,16 +1,17 @@
 package com.hhplus.commerce.application.order;
 
-import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.common.exception.IllegalStatusException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
 import com.hhplus.commerce.infra.item.ItemInventoryRepository;
 import com.hhplus.commerce.infra.item.ItemOptionRepository;
 import com.hhplus.commerce.infra.item.ItemRepository;
 import com.hhplus.commerce.infra.order.OrderRepository;
+import com.hhplus.commerce.interfaces.order.OrderDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -39,9 +40,10 @@ class OrderFacadeIntegrationTest {
     @DisplayName("주어진 주문정보에 따라 재고를 차감하고 주문서를 생성한다")
     void order() {
         Item item = createItemAggregateFixture();
-        OrderRequest orderRequest = createOrderRequest(item.getId());
+        OrderDto.OrderRequest orderRequest = createOrderRequest(item.getId());
 
-        Order createdOrder = orderFacade.orderPessimisticLock(1L, orderRequest);
+        var command = OrderCommand.OrderRequest.of(1L, orderRequest);
+        orderFacade.orderPessimisticLock(command);
 
         ItemInventory itemInventory = itemInventoryRepository.findById(item.getId()).orElseThrow();
         Assertions.assertEquals(8, itemInventory.getQuantity(),
@@ -67,8 +69,9 @@ class OrderFacadeIntegrationTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    OrderRequest orderRequest = createOrderRequest(item.getId());
-                    orderFacade.orderPessimisticLock(1L, orderRequest);
+                    OrderDto.OrderRequest orderRequest = createOrderRequest(item.getId());
+                    var command = OrderCommand.OrderRequest.of(1L, orderRequest);
+                    orderFacade.orderPessimisticLock(command);
                     success.incrementAndGet();
                 } catch (IllegalStatusException e) {
                     fail.incrementAndGet();
@@ -117,60 +120,60 @@ class OrderFacadeIntegrationTest {
                 .build();
     }
 
-    private OrderRequest createOrderRequest(Long itemId) {
-        OrderRequest.OrderItemOptionRequest orderItemOptionRequest =
-                OrderRequest.OrderItemOptionRequest
+    private OrderDto.OrderRequest createOrderRequest(Long itemId) {
+        OrderDto.OrderItemOptionRequest orderItemOptionRequest =
+                OrderDto.OrderItemOptionRequest
                         .builder()
                         .itemOptionId(itemId)
                         .build();
 
-        List<OrderRequest.OrderItemRequest> orderItemRequestList =
+        List<OrderDto.OrderItemRequest> orderItemRequestList =
                 List.of(
-                        OrderRequest.OrderItemRequest.builder()
-                                .orderItemOptionRequest(orderItemOptionRequest)
+                        OrderDto.OrderItemRequest.builder()
+                                .orderItemOption(orderItemOptionRequest)
                                 .itemId(itemId)
                                 .orderCount(2)
                                 .itemPrice(1000L)
                                 .build()
                 );
 
-        return OrderRequest.builder()
-                .orderItemRequestList(orderItemRequestList)
+        return OrderDto.OrderRequest.builder()
+                .orderItemList(orderItemRequestList)
                 .customerId(1L)
                 .build();
     }
 
-    private OrderRequest createOrderRequest(List<Long> ids) {
-        OrderRequest.OrderItemOptionRequest orderItemOptionRequest =
-                OrderRequest.OrderItemOptionRequest
+    private OrderCommand.OrderRequest createOrderRequest(List<Long> ids) {
+        OrderCommand.OrderItemOptionRequest orderItemOptionRequest =
+                OrderCommand.OrderItemOptionRequest
                         .builder()
                         .itemOptionId(ids.get(0))
                         .build();
 
-        List<OrderRequest.OrderItemRequest> orderItemRequestList =
+        List<OrderCommand.OrderItemRequest> orderItemRequestList =
                 List.of(
-                        OrderRequest.OrderItemRequest.builder()
-                            .orderItemOptionRequest(orderItemOptionRequest)
+                        OrderCommand.OrderItemRequest.builder()
+                            .orderItemOption(orderItemOptionRequest)
                             .itemId(ids.get(0))
                             .orderCount(3)
                             .itemPrice(1000L)
                             .build(),
-                        OrderRequest.OrderItemRequest.builder()
-                                .orderItemOptionRequest(orderItemOptionRequest)
+                        OrderCommand.OrderItemRequest.builder()
+                                .orderItemOption(orderItemOptionRequest)
                                 .itemId(ids.get(1))
                                 .orderCount(3)
                                 .itemPrice(1000L)
                                 .build(),
-                        OrderRequest.OrderItemRequest.builder()
-                                .orderItemOptionRequest(orderItemOptionRequest)
+                        OrderCommand.OrderItemRequest.builder()
+                                .orderItemOption(orderItemOptionRequest)
                                 .itemId(ids.get(2))
                                 .orderCount(3)
                                 .itemPrice(1000L)
                                 .build()
                 );
 
-        return OrderRequest.builder()
-                .orderItemRequestList(orderItemRequestList)
+        return OrderCommand.OrderRequest.builder()
+                .orderItemList(orderItemRequestList)
                 .customerId(1L)
                 .build();
     }

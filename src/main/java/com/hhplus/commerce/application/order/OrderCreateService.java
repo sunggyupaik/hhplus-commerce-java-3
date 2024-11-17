@@ -1,8 +1,9 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
+import com.hhplus.commerce.domain.order.OrderInfo;
 import com.hhplus.commerce.domain.order.OrderStore;
-import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import lombok.RequiredArgsConstructor;
@@ -15,20 +16,20 @@ public class OrderCreateService {
     private final OrderStore orderStore;
 
     @Transactional
-    public Order createOrder(Long customerId, OrderRequest request) {
-        Order savedOrder = orderStore.save(request.toEntity(customerId));
+    public OrderInfo.CreateResponse createOrder(OrderCommand.OrderRequest request) {
+        Order savedOrder = orderStore.save(request.toEntity(request.getCustomerId()));
 
         //order aggregate
-        request.getOrderItemRequestList().forEach(orderItemRequest -> {
+        request.getOrderItemList().forEach(orderItemRequest -> {
             OrderItem savedOrderItem = orderStore.saveOrderItem(orderItemRequest.toEntity(savedOrder));
 
-            OrderRequest.OrderItemOptionRequest orderItemOptionRequest = orderItemRequest.getOrderItemOptionRequest();
+            OrderCommand.OrderItemOptionRequest orderItemOptionRequest = orderItemRequest.getOrderItemOption();
             OrderItemOption orderItemOption = orderStore.saveOrderItemOption(orderItemOptionRequest.toEntity(savedOrderItem));
 
             savedOrderItem.changeOrderItemOption(orderItemOption);
             savedOrder.addOrderItem(savedOrderItem);
         });
 
-        return savedOrder;
+        return OrderInfo.CreateResponse.of(savedOrder);
     }
 }
