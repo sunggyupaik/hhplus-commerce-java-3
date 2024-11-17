@@ -1,11 +1,10 @@
 package com.hhplus.commerce.interfaces.order;
 
 import com.hhplus.commerce.application.order.OrderFacade;
-import com.hhplus.commerce.application.order.dto.OrderRequest;
-import com.hhplus.commerce.application.order.dto.OrderResponse;
-import com.hhplus.commerce.application.order.dto.OrderResultResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
+import com.hhplus.commerce.domain.order.OrderInfo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,18 +24,19 @@ public class OrderApiController implements OrderApiSpecification {
     @PostMapping
     public CommonResponse createOrder(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody OrderRequest orderRequest
+            @RequestBody @Valid OrderDto.OrderRequest orderRequest
     ) {
-        Order createdOrder = orderFacade.orderPessimisticLock(customerId, orderRequest);
+        var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
+        OrderInfo.CreateResponse response = orderFacade.orderPessimisticLock(command);
 
-        return CommonResponse.success(OrderResponse.of(createdOrder));
+        return CommonResponse.success(OrderDto.OrderResponse.of(response));
     }
 
     @GetMapping
-    public CommonResponse getOrder(
+    public CommonResponse getOrders(
             @RequestHeader("customerId") Long customerId
     ) {
-        List<OrderResultResponse.OrderDetailResponse> orders = orderFacade.getOrders(customerId);
-        return CommonResponse.success(OrderResultResponse.of(orders));
+        List<OrderInfo.DetailResponse> ordersInfo = orderFacade.getOrders(customerId);
+        return CommonResponse.success(OrderDto.ResultResponse.of(ordersInfo));
     }
 }

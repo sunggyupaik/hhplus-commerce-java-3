@@ -1,10 +1,10 @@
 package com.hhplus.commerce.interfaces.order;
 
 import com.hhplus.commerce.application.order.OrderFacade;
-import com.hhplus.commerce.application.order.dto.OrderRequest;
-import com.hhplus.commerce.application.order.dto.OrderResponse;
 import com.hhplus.commerce.common.response.CommonResponse;
-import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
+import com.hhplus.commerce.domain.order.OrderInfo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,30 +21,33 @@ public class OrderApiStrategyController {
     @PostMapping("/p")
     public CommonResponse createOrderPessimistic(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody OrderRequest orderRequest
+            @RequestBody @Valid OrderDto.OrderRequest orderRequest
     ) {
-        Order createdOrder = orderFacade.orderPessimisticLock(customerId, orderRequest);
+        var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
+        OrderInfo.CreateResponse response = orderFacade.orderPessimisticLock(command);
 
-        return CommonResponse.success(OrderResponse.of(createdOrder));
+        return CommonResponse.success(OrderDto.OrderResponse.of(response));
     }
 
     @PostMapping("/o")
     public CommonResponse createOrderOptimistic(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody OrderRequest orderRequest
+            @RequestBody @Valid OrderDto.OrderRequest orderRequest
     ) {
-        Order createdOrder = orderFacade.orderOptimisticLock(customerId, orderRequest);
+        var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
+        OrderInfo.CreateResponse response = orderFacade.orderOptimisticLock(command);
 
-        return CommonResponse.success(OrderResponse.of(createdOrder));
+        return CommonResponse.success(OrderDto.OrderResponse.of(response));
     }
 
     @PostMapping("/d")
     public CommonResponse createOrderDistributed(
             @RequestHeader("customerId") Long customerId,
-            @RequestBody OrderRequest orderRequest
+            @RequestBody @Valid OrderDto.OrderRequest orderRequest
     ) {
-        Order createdOrder = orderFacade.orderDistributedLock(customerId, orderRequest);
+        var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
+        OrderInfo.CreateResponse response = orderFacade.orderDistributedLock(command);
 
-        return CommonResponse.success(OrderResponse.of(createdOrder));
+        return CommonResponse.success(OrderDto.OrderResponse.of(response));
     }
 }

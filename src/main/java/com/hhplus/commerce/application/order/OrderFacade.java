@@ -1,9 +1,9 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.item.ItemStockService;
-import com.hhplus.commerce.application.order.dto.OrderRequest;
-import com.hhplus.commerce.application.order.dto.OrderResultResponse;
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
+import com.hhplus.commerce.domain.order.OrderInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,60 +23,57 @@ public class OrderFacade {
     private final OrderCancelHandler orderCancelHandler;
 
     @Transactional
-    public Order orderPessimisticLock(Long customerId, OrderRequest request) {
+    public OrderInfo.CreateResponse orderPessimisticLock(OrderCommand.OrderRequest request) {
         // 재고 차감(itemId 오름차순)
-        request.getOrderItemRequestList().stream()
-                .sorted(Comparator.comparing(OrderRequest.OrderItemRequest::getItemId))
+        request.getOrderItemList().stream()
+                .sorted(Comparator.comparing(OrderCommand.OrderItemRequest::getItemId))
                 .forEach(orderItemRequest -> {
-                    OrderRequest.OrderItemOptionRequest orderItemOptionRequest
-                            = orderItemRequest.getOrderItemOptionRequest();
+                    var orderItemOption = orderItemRequest.getOrderItemOption();
 
                     itemStockService.decreaseStockPessimistic(
-                            orderItemOptionRequest.getItemOptionId(),
+                            orderItemOption.getItemOptionId(),
                             Long.valueOf(orderItemRequest.getOrderCount())
                     );
                 });
 
         //주문 저장
-        return orderCreateService.createOrder(customerId, request);
+        return orderCreateService.createOrder(request);
     }
 
     @Transactional
-    public Order orderOptimisticLock(Long customerId, OrderRequest request) {
+    public OrderInfo.CreateResponse orderOptimisticLock(OrderCommand.OrderRequest request) {
         // 재고 차감
-        request.getOrderItemRequestList().stream()
-                .sorted(Comparator.comparing(OrderRequest.OrderItemRequest::getItemId))
+        request.getOrderItemList().stream()
+                .sorted(Comparator.comparing(OrderCommand.OrderItemRequest::getItemId))
                 .forEach(orderItemRequest -> {
-                    OrderRequest.OrderItemOptionRequest orderItemOptionRequest
-                            = orderItemRequest.getOrderItemOptionRequest();
+                    var orderItemOption = orderItemRequest.getOrderItemOption();
 
                     itemStockService.decreaseStockPessimistic(
-                            orderItemOptionRequest.getItemOptionId(),
+                            orderItemOption.getItemOptionId(),
                             Long.valueOf(orderItemRequest.getOrderCount())
                     );
                 });
 
         //주문 저장
-        return orderCreateService.createOrder(customerId, request);
+        return orderCreateService.createOrder(request);
     }
 
     @Transactional
-    public Order orderDistributedLock(Long customerId, OrderRequest request) {
+    public OrderInfo.CreateResponse orderDistributedLock(OrderCommand.OrderRequest request) {
         // 재고 차감
-        request.getOrderItemRequestList().stream()
-                .sorted(Comparator.comparing(OrderRequest.OrderItemRequest::getItemId))
+        request.getOrderItemList().stream()
+                .sorted(Comparator.comparing(OrderCommand.OrderItemRequest::getItemId))
                 .forEach(orderItemRequest -> {
-                    OrderRequest.OrderItemOptionRequest orderItemOptionRequest
-                            = orderItemRequest.getOrderItemOptionRequest();
+                    var orderItemOption = orderItemRequest.getOrderItemOption();
 
                     itemStockService.decreaseStockPessimistic(
-                            orderItemOptionRequest.getItemOptionId(),
+                            orderItemOption.getItemOptionId(),
                             Long.valueOf(orderItemRequest.getOrderCount())
                     );
                 });
 
         //주문 저장
-        return orderCreateService.createOrder(customerId, request);
+        return orderCreateService.createOrder(request);
     }
 
     //@Scheduled(cron = "0 * * * * *")
@@ -99,7 +96,7 @@ public class OrderFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResultResponse.OrderDetailResponse> getOrders(Long customerId) {
+    public List<OrderInfo.DetailResponse> getOrders(Long customerId) {
         return orderQueryService.getDetailOrders(customerId);
     }
 }

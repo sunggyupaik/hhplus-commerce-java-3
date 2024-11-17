@@ -1,10 +1,12 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
+import com.hhplus.commerce.domain.order.OrderInfo;
 import com.hhplus.commerce.domain.order.OrderStore;
-import com.hhplus.commerce.application.order.dto.OrderRequest;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
+import com.hhplus.commerce.interfaces.order.OrderDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -45,13 +47,14 @@ class OrderCreateServiceTest {
             @DisplayName("주문을 생성하고 반환한다")
             void it_returns_created_order() {
                 Order order = createOrderAggregate(createdOrderId, createdOrderItemId, createdOrderItemOptionId);
-                OrderRequest orderRequest = createOrderRequest();
+                OrderDto.OrderRequest orderRequest = createOrderRequest();
 
                 given(orderStore.save(any(Order.class))).willReturn(order);
 
-                Order createdOrder = orderCreateService.createOrder(1L, orderRequest);
+                var command = OrderCommand.OrderRequest.of(1L, orderRequest);
+                OrderInfo.CreateResponse createResponse = orderCreateService.createOrder(command);
 
-                assertThat(createdOrder.getId()).isEqualTo(createdOrderId);
+                assertThat(createResponse.getOrderId()).isEqualTo(createdOrderId);
                 verify(orderStore, times(1)).save(any(Order.class));
                 verify(orderStore, times(1)).saveOrderItem(any(OrderItem.class));
                 verify(orderStore, times(1)).saveOrderItemOption(any(OrderItemOption.class));
@@ -89,12 +92,12 @@ class OrderCreateServiceTest {
                 .build();
     }
 
-    private OrderRequest createOrderRequest() {
-        OrderRequest.OrderItemOptionRequest orderItemOptionRequest = OrderRequest.OrderItemOptionRequest.builder().build();
+    private OrderDto.OrderRequest createOrderRequest() {
+        OrderDto.OrderItemOptionRequest orderItemOptionRequest = OrderDto.OrderItemOptionRequest.builder().build();
 
-        List<OrderRequest.OrderItemRequest> orderItemRequestList =
-                List.of(OrderRequest.OrderItemRequest.builder().orderItemOptionRequest(orderItemOptionRequest).build());
+        List<OrderDto.OrderItemRequest> orderItemRequestList =
+                List.of(OrderDto.OrderItemRequest.builder().orderItemOption(orderItemOptionRequest).build());
 
-        return OrderRequest.builder().orderItemRequestList(orderItemRequestList).build();
+        return OrderDto.OrderRequest.builder().orderItemList(orderItemRequestList).build();
     }
 }
