@@ -4,7 +4,6 @@ import com.hhplus.commerce.common.exception.EntityNotFoundException;
 import com.hhplus.commerce.domain.cart.CartCommand;
 import com.hhplus.commerce.domain.cart.CartReader;
 import com.hhplus.commerce.domain.cart.CartStore;
-import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,8 +42,6 @@ class CartDeleteServiceTest {
         class Context_with_existed_customer_id_and_itemOption_ids {
             private final Long customerId = 1L;
             private final List<Long> itemOptionIds = List.of(2L,3L,4L);
-            private final Long itemId = 10L;
-            private final Long itemOptionId = 2L;
 
             @Test
             @DisplayName("해당하는 장바구니 상품을 삭제한다")
@@ -82,12 +79,6 @@ class CartDeleteServiceTest {
         return CartCommand.DeleteRequest.builder()
                 .customerId(customerId)
                 .itemOptionIdList(itemOptionIdList)
-                .build();
-    }
-
-    private Customer createCustomer(Long id) {
-        return Customer.builder()
-                .id(id)
                 .build();
     }
 }

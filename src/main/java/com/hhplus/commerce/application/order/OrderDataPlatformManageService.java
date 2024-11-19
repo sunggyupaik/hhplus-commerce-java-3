@@ -3,6 +3,7 @@ package com.hhplus.commerce.application.order;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPayload;
 import com.hhplus.commerce.common.exception.TimeoutException;
 import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.domain.order.OrderCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,14 +14,14 @@ import org.springframework.stereotype.Service;
 public class OrderDataPlatformManageService {
     private final OrderDataPlatformSendService orderDataPlatformSendService;
 
-    public boolean send(OrderDataPlatformPayload payload) {
+    public boolean send(OrderCommand.OrderDataPlatformRequest request) {
         try {
-            log.info("orderDataPlatformPayload: {}", payload);
-            boolean isSuccess = orderDataPlatformSendService.send(payload);
+            log.info("orderDataPlatformPayload: {}", request);
+            boolean isSuccess = orderDataPlatformSendService.send(request);
             if (isSuccess) return true;
             throw new TimeoutException(ErrorCode.ORDER_DATA_PLATFORM_TIMEOUT);
         } catch (TimeoutException e) {
-            boolean isSuccess = orderDataPlatformSendService.send(payload);
+            boolean isSuccess = orderDataPlatformSendService.send(request);
             if (isSuccess) return true;
             log.error("DataPlatformSend error, cause = {}, errorMsg = {}", e, e.getMessage());
         }
