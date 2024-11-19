@@ -19,6 +19,21 @@ public class OrderCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
+    public static class OrderDataPlatformRequest {
+        private Long orderId;
+
+        public static OrderDataPlatformRequest of(Long orderId) {
+            return OrderDataPlatformRequest.builder()
+                    .orderId(orderId)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
     public static class OrderRequest {
         private Long customerId;
         private String receiverCity;

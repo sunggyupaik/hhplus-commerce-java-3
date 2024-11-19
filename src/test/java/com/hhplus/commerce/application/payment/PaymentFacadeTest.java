@@ -9,6 +9,7 @@ import com.hhplus.commerce.common.response.ErrorCode;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.order.Order;
+import com.hhplus.commerce.domain.order.OrderCommand;
 import com.hhplus.commerce.domain.order.OrderStatus;
 import com.hhplus.commerce.domain.order.OrderStore;
 import com.hhplus.commerce.domain.order.item.OrderItem;
@@ -218,7 +219,8 @@ public class PaymentFacadeTest {
                 "반환된 1건은 최초로 성공한 결제이력이다");
 
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
-        verify(orderDataPlatformSendService, times(1)).send(orderDataPlatformPayload);
+        verify(orderDataPlatformSendService, times(1))
+                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
     }
 
     @Test
@@ -261,7 +263,8 @@ public class PaymentFacadeTest {
                 "반환된 결제 이력 0건이다");
 
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
-        verify(orderDataPlatformSendService, times(0)).send(orderDataPlatformPayload);
+        verify(orderDataPlatformSendService, times(0))
+                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
     }
 
     @Test
@@ -312,7 +315,8 @@ public class PaymentFacadeTest {
                 "반환된 1건은 최초로 성공한 결제이다");
 
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
-        verify(orderDataPlatformSendService, times(2)).send(orderDataPlatformPayload);
+        verify(orderDataPlatformSendService, times(2))
+                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
     }
 
     //paymentIdempotency
