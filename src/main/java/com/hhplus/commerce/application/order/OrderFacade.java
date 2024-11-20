@@ -1,6 +1,7 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.item.ItemStockService;
+import com.hhplus.commerce.application.order.kafkaSample.OrderSampleKafkaService;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderCommand;
 import com.hhplus.commerce.domain.order.OrderInfo;
@@ -21,6 +22,7 @@ public class OrderFacade {
     private final OrderCreateService orderCreateService;
     private final OrderQueryService orderQueryService;
     private final OrderCancelHandler orderCancelHandler;
+    private final OrderSampleKafkaService orderSampleKafkaService;
 
     @Transactional
     public OrderInfo.CreateResponse orderPessimisticLock(OrderCommand.OrderRequest request) {
@@ -98,5 +100,10 @@ public class OrderFacade {
     @Transactional(readOnly = true)
     public List<OrderInfo.DetailResponse> getOrders(Long customerId) {
         return orderQueryService.getDetailOrders(customerId);
+    }
+
+    @Transactional
+    public void sample(Long id) {
+        orderSampleKafkaService.sample(id);
     }
 }

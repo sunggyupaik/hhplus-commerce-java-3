@@ -7,6 +7,7 @@ import com.hhplus.commerce.domain.order.OrderInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -38,5 +39,12 @@ public class OrderApiController implements OrderApiSpecification {
     ) {
         List<OrderInfo.DetailResponse> ordersInfo = orderFacade.getOrders(customerId);
         return CommonResponse.success(OrderDto.ResultResponse.of(ordersInfo));
+    }
+
+    @GetMapping("/sample/{id}")
+    public void sampleOrder(
+            @PathVariable("id") Long id
+    ) {
+        orderFacade.sample(id);
     }
 }

@@ -17,6 +17,6 @@ public class OrderDataPlatformListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void orderDataPlatformHandler(OrderDataPlatformEvent event) {
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(event);
-        orderDataPlatformManageService.send(OrderCommand.OrderDataPlatformRequest.of(event.getOrderId()));
+        orderDataPlatformManageService.send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
     }
 }
