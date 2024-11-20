@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.cart;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;

@@ -1,9 +1,9 @@
 package com.hhplus.commerce.application.payment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hhplus.commerce.common.distributedLock.DistributedLock;
-import com.hhplus.commerce.common.exception.InvalidParamException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.distributedLock.DistributedLock;
+import com.hhplus.commerce.support.exception.InvalidParamException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentCommand;
 import com.hhplus.commerce.domain.payment.PaymentInfo;

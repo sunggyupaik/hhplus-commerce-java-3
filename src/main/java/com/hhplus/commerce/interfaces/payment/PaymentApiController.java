@@ -1,7 +1,7 @@
 package com.hhplus.commerce.interfaces.payment;
 
 import com.hhplus.commerce.application.payment.PaymentFacade;
-import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.support.response.CommonResponse;
 import com.hhplus.commerce.domain.payment.PaymentCommand;
 import com.hhplus.commerce.domain.payment.PaymentInfo;
 import lombok.RequiredArgsConstructor;

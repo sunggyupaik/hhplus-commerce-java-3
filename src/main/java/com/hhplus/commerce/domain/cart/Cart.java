@@ -1,6 +1,6 @@
 package com.hhplus.commerce.domain.cart;
 
-import com.hhplus.commerce.common.BaseTimeEntity;
+import com.hhplus.commerce.support.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

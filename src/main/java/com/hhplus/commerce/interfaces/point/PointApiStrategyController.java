@@ -1,7 +1,7 @@
 package com.hhplus.commerce.interfaces.point;
 
 import com.hhplus.commerce.application.point.PointChargeService;
-import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.support.response.CommonResponse;
 import com.hhplus.commerce.domain.point.PointCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

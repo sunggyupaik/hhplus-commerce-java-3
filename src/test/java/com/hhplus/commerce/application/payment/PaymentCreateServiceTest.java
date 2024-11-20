@@ -1,7 +1,7 @@
 package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.common.exception.IllegalStatusException;
-import com.hhplus.commerce.common.exception.InvalidParamException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.InvalidParamException;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;

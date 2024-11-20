@@ -1,7 +1,7 @@
 package com.hhplus.commerce.application.item;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
-import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import org.junit.jupiter.api.BeforeEach;

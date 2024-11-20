@@ -1,6 +1,6 @@
 package com.hhplus.commerce.domain.Item.itemOption;
 
-import com.hhplus.commerce.common.BaseTimeEntity;
+import com.hhplus.commerce.support.BaseTimeEntity;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import jakarta.persistence.CascadeType;

@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointInfo;
 import com.hhplus.commerce.domain.point.PointReader;

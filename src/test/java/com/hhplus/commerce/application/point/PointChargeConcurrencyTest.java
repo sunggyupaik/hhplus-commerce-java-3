@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.point.Point;

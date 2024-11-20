@@ -1,6 +1,6 @@
-package com.hhplus.commerce.common.response;
+package com.hhplus.commerce.support.response;
 
-import com.hhplus.commerce.common.exception.BaseException;
+import com.hhplus.commerce.support.exception.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;

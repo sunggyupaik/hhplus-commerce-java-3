@@ -1,7 +1,7 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
-import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointCommand;
 import com.hhplus.commerce.domain.point.PointReader;

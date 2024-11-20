@@ -1,15 +1,13 @@
 package com.hhplus.commerce.domain.item;
 
-import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.infra.item.ItemInventoryRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

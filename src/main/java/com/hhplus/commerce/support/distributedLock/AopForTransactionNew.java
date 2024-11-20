@@ -1,4 +1,4 @@
-package com.hhplus.commerce.common.distributedLock;
+package com.hhplus.commerce.support.distributedLock;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;

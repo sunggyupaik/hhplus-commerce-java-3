@@ -1,7 +1,7 @@
 package com.hhplus.commerce.infra.cart;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.cart.Cart;
 import com.hhplus.commerce.domain.cart.CartReader;
 import lombok.RequiredArgsConstructor;

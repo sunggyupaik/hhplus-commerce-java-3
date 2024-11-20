@@ -1,4 +1,4 @@
-package com.hhplus.commerce.common;
+package com.hhplus.commerce.support;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

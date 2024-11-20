@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.order;
 
-import com.hhplus.commerce.common.exception.TimeoutException;
+import com.hhplus.commerce.support.exception.TimeoutException;
 import com.hhplus.commerce.domain.order.OrderCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

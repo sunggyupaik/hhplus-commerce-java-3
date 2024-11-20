@@ -1,4 +1,4 @@
-package com.hhplus.commerce.common.response;
+package com.hhplus.commerce.support.response;
 
 import lombok.Builder;
 import lombok.Getter;

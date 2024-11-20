@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.order;
 
-import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;

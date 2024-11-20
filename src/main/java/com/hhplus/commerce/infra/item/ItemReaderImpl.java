@@ -1,7 +1,7 @@
 package com.hhplus.commerce.infra.item;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;

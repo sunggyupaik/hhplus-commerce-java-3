@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.common.exception.InvalidParamException;
+import com.hhplus.commerce.support.exception.InvalidParamException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.payment.Payment;

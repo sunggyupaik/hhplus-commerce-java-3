@@ -1,6 +1,6 @@
 package com.hhplus.commerce.domain.order.item;
 
-import com.hhplus.commerce.common.BaseTimeEntity;
+import com.hhplus.commerce.support.BaseTimeEntity;
 import com.hhplus.commerce.domain.order.Order;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ConstraintMode;
