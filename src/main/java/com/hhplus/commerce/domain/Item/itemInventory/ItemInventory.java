@@ -1,8 +1,8 @@
 package com.hhplus.commerce.domain.Item.itemInventory;
 
-import com.hhplus.commerce.common.BaseTimeEntity;
-import com.hhplus.commerce.common.exception.IllegalStatusException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.BaseTimeEntity;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;

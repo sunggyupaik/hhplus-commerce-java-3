@@ -1,6 +1,6 @@
 package com.hhplus.commerce.domain.point;
 
-import com.hhplus.commerce.common.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
 import com.hhplus.commerce.config.cleaner.TearDownDatabase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

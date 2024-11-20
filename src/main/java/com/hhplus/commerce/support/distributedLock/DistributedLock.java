@@ -1,4 +1,4 @@
-package com.hhplus.commerce.common.distributedLock;
+package com.hhplus.commerce.support.distributedLock;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

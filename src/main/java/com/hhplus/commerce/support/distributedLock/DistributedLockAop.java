@@ -1,7 +1,7 @@
-package com.hhplus.commerce.common.distributedLock;
+package com.hhplus.commerce.support.distributedLock;
 
-import com.hhplus.commerce.common.exception.IllegalStatusException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,7 +26,7 @@ public class DistributedLockAop {
     private final RedissonClient redissonClient;
     private final AopForTransactionNew aopForTransactionNew;
 
-    @Around("@annotation(com.hhplus.commerce.common.distributedLock.DistributedLock)")
+    @Around("@annotation(com.hhplus.commerce.support.distributedLock.DistributedLock)")
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

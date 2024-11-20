@@ -1,7 +1,7 @@
 package com.hhplus.commerce.infra.point;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointReader;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.hhplus.commerce.domain.point;
 
-import com.hhplus.commerce.common.BaseTimeEntity;
-import com.hhplus.commerce.common.exception.IllegalStatusException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.BaseTimeEntity;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

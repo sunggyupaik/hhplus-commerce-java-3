@@ -1,6 +1,6 @@
 package com.hhplus.commerce.interfaces.payment;
 
-import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.support.response.CommonResponse;
 import com.hhplus.commerce.domain.payment.PaymentCommand;
 import com.hhplus.commerce.domain.payment.PaymentInfo;
 import io.swagger.v3.oas.annotations.Operation;

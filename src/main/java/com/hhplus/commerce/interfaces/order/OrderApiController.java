@@ -1,7 +1,7 @@
 package com.hhplus.commerce.interfaces.order;
 
 import com.hhplus.commerce.application.order.OrderFacade;
-import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.support.response.CommonResponse;
 import com.hhplus.commerce.domain.order.OrderCommand;
 import com.hhplus.commerce.domain.order.OrderInfo;
 import jakarta.validation.Valid;

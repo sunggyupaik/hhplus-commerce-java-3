@@ -1,6 +1,6 @@
 package com.hhplus.commerce.domain.payment;
 
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.payment.history.PaymentHistory;
 import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
 import com.hhplus.commerce.interfaces.payment.PaymentDto;

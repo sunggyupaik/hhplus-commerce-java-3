@@ -1,4 +1,4 @@
-package com.hhplus.commerce.common.distributedLock;
+package com.hhplus.commerce.support.distributedLock;
 
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;

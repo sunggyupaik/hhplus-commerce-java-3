@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.point;
 
-import com.hhplus.commerce.common.distributedLock.DistributedLock;
+import com.hhplus.commerce.support.distributedLock.DistributedLock;
 import com.hhplus.commerce.domain.point.Point;
 import com.hhplus.commerce.domain.point.PointCommand;
 import com.hhplus.commerce.domain.point.PointReader;

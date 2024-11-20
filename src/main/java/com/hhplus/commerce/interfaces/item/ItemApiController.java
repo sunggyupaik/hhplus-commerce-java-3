@@ -2,7 +2,7 @@ package com.hhplus.commerce.interfaces.item;
 
 import com.hhplus.commerce.application.item.ItemBestQueryService;
 import com.hhplus.commerce.application.item.ItemQueryService;
-import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.support.response.CommonResponse;
 import com.hhplus.commerce.domain.Item.ItemInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,7 @@
 package com.hhplus.commerce.infra.customer;
 
-import com.hhplus.commerce.common.exception.EntityNotFoundException;
-import com.hhplus.commerce.common.response.ErrorCode;
+import com.hhplus.commerce.support.exception.EntityNotFoundException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.customer.CustomerReader;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.hhplus.commerce.interfaces.order;
 
-import com.hhplus.commerce.common.response.CommonResponse;
+import com.hhplus.commerce.support.response.CommonResponse;
 import com.hhplus.commerce.domain.order.OrderStatus;
 import com.hhplus.commerce.domain.order.address.Address;
 import io.swagger.v3.oas.annotations.Operation;

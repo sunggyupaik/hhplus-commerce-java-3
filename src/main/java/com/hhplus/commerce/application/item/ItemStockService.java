@@ -1,6 +1,6 @@
 package com.hhplus.commerce.application.item;
 
-import com.hhplus.commerce.common.distributedLock.DistributedLock;
+import com.hhplus.commerce.support.distributedLock.DistributedLock;
 import com.hhplus.commerce.domain.Item.ItemReader;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
 import com.hhplus.commerce.domain.order.Order;
