@@ -1,10 +1,13 @@
 package com.hhplus.commerce.application.order;
 
 import com.hhplus.commerce.application.item.ItemStockService;
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
 import com.hhplus.commerce.application.order.kafkaSample.OrderSampleKafkaService;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderCommand;
 import com.hhplus.commerce.domain.order.OrderInfo;
+import com.hhplus.commerce.domain.outbox.OutBoxCommand;
+import com.hhplus.commerce.domain.outbox.Outbox;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.hhplus.commerce.domain.order.Order.PAY_CHECK_MINUTE;
+import static com.hhplus.commerce.domain.outbox.Outbox.PROCESSED_CHECK_MINUTE;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,8 @@ public class OrderFacade {
     private final OrderQueryService orderQueryService;
     private final OrderCancelHandler orderCancelHandler;
     private final OrderSampleKafkaService orderSampleKafkaService;
+    private final OrderExternalEventService orderExternalEventService;
+    private final OrderDataPlatformManageService orderDataPlatformManageService;
 
     @Transactional
     public OrderInfo.CreateResponse orderPessimisticLock(OrderCommand.OrderRequest request) {
@@ -89,11 +95,40 @@ public class OrderFacade {
     }
 
     @Transactional
-    public void orderCancelWithTime(int minute, LocalDateTime dateTime) {
+    public void orderCancelWithParam(int minute, LocalDateTime dateTime) {
         List<Order> orders = orderQueryService.getInitOrders();
 
         orders.forEach(order -> {
             orderCancelHandler.cancelOrder(order, dateTime, minute);
+        });
+    }
+
+    //@Scheduled(cron = "0 * * * * *")
+    @Transactional
+    public void orderExternalEventOrderDataPlatformSendBatch() {
+        OutBoxCommand.FindAllRequest request = OutBoxCommand.FindAllRequest.of(
+                OrderDataPlatformEvent.ORDER_DATA_PLATFORM_EVENT_V1_TOPIC, false
+        );
+        List<Outbox> outboxes = orderExternalEventService.findAll(request);
+
+        outboxes.forEach(outbox -> {
+            if (outbox.getCreatedDate().plusMinutes(PROCESSED_CHECK_MINUTE).isAfter(LocalDateTime.now())) {
+                orderDataPlatformManageService.send(OrderCommand.OrderDataPlatformRequest.of(outbox.getMessage()));
+                orderExternalEventService.changeToProcessedTrue(outbox);
+            }
+        });
+    }
+
+    @Transactional
+    public void orderExternalEventOrderDataPlatformSendWithParam(String topic, boolean processed, int minute, LocalDateTime dateTime) {
+        OutBoxCommand.FindAllRequest request = OutBoxCommand.FindAllRequest.of(topic, processed);
+        List<Outbox> outboxes = orderExternalEventService.findAll(request);
+
+        outboxes.forEach(outbox -> {
+            if (outbox.getCreatedDate().plusMinutes(minute).isAfter(dateTime)) {
+                orderDataPlatformManageService.send(OrderCommand.OrderDataPlatformRequest.of(outbox.getMessage()));
+                orderExternalEventService.changeToProcessedTrue(outbox);
+            }
         });
     }
 
