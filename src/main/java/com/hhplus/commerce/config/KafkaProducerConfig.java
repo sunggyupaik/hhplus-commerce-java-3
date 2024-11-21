@@ -1,6 +1,7 @@
 package com.hhplus.commerce.config;
 
 
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -34,5 +35,19 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, Long> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, OrderDataPlatformEvent> producerOrderDataPlatformFactory() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, host + ":" + port);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
+        return new DefaultKafkaProducerFactory<>(config);
+    }
+
+    @Bean
+    public KafkaTemplate<String, OrderDataPlatformEvent> kafkaOrderDataPlatformTemplate() {
+        return new KafkaTemplate<>(producerOrderDataPlatformFactory());
     }
 }
