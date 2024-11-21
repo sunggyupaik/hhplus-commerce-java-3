@@ -3,10 +3,7 @@ package com.hhplus.commerce.application.payment;
 import com.hhplus.commerce.application.order.OrderDataPlatformSendService;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformEvent;
 import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPayload;
-import com.hhplus.commerce.support.exception.IllegalStatusException;
-import com.hhplus.commerce.support.exception.InvalidParamException;
-import com.hhplus.commerce.support.response.ErrorCode;
-import com.hhplus.commerce.config.cleaner.TearDownDatabase;
+import com.hhplus.commerce.config.acceptance.AcceptanceTest;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.order.OrderCommand;
@@ -25,6 +22,9 @@ import com.hhplus.commerce.infra.payment.PaymentHistoryRepository;
 import com.hhplus.commerce.infra.payment.PaymentIdempotencyRepository;
 import com.hhplus.commerce.infra.payment.PaymentRepository;
 import com.hhplus.commerce.infra.point.PointRepository;
+import com.hhplus.commerce.support.exception.IllegalStatusException;
+import com.hhplus.commerce.support.exception.InvalidParamException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -47,8 +47,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TearDownDatabase
-public class PaymentFacadeTest {
+//@TearDownDatabase
+public class PaymentFacadeTest extends AcceptanceTest {
     @Autowired private PaymentFacade paymentFacade;
     @Autowired private OrderStore orderStore;
 
@@ -220,7 +220,7 @@ public class PaymentFacadeTest {
 
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
         verify(orderDataPlatformSendService, times(1))
-                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
+                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class PaymentFacadeTest {
 
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
         verify(orderDataPlatformSendService, times(0))
-                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
+                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload));
     }
 
     @Test
@@ -316,7 +316,7 @@ public class PaymentFacadeTest {
 
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(OrderDataPlatformEvent.of(order));
         verify(orderDataPlatformSendService, times(2))
-                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload.getOrderId()));
+                .send(OrderCommand.OrderDataPlatformRequest.of(orderDataPlatformPayload));
     }
 
     //paymentIdempotency

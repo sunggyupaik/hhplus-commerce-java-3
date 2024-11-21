@@ -1,11 +1,13 @@
 package com.hhplus.commerce.domain.order;
 
+import com.hhplus.commerce.application.order.dataPlatform.OrderDataPlatformPayload;
 import com.hhplus.commerce.domain.order.address.Address;
 import com.hhplus.commerce.domain.order.item.OrderItem;
 import com.hhplus.commerce.domain.order.item.OrderItemOption;
 import com.hhplus.commerce.interfaces.order.OrderDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -19,12 +21,19 @@ public class OrderCommand {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
+    @EqualsAndHashCode(of = "orderId")
     public static class OrderDataPlatformRequest {
         private Long orderId;
 
-        public static OrderDataPlatformRequest of(Long orderId) {
+        public static OrderDataPlatformRequest of(OrderDataPlatformPayload event) {
             return OrderDataPlatformRequest.builder()
-                    .orderId(orderId)
+                    .orderId(event.getOrderId())
+                    .build();
+        }
+
+        public static OrderDataPlatformRequest of(String orderId) {
+            return OrderDataPlatformRequest.builder()
+                    .orderId(Long.valueOf(orderId))
                     .build();
         }
     }
