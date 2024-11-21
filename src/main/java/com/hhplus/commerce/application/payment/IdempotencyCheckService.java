@@ -1,15 +1,15 @@
 package com.hhplus.commerce.application.payment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hhplus.commerce.support.distributedLock.DistributedLock;
-import com.hhplus.commerce.support.exception.InvalidParamException;
-import com.hhplus.commerce.support.response.ErrorCode;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentCommand;
 import com.hhplus.commerce.domain.payment.PaymentInfo;
 import com.hhplus.commerce.domain.payment.PaymentReader;
 import com.hhplus.commerce.domain.payment.PaymentStore;
 import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
+import com.hhplus.commerce.support.distributedLock.DistributedLock;
+import com.hhplus.commerce.support.exception.InvalidParamException;
+import com.hhplus.commerce.support.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ public class IdempotencyCheckService {
     private final PaymentReader paymentReader;
     private final PaymentStore paymentStore;
 
-    @DistributedLock(key = "'idempotencyKey'.concat(':').concat(#paymentRequest.getIdempotencyKey())")
+    @DistributedLock(key = "'idempotencyKey'.concat(':').concat(#payOrderRequest.getOrderId())")
     public PaymentInfo.PaymentIdempotencyCheckResponse idempotencyCheck(PaymentCommand.PayOrderRequest payOrderRequest) {
         //400 Bad Request 멱등키가 존재하지 않을 때
         String requestIdempotencyKey = payOrderRequest.getIdempotencyKey();

@@ -1,7 +1,6 @@
 package com.hhplus.commerce.application.payment;
 
-import com.hhplus.commerce.support.exception.InvalidParamException;
-import com.hhplus.commerce.config.cleaner.TearDownDatabase;
+import com.hhplus.commerce.config.acceptance.AcceptanceTest;
 import com.hhplus.commerce.domain.customer.Customer;
 import com.hhplus.commerce.domain.payment.Payment;
 import com.hhplus.commerce.domain.payment.PaymentCommand;
@@ -10,6 +9,7 @@ import com.hhplus.commerce.domain.payment.idempotency.PaymentIdempotency;
 import com.hhplus.commerce.infra.customer.CustomerRepository;
 import com.hhplus.commerce.infra.payment.PaymentIdempotencyRepository;
 import com.hhplus.commerce.infra.payment.PaymentRepository;
+import com.hhplus.commerce.support.exception.InvalidParamException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@TearDownDatabase
-class IdempotencyCheckServiceTest {
+class IdempotencyCheckServiceTest extends AcceptanceTest {
     @Autowired private IdempotencyCheckService idempotencyCheckService;
 
     @Autowired private CustomerRepository customerRepository;

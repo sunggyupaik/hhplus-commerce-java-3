@@ -39,7 +39,7 @@ public class AcceptanceTest {
 
     @AfterEach
     void tearDown() {
-        databaseCleanListener.clearH2();
+        databaseCleanListener.clearMySQL();
     }
 }
 
