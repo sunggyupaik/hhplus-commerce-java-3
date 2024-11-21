@@ -47,6 +47,9 @@ public enum ErrorCode {
     //cart
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 장바구니 입니다."),
 
+    //outbox
+    OUTBOX_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 이벤트 데이터입니다."),
+
     ;
     private final HttpStatus httpStatus;
     private final String errorMsg;
