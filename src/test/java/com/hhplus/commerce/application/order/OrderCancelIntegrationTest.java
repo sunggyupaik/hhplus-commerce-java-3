@@ -40,7 +40,7 @@ public class OrderCancelIntegrationTest {
         Item item = createItemAggregateFixture(10L);
         Order order = orderFixture(1L, 2, item.getId());
 
-        orderFacade.orderCancelWithTime(15, order.getCreatedDate().plusMinutes(10));
+        orderFacade.orderCancelWithParam(15, order.getCreatedDate().plusMinutes(10));
 
         Long quantity = itemInventoryRepository.findById(item.getId()).orElseThrow().getQuantity();
         Assertions.assertEquals(quantity, 12L,
@@ -61,7 +61,7 @@ public class OrderCancelIntegrationTest {
         for (int i = 1; i <= threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    orderFacade.orderCancelWithTime(15, order.getCreatedDate().plusMinutes(10));
+                    orderFacade.orderCancelWithParam(15, order.getCreatedDate().plusMinutes(10));
                     success.incrementAndGet();
                 } finally {
                     latch.countDown();
