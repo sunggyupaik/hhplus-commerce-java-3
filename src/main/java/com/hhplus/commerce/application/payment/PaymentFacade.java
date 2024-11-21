@@ -84,15 +84,15 @@ public class PaymentFacade {
         );
         pointUseService.usePoint(command);
 
-        // 주문 완료
-        orderStatusChangeService.changeToComplete(order);
-
         // 레디스에 <멱등성 키, 결제> 캐시 저장
         idempotencyManageService.saveIdempotencyPayment(
                 payOrderRequest.getIdempotencyKey(), paymentResponse, EXPIRE_MINUTE_15
         );
 
-        // 데이터 플랫폼 전송 이벤트
+        // 주문 완료
+        orderStatusChangeService.changeToComplete(order);
+
+        // 데이터 플랫폼 전송 이벤트 -> 트랜잭셔널 아웃박스 패턴
         orderDataPlatformPublisher.success(OrderDataPlatformEvent.of(order));
 
         if (type.equals("1")) {
