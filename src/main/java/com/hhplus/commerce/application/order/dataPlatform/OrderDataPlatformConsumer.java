@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -18,8 +17,11 @@ public class OrderDataPlatformConsumer {
     private final OrderDataPlatformManageService orderDataPlatformManageService;
     private final OrderExternalEventService orderExternalEventService;
 
-    @Transactional
-    @KafkaListener(topics = OrderDataPlatformEvent.ORDER_DATA_PLATFORM_EVENT_V1_TOPIC, groupId = "group_2")
+    @KafkaListener(
+            topics = OrderDataPlatformEvent.ORDER_DATA_PLATFORM_EVENT_V1_TOPIC,
+            groupId = "group_2",
+            containerFactory = "kafkaOrderDataPlatformListenerContainerFactory"
+    )
     public void orderDataPlatformHandler(OrderDataPlatformEvent event) {
         log.info("topic {}, message: {}", OrderDataPlatformEvent.ORDER_DATA_PLATFORM_EVENT_V1_TOPIC, event);
         OrderDataPlatformPayload orderDataPlatformPayload = OrderDataPlatformPayload.of(event);

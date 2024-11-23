@@ -4,15 +4,17 @@ import com.hhplus.commerce.domain.order.Order;
 import com.hhplus.commerce.domain.outbox.OutBoxCommand;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class OrderDataPlatformEvent {
     public static final String ORDER_DOMAIN_NAME = "order";
     public static final String ORDER_DATA_PLATFORM_EVENT_V1_TOPIC = "order-data-platform-event-v1";
     public static final String ORDER_DATA_PLATFORM_EVENT_TYPE = "orderDataPlatform";
     public static final String ORDER_DATA_PLATFORM_EVENT = "orderDataPlatform";
 
-    private final Long orderId;
+    private Long orderId;
 
     @Builder
     public OrderDataPlatformEvent(Long orderId) {
