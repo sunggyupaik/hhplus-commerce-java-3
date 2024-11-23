@@ -24,8 +24,8 @@ public class AcceptanceTest {
     @Container
     static GenericContainer<?> redis =
             new GenericContainer<>(DockerImageName.parse(REDIS_IMAGE))
-                    .withExposedPorts(REDIS_PORT)
-                    .withReuse(true);
+                    .withExposedPorts(REDIS_PORT);
+                    //.withReuse(true);
 
     static {
         redis.start();
@@ -40,6 +40,7 @@ public class AcceptanceTest {
     @AfterEach
     void tearDown() {
         databaseCleanListener.clearMySQL();
+        databaseCleanListener.clearRedis();
     }
 }
 

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +14,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @TestComponent
 public class DatabaseCleanListener extends AbstractTestExecutionListener {
     private final List<String> tableNames = new ArrayList<>();
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -51,6 +57,10 @@ public class DatabaseCleanListener extends AbstractTestExecutionListener {
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
     }
 
+    private void truncateRedis() {
+        requireNonNull(redisTemplate.getConnectionFactory()).getConnection().serverCommands().flushAll();
+    }
+
     @Transactional
     public void clearH2() {
         if (tableNames.isEmpty()) {
@@ -67,5 +77,10 @@ public class DatabaseCleanListener extends AbstractTestExecutionListener {
         }
         entityManager.clear();
         truncateMySQL();
+    }
+
+    @Transactional
+    public void clearRedis() {
+        truncateRedis();
     }
 }
