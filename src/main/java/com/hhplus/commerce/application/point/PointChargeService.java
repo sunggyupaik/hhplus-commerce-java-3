@@ -72,7 +72,7 @@ public class PointChargeService {
      * @param request 충전 요청 정보
      * @return 충전된 금액
      */
-    @DistributedLock(key = "'point'.concat(':').concat(#customerId)")
+    @DistributedLock(key = "'point'.concat(':').concat(#request.customerId)")
     public Long chargePointWithDistributedLock(PointCommand.ChargeRequest request) {
         Point point = pointReader.getPoint(request.getCustomerId());
         Long chargedPoint = point.charge(request.getAmount());
