@@ -22,6 +22,17 @@ import java.util.List;
 public class OrderApiController implements OrderApiSpecification {
     private final OrderFacade orderFacade;
 
+    @PostMapping("/r")
+    public CommonResponse createOrderRedis(
+            @RequestHeader("customerId") Long customerId,
+            @RequestBody @Valid OrderDto.OrderRequest orderRequest
+    ) {
+        var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
+        OrderInfo.CreateResponse response = orderFacade.orderRedis(command);
+
+        return CommonResponse.success(OrderDto.OrderResponse.of(response));
+    }
+
     @PostMapping("/p/s")
     public CommonResponse createOrder(
             @RequestHeader("customerId") Long customerId,

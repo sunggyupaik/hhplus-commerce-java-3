@@ -31,6 +31,22 @@ public class OrderFacade {
     private final OrderDataPlatformManageService orderDataPlatformManageService;
 
     @Transactional
+    public OrderInfo.CreateResponse orderRedis(OrderCommand.OrderRequest request) {
+        // 재고 차감
+        request.getOrderItemList().forEach(orderItemRequest -> {
+            var orderItemOptionRequest = orderItemRequest.getOrderItemOption();
+            itemStockService.decreaseStockRedis(
+                    orderItemOptionRequest.getItemOptionId(),
+                    Long.valueOf(orderItemRequest.getOrderCount()),
+                    10000L
+            );
+        });
+
+        //주문 저장
+        return orderCreateService.createOrder(request);
+    }
+
+    @Transactional
     public OrderInfo.CreateResponse orderPessimisticLockWithoutSort(OrderCommand.OrderRequest request) {
         // 재고 차감
         request.getOrderItemList().forEach(orderItemRequest -> {
