@@ -22,13 +22,24 @@ import java.util.List;
 public class OrderApiController implements OrderApiSpecification {
     private final OrderFacade orderFacade;
 
-    @PostMapping
+    @PostMapping("/p/s")
     public CommonResponse createOrder(
             @RequestHeader("customerId") Long customerId,
             @RequestBody @Valid OrderDto.OrderRequest orderRequest
     ) {
         var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
         OrderInfo.CreateResponse response = orderFacade.orderPessimisticLock(command);
+
+        return CommonResponse.success(OrderDto.OrderResponse.of(response));
+    }
+
+    @PostMapping("/p/n/s")
+    public CommonResponse createOrderPessimisticLockWithoutSort(
+            @RequestHeader("customerId") Long customerId,
+            @RequestBody @Valid OrderDto.OrderRequest orderRequest
+    ) {
+        var command = OrderCommand.OrderRequest.of(customerId, orderRequest);
+        OrderInfo.CreateResponse response = orderFacade.orderPessimisticLockWithoutSort(command);
 
         return CommonResponse.success(OrderDto.OrderResponse.of(response));
     }
