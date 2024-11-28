@@ -31,6 +31,21 @@ public class OrderFacade {
     private final OrderDataPlatformManageService orderDataPlatformManageService;
 
     @Transactional
+    public OrderInfo.CreateResponse orderPessimisticLockWithoutSort(OrderCommand.OrderRequest request) {
+        // 재고 차감
+        request.getOrderItemList().forEach(orderItemRequest -> {
+            var orderItemOptionRequest = orderItemRequest.getOrderItemOption();
+            itemStockService.decreaseStockPessimistic(
+                    orderItemOptionRequest.getItemOptionId(),
+                    Long.valueOf(orderItemRequest.getOrderCount())
+            );
+        });
+
+        //주문 저장
+        return orderCreateService.createOrder(request);
+    }
+
+    @Transactional
     public OrderInfo.CreateResponse orderPessimisticLock(OrderCommand.OrderRequest request) {
         // 재고 차감(itemId 오름차순)
         request.getOrderItemList().stream()
