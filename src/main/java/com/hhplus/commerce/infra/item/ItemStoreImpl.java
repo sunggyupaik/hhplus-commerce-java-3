@@ -3,6 +3,7 @@ package com.hhplus.commerce.infra.item;
 import com.hhplus.commerce.domain.Item.Item;
 import com.hhplus.commerce.domain.Item.ItemStore;
 import com.hhplus.commerce.domain.Item.itemInventory.ItemInventory;
+import com.hhplus.commerce.domain.Item.itemInventory.ItemInventoryHistory;
 import com.hhplus.commerce.domain.Item.itemOption.ItemOption;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ public class ItemStoreImpl implements ItemStore {
     private final ItemRepository itemRepository;
     private final ItemOptionRepository itemOptionRepository;
     private final ItemInventoryRepository itemInventoryRepository;
+    private final ItemInventoryHistoryRepository itemInventoryHistoryRepository;
 
     @Override
     public Item saveItem(Item item) {
@@ -27,5 +29,10 @@ public class ItemStoreImpl implements ItemStore {
     @Override
     public ItemInventory saveItemInventory(ItemInventory itemInventory) {
         return itemInventoryRepository.save(itemInventory);
+    }
+
+    @Override
+    public ItemInventoryHistory createItemInventoryHistory(ItemInventoryHistory itemInventoryHistory) {
+        return itemInventoryHistoryRepository.save(itemInventoryHistory);
     }
 }
