@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -21,12 +22,14 @@ class ItemStockServiceTest {
     private ItemReader itemReader;
     private ItemStore itemStore;
     private ItemStockService itemStockService;
+    private RedisTemplate redisTemplate;
 
     @BeforeEach
     void setUp() {
         itemReader = mock(ItemReader.class);
         itemStore = mock(ItemStore.class);
-        itemStockService = new ItemStockService(itemReader, itemStore);
+        redisTemplate = mock(RedisTemplate.class);
+        itemStockService = new ItemStockService(itemReader, itemStore, redisTemplate);
     }
 
     @Nested
